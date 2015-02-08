@@ -1,4 +1,5 @@
 #include "lwt.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
@@ -94,12 +95,12 @@ void __init_lwt(lwt_t lwt){
 		if(lwt->id == INIT_ID){
 			//set the original stack to the current stack pointer
 			register long sp asm("esp");
-			lwt->min_addr_thread_stack = sp - STACK_SIZE;
-			lwt->max_addr_thread_stack = sp;
+			lwt->min_addr_thread_stack = (long *)(sp - STACK_SIZE);
+			lwt->max_addr_thread_stack = (long *)sp;
 		}
 		else{
 			lwt->min_addr_thread_stack = __lwt_stack_get();
-			lwt->max_addr_thread_stack = lwt->min_addr_thread_stack + STACK_SIZE;
+			lwt->max_addr_thread_stack = (long *)(lwt->min_addr_thread_stack + STACK_SIZE);
 		}
 		lwt->thread_sp = lwt->max_addr_thread_stack;
 

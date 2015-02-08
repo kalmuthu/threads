@@ -26,11 +26,11 @@ typedef enum
 
 typedef void *(*lwt_fnt_t)(void *); //function pointer definition
 
-typedef struct
+struct lwt
 {
-	unsigned long * max_addr_thread_stack;
-	unsigned long * min_addr_thread_stack;
-	unsigned long * thread_sp;
+	long * max_addr_thread_stack;
+	long * min_addr_thread_stack;
+	long * thread_sp;
 
 
 	struct lwt * parent; //parent thread
@@ -39,7 +39,9 @@ typedef struct
 	void * args; //args to store for the routine
 	lwt_info_t info; //current status
 	int id; //thread id
-} lwt, *lwt_t;
+} lwt;
+
+typedef struct lwt* lwt_t;
 
 lwt_t lwt_create(lwt_fnt_t fn, void * data);
 void *lwt_join(lwt_t);
