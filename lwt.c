@@ -85,7 +85,7 @@ void __lwt_dispatch(lwt_t next, lwt_t current){
 	);
 }
 
-void __init__lwt(lwt_t lwt){
+void __init_lwt(lwt_t lwt){
 	//check that the id hasn't been initialized
 	if(lwt->id < INIT_ID){
 		//set id
@@ -148,6 +148,10 @@ int lwt_yield(lwt_t lwt){
 		__lwt_dispatch(lwt, __current_thread);
 	}
 	return 0;
+}
+
+void __lwt_schedule(){
+
 }
 
 __attribute__((constructor)) void __init__(){
