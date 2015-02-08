@@ -15,8 +15,12 @@ int __next_id = INIT_ID;
 
 //pointer to the current thread
 lwt_t __current_thread = NULL;
+lwt_t __original_thread = NULL;
 
 list_t * __current_threads = NULL;
+list_t * __runnable_threads = NULL;
+list_t * __blocked_threads = NULL;
+list_t * __zombie_threads = NULL;
 
 /**
  * Counter for the id
@@ -35,6 +39,19 @@ lwt_t lwt_current(){
  */
 int lwt_id(lwt_t thread){
 	return thread->id;
+}
+
+int lwt_info(lwt_info_t t){
+	int count = 0;
+	if(t == LWT_INFO_NTHD_RUNNABLE){
+		if(__runnable_threads){
+			count = __runnable_threads->count;
+		}
+		else{
+			count = 0;
+		}
+	}
+	return count;
 }
 
 void __lwt_dispatch(lwt_t next, lwt_t current){
@@ -63,7 +80,7 @@ void __lwt_dispatch(lwt_t next, lwt_t current){
 		"return_routine:\n\t"
 		"ret\n\t"
 		:
-		: "m" ((next->sp)), "m" ((current->sp))
+		: "m" ((next->thread_sp)), "m" ((current->thread_sp))
 		: "memory"
 	);
 }
@@ -72,11 +89,19 @@ void __init__lwt(lwt_t lwt){
 	//check that the id hasn't been initialized
 	if(lwt->id < INIT_ID){
 		//set id
-		lwt->id = __next_id++; //return id and increment TODO implement atomically
-		//set up thread stack
-		lwt->max_addr_thread_stack = __lwt_stack_get();
-		lwt->min_addr_thread_stack = lwt->thread_stack;
-		lwt->top_addr_thread_stack = lwt->max_addr_thread_stack;
+		lwt->id = __get_new_id(); //return id and increment TODO implement atomically
+
+		if(lwt->id == INIT_ID){
+			//set the original stack to the current stack pointer
+			register long sp asm("esp");
+			lwt->min_addr_thread_stack = sp - STACK_SIZE;
+			lwt->max_addr_thread_stack = sp;
+		}
+		else{
+			lwt->min_addr_thread_stack = __lwt_stack_get();
+			lwt->max_addr_thread_stack = lwt->min_addr_thread_stack + STACK_SIZE;
+		}
+		lwt->thread_sp = lwt->max_addr_thread_stack;
 
 		//set up parent
 		lwt->parent = __current_thread;
@@ -91,11 +116,18 @@ void __init__lwt(lwt_t lwt){
 			//push lwt
 			push_list(__current_thread->children, lwt);
 		}
+
+		//add to the list of threads
+		if(!__current_threads){
+			__current_threads = (list_t *)malloc(sizeof(list_t));
+			init_list(__current_threads);
+			push_list(__current_threads, lwt);
+		}
 	}
 }
 
 void * __lwt_stack_get(){
-	unsigned long * stack = (unsigned long *)malloc(sizeof(unsigned long) * PAGE_SIZE * NUM_PAGES);
+	unsigned long * stack = (unsigned long *)malloc(sizeof(unsigned long) * STACK_SIZE);
 	return stack;
 }
 
@@ -108,11 +140,33 @@ void __lwt_trampoline(){
 }
 
 int lwt_yield(lwt_t lwt){
+	assert(lwt != __current_thread); //ensure current thread isn't being yielded to itself
 	if(lwt == LWT_NULL){
-
+		__lwt_schedule();
 	}
 	else{
-
+		__lwt_dispatch(lwt, __current_thread);
 	}
+	return 0;
+}
+
+__attribute__((constructor)) void __init__(){
+	lwt_t curr_thread = (lwt_t)malloc(sizeof(lwt));
+	__init_lwt(curr_thread);
+	__original_thread = curr_thread;
+}
+
+__attribute__((destructor)) void __destroy__(){
+	free(__original_thread);
+	if(__current_threads){
+		empty_list_free(__current_threads);
+		free(__current_threads);
+	}
+}
+
+int
+main(int argc, char *argv[])
+{
+	printf("Successfully initialized shit!\n");
 }
 

@@ -153,3 +153,10 @@ void remove_list(list_t * list, void * value){
 		free(node);
 	}
 }
+
+void empty_list_free(list_t * list){
+	while(list->head){
+		void * value = pop_list(list);
+		free(value);
+	}
+}

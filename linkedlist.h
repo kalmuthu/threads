@@ -41,4 +41,6 @@ void remove_list(list_t * list, void * value);
 
 void init_list(list_t * list);
 
+void empty_list_free(list_t * list);
+
 #endif

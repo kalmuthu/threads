@@ -12,8 +12,10 @@
 
 #define PAGE_SIZE 4096
 #define NUM_PAGES 5
+#define STACK_SIZE 4096*5
 
 #define LWT_NULL NULL
+#define LWT_YIELD_NO_LWT_TO_YIELD 1
 
 typedef enum
 {
@@ -26,11 +28,9 @@ typedef void *(*lwt_fnt_t)(void *); //function pointer definition
 
 typedef struct
 {
-	void * sp; //stack pointer
-	unsigned long * thread_stack; //thread_stack
 	unsigned long * max_addr_thread_stack;
 	unsigned long * min_addr_thread_stack;
-	unsigned long * top_addr_thread_stack;
+	unsigned long * thread_sp;
 
 
 	struct lwt * parent; //parent thread
