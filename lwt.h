@@ -4,9 +4,16 @@
  *  Created on: Feb 5, 2015
  *      Author: mtrotter
  */
-
 #ifndef LWT_H_
 #define LWT_H_
+
+#include "linkedlist.h"
+#include <stdlib.h>
+
+#define PAGE_SIZE 4096
+#define NUM_PAGES 5
+
+#define LWT_NULL NULL
 
 typedef enum
 {
@@ -20,12 +27,18 @@ typedef void *(*lwt_fnt_t)(void *); //function pointer definition
 typedef struct
 {
 	void * sp; //stack pointer
-	unsigned int lwt_id; //thread id
-	lwt_t parent; //parent thread
+	unsigned long * thread_stack; //thread_stack
+	unsigned long * max_addr_thread_stack;
+	unsigned long * min_addr_thread_stack;
+	unsigned long * top_addr_thread_stack;
+
+
+	struct lwt * parent; //parent thread
+	list_t * children; //children
 	lwt_fnt_t start_routine; //start routine
 	void * args; //args to store for the routine
 	lwt_info_t info; //current status
-	//TODO pointer to list
+	int id; //thread id
 } lwt, *lwt_t;
 
 lwt_t lwt_create(lwt_fnt_t fn, void * data);
