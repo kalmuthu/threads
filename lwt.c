@@ -162,7 +162,6 @@ __attribute__((constructor)) void __init__(){
 }
 
 __attribute__((destructor)) void __destroy__(){
-	free(__original_thread);
 	if(__current_threads){
 		empty_list_free(__current_threads);
 		free(__current_threads);
