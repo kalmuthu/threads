@@ -35,8 +35,11 @@ struct lwt
 
 	struct lwt * parent; //parent thread
 	list_t * children; //children
+
 	lwt_fnt_t start_routine; //start routine
 	void * args; //args to store for the routine
+	void * return_value; //return value from function
+
 	lwt_info_t info; //current status
 	int id; //thread id
 } lwt;
