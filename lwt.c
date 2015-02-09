@@ -165,7 +165,7 @@ void __lwt_stack_return(void * stack){
 
 void __lwt_trampoline(){
 	void * value = __current_thread->start_routine(__current_thread->args);
-	lwt_die();
+	lwt_die(value);
 }
 
 void * lwt_join(lwt_t thread){
@@ -219,7 +219,7 @@ void __lwt_schedule(){
 	if(__current_thread != peek_list(__runnable_threads)){
 		lwt_t curr_thread = __current_thread;
 		//move current thread to the end of the queue
-		if(__current_thread == LWT_INFO_NTHD_RUNNABLE){
+		if(__current_thread->info == LWT_INFO_NTHD_RUNNABLE){
 			//initialize runnable threads if necessary
 			if(!__runnable_threads){
 				__runnable_threads = (list_t *)malloc(sizeof(list_t));
@@ -227,7 +227,7 @@ void __lwt_schedule(){
 			}
 			push_list(__runnable_threads, __current_thread);
 		}
-		else if(__current_thread == LWT_INFO_NTHD_BLOCKED){
+		else if(__current_thread->info == LWT_INFO_NTHD_BLOCKED){
 			//init blocked threads if necessary
 			if(!__blocked_threads){
 				__blocked_threads = (list_t *)malloc(sizeof(list_t));
