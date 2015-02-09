@@ -6,7 +6,7 @@
 #define INIT_ID 1
 
 void __lwt_schedule(void);
-void __lwt_dispatch(lwt_t next, lwt_t current);
+static inline void __lwt_dispatch(lwt_t next, lwt_t current);
 void __lwt_trampoline(void);
 void *__lwt_stack_get(void);
 void __lwt_stack_return(void *stk);
@@ -71,13 +71,13 @@ int lwt_info(lwt_info_t t){
 	return count;
 }
 
-void __lwt_dispatch(lwt_t next, lwt_t current){
+static inline void __lwt_dispatch(lwt_t next, lwt_t current){
 	__asm__ __volatile__ (
 		//save callee saved registers
-		"pushl %%esi\n\t"
-		"pushl %%edi\n\t"
-		"pushl %%ebx\n\t"
 		"pushl %%ebp\n\t"
+		"pushl %%ebx\n\t"
+		"pushl %%edi\n\t"
+		"pushl %%esi\n\t"
 
 		//move the current stack
 		"movl %%esp, %0\n\t"
@@ -85,10 +85,10 @@ void __lwt_dispatch(lwt_t next, lwt_t current){
 		"movl %1, %%esp\n\t"
 
 		//restore registers
-		"popl %%ebp\n\t"
-		"popl %%ebx\n\t"
-		"popl %%edi\n\t"
 		"popl %%esi\n\t"
+		"popl %%edi\n\t"
+		"popl %%ebx\n\t"
+		"popl %%ebp\n\t"
 
 		//jump to return routine
 		"jmp return_routine\n\t"
@@ -97,7 +97,7 @@ void __lwt_dispatch(lwt_t next, lwt_t current){
 		"return_routine:\n\t"
 		"ret\n\t"
 		:
-		: "m" ((next->thread_sp)), "m" ((current->thread_sp))
+		: "m" ((current->thread_sp)), "m" ((next->thread_sp))
 		: "memory"
 	);
 }
@@ -118,8 +118,19 @@ void __init_lwt(lwt_t lwt){
 		else{
 			lwt->min_addr_thread_stack = __lwt_stack_get();
 			lwt->max_addr_thread_stack = (long *)(lwt->min_addr_thread_stack + STACK_SIZE);
-			lwt->thread_sp = lwt->max_addr_thread_stack - 12;
+			lwt->thread_sp = lwt->max_addr_thread_stack;
+			//add the function
+			*(lwt->thread_sp--) = (long)__lwt_trampoline;
+
+			*(lwt->thread_sp--) = (long)(lwt->thread_sp + 1); //ebp
+			*(lwt->thread_sp--) = (long)0;//ebx
+			*(lwt->thread_sp--) = (long)0;//edi
+			*(lwt->thread_sp) = (long)0;//esi
+
+			//*(lwt->thread_sp) = (long)__lwt_trampoline;
+			//lwt->thread_sp -= 4;
 		}
+
 
 
 		//set up parent
@@ -172,7 +183,7 @@ void * lwt_join(lwt_t thread){
 	//ensure current thread isn't thread
 	assert(__current_thread != thread);
 	//block if the thread hasn't returned yet
-	while(__current_thread->info != LWT_INFO_NTHD_ZOMBIES){
+	while(thread->info != LWT_INFO_NTHD_ZOMBIES){
 		//switch to another thread
 		__lwt_schedule();
 	}
@@ -210,7 +221,7 @@ int lwt_yield(lwt_t lwt){
 		//remove it from the runqueue
 		remove_list(__runnable_threads, lwt);
 		__lwt_dispatch(lwt, curr_thread);
-		__lwt_trampoline();
+		//__lwt_trampoline();
 	}
 	return 0;
 }
@@ -247,7 +258,7 @@ void __lwt_schedule(){
 		lwt_t next_thread = (lwt_t)pop_list(__runnable_threads);
 		__current_thread = next_thread;
 		__lwt_dispatch(next_thread, curr_thread);
-		__lwt_trampoline();
+		//__lwt_trampoline();
 	}
 }
 
@@ -256,6 +267,7 @@ __attribute__((constructor)) void __init__(){
 	curr_thread->id = -1;
 	__init_lwt(curr_thread);
 	__original_thread = curr_thread;
+	__current_thread = __original_thread;
 }
 
 __attribute__((destructor)) void __destroy__(){
