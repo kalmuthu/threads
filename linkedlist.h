@@ -37,6 +37,8 @@ void * pop_list(list_t * list);
 
 void push_list(list_t * list, void * value);
 
+void push_head_list(list_t * list, void * value);
+
 void remove_list(list_t * list, void * value);
 
 void init_list(list_t * list);

@@ -21,7 +21,7 @@ typedef enum
 {
 	LWT_INFO_NTHD_RUNNABLE,
 	LWT_INFO_NTHD_BLOCKED,
-	LWT_INFO_NTH_ZOMBIES
+	LWT_INFO_NTHD_ZOMBIES
 } lwt_info_t;
 
 typedef void *(*lwt_fnt_t)(void *); //function pointer definition

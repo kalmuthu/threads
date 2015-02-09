@@ -141,6 +141,22 @@ void push_list(list_t * list, void * value){
 	list->count++;
 }
 
+void push_head_list(list_t * list, void * value){
+	node_t * node = (node_t *)malloc(sizeof(node_t));
+	assert(node);
+	node->next = NULL;
+	node->value = value;
+	if(list->head){
+		node->next = list->head;
+		list->head = node->next;
+	}
+	else{
+		list->head = node;
+		list->tail = node;
+	}
+	list->count++;
+}
+
 /**
  * @brief remove_list Removes the value from the list
  * @param list The list to use
