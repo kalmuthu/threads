@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #define INIT_ID 1
+#define DEFAULT_ID -1
 
 void __lwt_schedule(void);
 static inline void __lwt_dispatch(lwt_t next, lwt_t current);
@@ -74,7 +75,7 @@ int lwt_info(lwt_info_t t){
 static inline void __lwt_dispatch(lwt_t next, lwt_t current){
 	__asm__ __volatile__ (
 		//save callee saved registers
-		"pushl %%ebp\n\t"
+//		"pushl %%ebp\n\t"
 		"pushl %%ebx\n\t"
 		"pushl %%edi\n\t"
 		"pushl %%esi\n\t"
@@ -88,14 +89,14 @@ static inline void __lwt_dispatch(lwt_t next, lwt_t current){
 		"popl %%esi\n\t"
 		"popl %%edi\n\t"
 		"popl %%ebx\n\t"
-		"popl %%ebp\n\t"
+//		"popl %%ebp\n\t"
 
 		//jump to return routine
 		"jmp return_routine\n\t"
 
 		//return routine
 		"return_routine:\n\t"
-		"ret\n\t"
+//		"ret\n\t"
 		:
 		: "m" ((current->thread_sp)), "m" ((next->thread_sp))
 		: "memory"
@@ -118,9 +119,9 @@ void __init_lwt(lwt_t lwt){
 		else{
 			lwt->min_addr_thread_stack = __lwt_stack_get();
 			lwt->max_addr_thread_stack = (long *)(lwt->min_addr_thread_stack + STACK_SIZE);
-			lwt->thread_sp = lwt->max_addr_thread_stack;
+			lwt->thread_sp = lwt->max_addr_thread_stack - 1;
 			//add the function
-			*(lwt->thread_sp--) = (long)__lwt_trampoline;
+			*(lwt->thread_sp--) = (long)(__lwt_trampoline);
 
 			*(lwt->thread_sp--) = (long)(lwt->thread_sp + 1); //ebp
 			*(lwt->thread_sp--) = (long)0;//ebx
@@ -135,6 +136,7 @@ void __init_lwt(lwt_t lwt){
 
 		//set up parent
 		lwt->parent = __current_thread;
+		lwt->children = NULL;
 		//add to parent (only initial thread won't have the parent)
 		if(__current_thread){
 			//init children if necessary
@@ -155,6 +157,7 @@ void __init_lwt(lwt_t lwt){
 		push_list(__current_threads, lwt);
 
 		//add to run queue
+		lwt->info = LWT_INFO_NTHD_RUNNABLE;
 		if(lwt->id != INIT_ID){
 			if(!__runnable_threads){
 				__runnable_threads = (list_t *)malloc(sizeof(list_t));
@@ -179,6 +182,50 @@ void __lwt_trampoline(){
 	lwt_die(value);
 }
 
+
+void __cleanup_joined_thread(lwt_t lwt){
+	//remove thread from zombie list
+	if(__zombie_threads){
+		remove_list(__zombie_threads, lwt);
+	}
+	//remove from current threads
+	if(__runnable_threads){
+		remove_list(__current_threads, lwt);
+	}
+	//clear up resources
+	if(lwt->min_addr_thread_stack){
+		free(lwt->min_addr_thread_stack);
+	}
+	if(lwt->children){
+		while(lwt->children && lwt->children->head){
+			pop_list(lwt->children);
+		}
+		free(lwt->children);
+	}
+
+	free(lwt);
+}
+
+void __cleanup_thread_end(list_t * list){
+	while(list->head){
+		lwt_t lwt = pop_list(list);
+		//remove thread from run queue
+		remove_list(__current_threads, lwt);
+		if(lwt != __original_thread){
+			//free resources
+			if(lwt->children){
+				while(lwt->children && lwt->children->head){
+					pop_list(lwt->children);
+				}
+				free(lwt->children);
+			}
+			if(lwt->min_addr_thread_stack){
+				free(lwt->min_addr_thread_stack);
+			}
+		}
+	}
+}
+
 void * lwt_join(lwt_t thread){
 	//ensure current thread isn't thread
 	assert(__current_thread != thread);
@@ -187,15 +234,17 @@ void * lwt_join(lwt_t thread){
 		//switch to another thread
 		__lwt_schedule();
 	}
+	void * value = thread->return_value;
 	//free the thread's stack
-	__lwt_stack_return(thread->max_addr_thread_stack);
-	return thread->return_value;
+	__cleanup_joined_thread(thread);
+	//free thread info
+	return value;
 }
 
 void lwt_die(void * value){
 	__current_thread->return_value = value;
 	//check to see if we can return
-	while(__current_thread->children->count > 0){
+	while(__current_thread->children && __current_thread->children->count > 0){
 		__lwt_schedule();
 	}
 	//remove from parent thread
@@ -264,41 +313,41 @@ void __lwt_schedule(){
 
 __attribute__((constructor)) void __init__(){
 	lwt_t curr_thread = (lwt_t)malloc(sizeof(lwt));
-	curr_thread->id = -1;
+	assert(curr_thread);
+	curr_thread->id = DEFAULT_ID;
+	curr_thread->children = NULL;
 	__init_lwt(curr_thread);
 	__original_thread = curr_thread;
 	__current_thread = __original_thread;
 }
 
 __attribute__((destructor)) void __destroy__(){
-	if(__current_threads){
-		empty_list_free(__current_threads);
-		free(__current_threads);
-	}
+	//free threads
 	if(__runnable_threads){
-		while(__runnable_threads->head){
-			pop_list(__runnable_threads);
-		}
+		__cleanup_thread_end(__runnable_threads);
 		free(__runnable_threads);
 	}
 	if(__blocked_threads){
-		while(__blocked_threads){
-			pop_list(__blocked_threads);
-		}
-		free(__blocked_threads);
+		__cleanup_thread_end(__blocked_threads);
+		free(__runnable_threads);
 	}
 	if(__zombie_threads){
-		while(__zombie_threads){
-			pop_list(__zombie_threads);
-		}
+		__cleanup_thread_end(__zombie_threads);
 		free(__zombie_threads);
 	}
+	//free original thread
+	if(__original_thread->children){
+		free(__original_thread->children);
+	}
+	free(__original_thread);
 }
 
 lwt_t lwt_create(lwt_fnt_t fn, void * data){
 	lwt_t thread = (lwt_t)malloc(sizeof(lwt));
+	assert(thread);
 	thread->start_routine = fn;
 	thread->args = data;
+	thread->id = DEFAULT_ID;
 	__init_lwt(thread);
 
 	return thread;
@@ -306,7 +355,7 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data){
 
 void * test_method(void * param){
 	printf("In another thread!!!\n");
-	return 0;
+	return 1;
 }
 
 int
