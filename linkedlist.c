@@ -114,7 +114,12 @@ void * pop_list(list_t * list){
     assert(list->head);
     if(list->head){
         list->count--;
-        return pop_node(&(list->head));
+        void * value = pop_node(&(list->head));
+        //update tail if necessary
+        if(!list->head){
+        	list->tail = NULL;
+        }
+        return value;
     }
     return NULL;
 }

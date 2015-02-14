@@ -26,6 +26,7 @@ typedef enum
 
 typedef void *(*lwt_fnt_t)(void *); //function pointer definition
 
+typedef struct lwt* lwt_t;
 struct lwt
 {
 	long * max_addr_thread_stack;
@@ -33,7 +34,7 @@ struct lwt
 	long * thread_sp;
 
 
-	struct lwt * parent; //parent thread
+	lwt_t parent; //parent thread
 	list_t * children; //children
 
 	lwt_fnt_t start_routine; //start routine
@@ -42,9 +43,8 @@ struct lwt
 
 	lwt_info_t info; //current status
 	int id; //thread id
-} lwt;
+};
 
-typedef struct lwt* lwt_t;
 
 lwt_t lwt_create(lwt_fnt_t fn, void * data);
 void *lwt_join(lwt_t);
