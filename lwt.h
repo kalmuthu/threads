@@ -29,9 +29,9 @@ typedef void *(*lwt_fnt_t)(void *); //function pointer definition
 typedef struct lwt* lwt_t;
 struct lwt
 {
-	long * max_addr_thread_stack;
-	long * min_addr_thread_stack;
-	long * thread_sp;
+	int * max_addr_thread_stack;
+	int * min_addr_thread_stack;
+	int * thread_sp;
 
 
 	lwt_t parent; //parent thread

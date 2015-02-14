@@ -52,6 +52,7 @@ int lwt_info(lwt_info_t t){
 		else{
 			count = 0;
 		}
+		count++; //include the main thread
 	}
 	else if(t == LWT_INFO_NTHD_BLOCKED){
 		if(__blocked_threads){
@@ -113,23 +114,23 @@ void __init_lwt(lwt_t thread){
 
 		if(thread->id == INIT_ID){
 			//set the original stack to the current stack pointer
-			register long sp asm("esp");
-			thread->min_addr_thread_stack = (long *)(sp - STACK_SIZE);
-			thread->max_addr_thread_stack = (long *)sp;
+			register int sp asm("esp");
+			thread->min_addr_thread_stack = (int *)(sp - STACK_SIZE);
+			thread->max_addr_thread_stack = (int *)sp;
 			thread->thread_sp = thread->max_addr_thread_stack;
 		}
 		else{
 			thread->min_addr_thread_stack = __lwt_stack_get();
-			thread->max_addr_thread_stack = (long *)(thread->min_addr_thread_stack + STACK_SIZE);
+			thread->max_addr_thread_stack = (int *)(thread->min_addr_thread_stack + STACK_SIZE);
 			assert(thread->max_addr_thread_stack);
 			thread->thread_sp = thread->max_addr_thread_stack - 1;
 			//add the function
-			*(thread->thread_sp--) = (long)(__lwt_trampoline);
+			*(thread->thread_sp--) = (int)(__lwt_trampoline);
 
-			*(thread->thread_sp--) = (long)0; //ebp
-			*(thread->thread_sp--) = (long)0;//ebx
-			*(thread->thread_sp--) = (long)0;//edi
-			*(thread->thread_sp) = (long)0;//esi
+			*(thread->thread_sp--) = (int)0; //ebp
+			*(thread->thread_sp--) = (int)0;//ebx
+			*(thread->thread_sp--) = (int)0;//edi
+			*(thread->thread_sp) = (int)0;//esi
 
 			//*(lwt->thread_sp) = (long)__lwt_trampoline;
 			//lwt->thread_sp -= 4;
@@ -172,7 +173,7 @@ void __init_lwt(lwt_t thread){
 }
 
  void * __lwt_stack_get(){
-	long * stack = (long *)malloc(sizeof(long) * STACK_SIZE);
+	int * stack = (int *)malloc(sizeof(int) * STACK_SIZE);
 	return stack;
 }
 
@@ -181,7 +182,6 @@ void __init_lwt(lwt_t thread){
 }
 
  void __lwt_trampoline(){
-	printf("AT Tramponline!\n");
 	assert(__current_thread->start_routine);
 	void * value = __current_thread->start_routine(__current_thread->args);
 	lwt_die(value);
@@ -189,6 +189,9 @@ void __init_lwt(lwt_t thread){
 
 
  void __cleanup_joined_thread(lwt_t lwt){
+	if(lwt->parent == NULL){
+		return; //ignore original and double frees
+	}
 	//remove thread from zombie list
 	if(__zombie_threads && __zombie_threads->head){
 		remove_list(__zombie_threads, lwt);
@@ -207,7 +210,7 @@ void __init_lwt(lwt_t thread){
 		}
 		free(lwt->children);
 	}
-
+	lwt->parent = NULL;
 	free(lwt);
 }
 
@@ -287,7 +290,7 @@ int lwt_yield(lwt_t lwt){
 		//remove it from the runqueue
 		remove_list(__runnable_threads, lwt);
 		//put it out in front
-		push_head_list(__runnable_threads, lwt);
+		push_head_list(__runnable_threads, curr_thread);
 		__lwt_dispatch(lwt, curr_thread);
 		//__lwt_trampoline();
 	}
@@ -295,7 +298,8 @@ int lwt_yield(lwt_t lwt){
 }
 
 void __lwt_schedule(){
-	if(__current_thread != peek_list(__runnable_threads)){
+
+	if(__runnable_threads->count > 0 && __current_thread != peek_list(__runnable_threads)){
 		lwt_t curr_thread = __current_thread;
 		//move current thread to the end of the queue
 		if(__current_thread->info == LWT_INFO_NTHD_RUNNABLE){
@@ -373,7 +377,7 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data){
 
 	return thread;
 }
-
+/*
 void * test_method3(void * param){
 	printf("Received value: %d\n", *((int *)param));
 	return (void *)3;
@@ -381,7 +385,7 @@ void * test_method3(void * param){
 
 void * test_method2(void * param){
 	printf("In yet another thread!!\n");
-	/*int * param1 = (int *)malloc(sizeof(int));
+	int * param1 = (int *)malloc(sizeof(int));
 	*param1 = 1;
 	int * param2 = (int *)malloc(sizeof(int));
 	*param2 = 2;
@@ -390,14 +394,19 @@ void * test_method2(void * param){
 	lwt_join(t2);
 	lwt_join(t1);
 	free(param1);
-	free(param2);*/
+	free(param2);
+	return NULL;
+}
+
+void * test_method1(void * param){
+	printf("In Method1!!\n");
 	return NULL;
 }
 
 void * test_method(void * param){
 	printf("In another thread!!!\n");
-	//lwt_t new_thread = lwt_create(test_method2, NULL);
-	//lwt_join(new_thread);
+	lwt_t new_thread = lwt_create(test_method2, NULL);
+	lwt_join(new_thread);
 	return NULL;
 }
 
@@ -406,13 +415,14 @@ main(int argc, char *argv[])
 {
 	printf("Starting\n");
 	lwt_t new_thread = lwt_create(test_method, NULL);
-	//lwt_t new_thread2 = lwt_create(test_method2, NULL);
+	//lwt_t new_thread2 = lwt_create(test_method1, NULL);
 	printf("Successfully initialized shit!\n");
 	lwt_join(new_thread);
+
 	//lwt_join(new_thread2);
 
 	printf("Successfully joined!\n");
 
 	return 0;
 }
-
+*/

@@ -138,6 +138,9 @@ void push_list(list_t * list, void * value){
 	if(list->tail){
 		list->tail->next = node;
 		list->tail = node;
+		if(!list->head){
+			list->head = node;
+		}
 	}
 	else{
 		list->head = node;
@@ -154,6 +157,9 @@ void push_head_list(list_t * list, void * value){
 	if(list->head){
 		node->next = list->head;
 		list->head = node->next;
+		if(!list->tail){
+			list->tail = node;
+		}
 	}
 	else{
 		list->head = node;
@@ -171,6 +177,14 @@ void remove_list(list_t * list, void * value){
 	node_t * node = remove_node(&(list->head), value);
 	if(node){
 		list->count--;
+		//fix head and tail if necessary
+		if(list->count == 0){
+			list->head = NULL;
+			list->tail = NULL;
+		}
+		else if(!list->head->next){
+			list->tail = list->head;
+		}
 		free(node);
 	}
 }
