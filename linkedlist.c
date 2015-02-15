@@ -149,6 +149,11 @@ void push_list(list_t * list, void * value){
 	list->count++;
 }
 
+/**
+ * @brief Pushes the value to the head of the list
+ * @param list The list to use
+ * @param value The value to hold inside the node
+ */
 void push_head_list(list_t * list, void * value){
 	node_t * node = (node_t *)malloc(sizeof(node_t));
 	assert(node);
@@ -189,6 +194,10 @@ void remove_list(list_t * list, void * value){
 	}
 }
 
+/**
+ * @brief Frees the value and the elements within the list
+ * @param list
+ */
 void empty_list_free(list_t * list){
 	while(list->head){
 		void * value = pop_list(list);

@@ -25,12 +25,17 @@ list_t * __blocked_threads = NULL;
 list_t * __zombie_threads = NULL;
 
 /**
- * Counter for the id
+ * @brief Counter for the id
+ * @return The next id to use
  */
 int __get_new_id(){
 	return __next_id++; //return and then increment
 }
 
+/**
+ * @brief Gets the current thread
+ * @return The current thread
+ */
 lwt_t lwt_current(){
 	return __current_thread;
 }
@@ -43,6 +48,12 @@ int lwt_id(lwt_t thread){
 	return thread->id;
 }
 
+/**
+ * @brief Gets the counts of the info
+ * @param t The info enum to get the counts
+ * @return The count for the info enum provided
+ * @see lwt_info_t
+ */
 int lwt_info(lwt_info_t t){
 	int count = 0;
 	if(t == LWT_INFO_NTHD_RUNNABLE){
@@ -106,6 +117,11 @@ void __attribute__((noinline)) __lwt_dispatch(lwt_t next, lwt_t current){
 	printf("Returning\n");
 }
 */
+
+/**
+ * @brief Initializes the provided thread
+ * @param thread The thread to init
+ */
 void __init_lwt(lwt_t thread){
 	//check that the id hasn't been initialized
 	if(thread->id < INIT_ID){
@@ -114,23 +130,23 @@ void __init_lwt(lwt_t thread){
 
 		if(thread->id == INIT_ID){
 			//set the original stack to the current stack pointer
-			register int sp asm("esp");
-			thread->min_addr_thread_stack = (int *)(sp - STACK_SIZE);
-			thread->max_addr_thread_stack = (int *)sp;
+			register long sp asm("esp");
+			thread->min_addr_thread_stack = (long *)(sp - STACK_SIZE);
+			thread->max_addr_thread_stack = (long *)sp;
 			thread->thread_sp = thread->max_addr_thread_stack;
 		}
 		else{
 			thread->min_addr_thread_stack = __lwt_stack_get();
-			thread->max_addr_thread_stack = (int *)(thread->min_addr_thread_stack + STACK_SIZE);
+			thread->max_addr_thread_stack = (long *)(thread->min_addr_thread_stack + STACK_SIZE);
 			assert(thread->max_addr_thread_stack);
 			thread->thread_sp = thread->max_addr_thread_stack - 1;
 			//add the function
-			*(thread->thread_sp--) = (int)(__lwt_trampoline);
+			*(thread->thread_sp--) = (long)(__lwt_trampoline);
 
-			*(thread->thread_sp--) = (int)0; //ebp
-			*(thread->thread_sp--) = (int)0;//ebx
-			*(thread->thread_sp--) = (int)0;//edi
-			*(thread->thread_sp) = (int)0;//esi
+			*(thread->thread_sp--) = (long)0; //ebp
+			*(thread->thread_sp--) = (long)0;//ebx
+			*(thread->thread_sp--) = (long)0;//edi
+			*(thread->thread_sp) = (long)0;//esi
 
 			//*(lwt->thread_sp) = (long)__lwt_trampoline;
 			//lwt->thread_sp -= 4;
@@ -172,22 +188,35 @@ void __init_lwt(lwt_t thread){
 	}
 }
 
+/**
+ * @brief Allocates the stack for a LWT and returns it
+ */
  void * __lwt_stack_get(){
-	int * stack = (int *)malloc(sizeof(int) * STACK_SIZE);
+	long * stack = (long *)malloc(sizeof(long) * STACK_SIZE);
 	return stack;
 }
 
+ /**
+  * Frees the provided stack
+  * @param stack The LWT stack to free
+  */
  void __lwt_stack_return(void * stack){
 	free(stack);
 }
 
+ /**
+  * @brief Drops in from being scheduled after the initialized thread is switched to and leaps to the function pointer provided
+  */
  void __lwt_trampoline(){
 	assert(__current_thread->start_routine);
 	void * value = __current_thread->start_routine(__current_thread->args);
 	lwt_die(value);
 }
 
-
+/**
+ * @brief Cleans up the thread on join
+ * @param lwt The thread to join on
+ */
  void __cleanup_joined_thread(lwt_t lwt){
 	if(lwt->parent == NULL){
 		return; //ignore original and double frees
@@ -214,6 +243,9 @@ void __init_lwt(lwt_t thread){
 	free(lwt);
 }
 
+/**
+ * @brief Cleans up all threads on exit
+ */
 void __cleanup_thread_end(list_t * list){
 	while(list->head){
 		lwt_t lwt = pop_list(list);
@@ -234,6 +266,10 @@ void __cleanup_thread_end(list_t * list){
 	}
 }
 
+/**
+ * @brief Joins the provided thread
+ * @param thread The thread to join on
+ */
 void * lwt_join(lwt_t thread){
 	//ensure current thread isn't thread
 	assert(__current_thread != thread);
@@ -252,6 +288,9 @@ void * lwt_join(lwt_t thread){
 	return value;
 }
 
+/**
+ * @brief Prepares the current thread to be cleaned up
+ */
 void lwt_die(void * value){
 	__current_thread->return_value = value;
 	//check to see if we can return
@@ -279,6 +318,12 @@ void lwt_die(void * value){
 	__lwt_schedule();
 }
 
+/**
+ * @brief Yields to the provided LWT
+ * @param lwt The thread to yield to
+ * @note Will just schedule normally if LWT_NULL is provided
+ * @return 0 if successful
+ */
 int lwt_yield(lwt_t lwt){
 	assert(lwt != __current_thread); //ensure current thread isn't being yielded to itself
 	if(lwt == LWT_NULL){
@@ -297,6 +342,9 @@ int lwt_yield(lwt_t lwt){
 	return 0;
 }
 
+/**
+ * @brief Schedules the next thread to switch to and dispatches
+ */
 void __lwt_schedule(){
 
 	if(__runnable_threads->count > 0 && __current_thread != peek_list(__runnable_threads)){
@@ -330,12 +378,13 @@ void __lwt_schedule(){
 		lwt_t next_thread = (lwt_t)pop_list(__runnable_threads);
 		assert(next_thread);
 		__current_thread = next_thread;
-		//printf("Dispatching\n");
 		__lwt_dispatch(next_thread, curr_thread);
-		//__lwt_trampoline();
 	}
 }
 
+/**
+ * @brief Initializes the LWT by wrapping the current thread as a LWT
+ */
 __attribute__((constructor)) void __init__(){
 	lwt_t curr_thread = (lwt_t)malloc(sizeof(struct lwt));
 	assert(curr_thread);
@@ -346,6 +395,9 @@ __attribute__((constructor)) void __init__(){
 	__current_thread = __original_thread;
 }
 
+/**
+ * @brief Cleans up all remaining threads on exit
+ */
 __attribute__((destructor)) void __destroy__(){
 	//free threads
 	if(__runnable_threads){
@@ -367,6 +419,12 @@ __attribute__((destructor)) void __destroy__(){
 	free(__original_thread);
 }
 
+/**
+ * @brief Creates a LWT using the provided function pointer and the data as input for it
+ * @param fn The function pointer to use
+ * @param data The data to the function
+ * @return A pointer to the initialized LWT
+ */
 lwt_t lwt_create(lwt_fnt_t fn, void * data){
 	lwt_t thread = (lwt_t)malloc(sizeof(struct lwt));
 	assert(thread);
@@ -377,7 +435,9 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data){
 
 	return thread;
 }
+
 /*
+ * Test cases
 void * test_method3(void * param){
 	printf("Received value: %d\n", *((int *)param));
 	return (void *)3;

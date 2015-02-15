@@ -17,6 +17,9 @@
 #define LWT_NULL NULL
 #define LWT_YIELD_NO_LWT_TO_YIELD 1
 
+/**
+ * @brief The various statuses for a LWT
+ */
 typedef enum
 {
 	LWT_INFO_NTHD_RUNNABLE,
@@ -27,11 +30,14 @@ typedef enum
 typedef void *(*lwt_fnt_t)(void *); //function pointer definition
 
 typedef struct lwt* lwt_t;
+/**
+ * @brief The Lightweight Thread (LWT) struct
+ */
 struct lwt
 {
-	int * max_addr_thread_stack;
-	int * min_addr_thread_stack;
-	int * thread_sp;
+	long * max_addr_thread_stack;
+	long * min_addr_thread_stack;
+	long * thread_sp;
 
 
 	lwt_t parent; //parent thread
