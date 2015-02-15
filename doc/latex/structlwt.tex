@@ -1,0 +1,76 @@
+\hypertarget{structlwt}{\section{lwt\+\_\+t Struct Reference}
+\label{structlwt}\index{lwt\+\_\+t@{lwt\+\_\+t}}
+}
+
+
+The Lightweight Thread (L\+W\+T) struct.  
+
+
+
+
+{\ttfamily \#include $<$lwt.\+h$>$}
+
+\subsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+long $\ast$ \hyperlink{structlwt_ae97cdce617ee026378588f57a999f972}{max\+\_\+addr\+\_\+thread\+\_\+stack}
+\item 
+long $\ast$ \hyperlink{structlwt_a62ea9a882e0a197b9b076e1e018048d7}{min\+\_\+addr\+\_\+thread\+\_\+stack}
+\item 
+long $\ast$ \hyperlink{structlwt_aba48cdf2f962d7ededf74923ddd33ea1}{thread\+\_\+sp}
+\item 
+lwt\+\_\+t \hyperlink{structlwt_a1849cde569fc8f254db05365de570b0e}{parent}
+\item 
+list\+\_\+t $\ast$ \hyperlink{structlwt_aea6931811e4b99f909101d0f6f86cb59}{children}
+\item 
+\hyperlink{lwt_8h_a58d5112b6c76cbcd033e124f6131a51a}{lwt\+\_\+fnt\+\_\+t} \hyperlink{structlwt_acdcfc344e943154b9d3d11e1a41cb9f1}{start\+\_\+routine}
+\item 
+void $\ast$ \hyperlink{structlwt_a6e870b21b996bc5c62b6cbd04328e784}{args}
+\item 
+void $\ast$ \hyperlink{structlwt_a22ac5beef8503481294035218e73c3ef}{return\+\_\+value}
+\item 
+\hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75}{lwt\+\_\+info\+\_\+t} \hyperlink{structlwt_a40641e751624b983f5e1ae5302210e5d}{info}
+\item 
+int \hyperlink{structlwt_aa3df3d76d606756e38bb9bd3d2c2d241}{id}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The Lightweight Thread (L\+W\+T) struct. 
+
+\subsection{Field Documentation}
+\hypertarget{structlwt_a6e870b21b996bc5c62b6cbd04328e784}{\index{lwt@{lwt}!args@{args}}
+\index{args@{args}!lwt@{lwt}}
+\subsubsection[{args}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ lwt\+\_\+t\+::args}}\label{structlwt_a6e870b21b996bc5c62b6cbd04328e784}
+The args for the start\+\_\+routine \hypertarget{structlwt_aea6931811e4b99f909101d0f6f86cb59}{\index{lwt@{lwt}!children@{children}}
+\index{children@{children}!lwt@{lwt}}
+\subsubsection[{children}]{\setlength{\rightskip}{0pt plus 5cm}list\+\_\+t$\ast$ lwt\+\_\+t\+::children}}\label{structlwt_aea6931811e4b99f909101d0f6f86cb59}
+List of children threads \hypertarget{structlwt_aa3df3d76d606756e38bb9bd3d2c2d241}{\index{lwt@{lwt}!id@{id}}
+\index{id@{id}!lwt@{lwt}}
+\subsubsection[{id}]{\setlength{\rightskip}{0pt plus 5cm}int lwt\+\_\+t\+::id}}\label{structlwt_aa3df3d76d606756e38bb9bd3d2c2d241}
+The id of the thread \hypertarget{structlwt_a40641e751624b983f5e1ae5302210e5d}{\index{lwt@{lwt}!info@{info}}
+\index{info@{info}!lwt@{lwt}}
+\subsubsection[{info}]{\setlength{\rightskip}{0pt plus 5cm}{\bf lwt\+\_\+info\+\_\+t} lwt\+\_\+t\+::info}}\label{structlwt_a40641e751624b983f5e1ae5302210e5d}
+The current status of the thread \hypertarget{structlwt_ae97cdce617ee026378588f57a999f972}{\index{lwt@{lwt}!max\+\_\+addr\+\_\+thread\+\_\+stack@{max\+\_\+addr\+\_\+thread\+\_\+stack}}
+\index{max\+\_\+addr\+\_\+thread\+\_\+stack@{max\+\_\+addr\+\_\+thread\+\_\+stack}!lwt@{lwt}}
+\subsubsection[{max\+\_\+addr\+\_\+thread\+\_\+stack}]{\setlength{\rightskip}{0pt plus 5cm}long$\ast$ lwt\+\_\+t\+::max\+\_\+addr\+\_\+thread\+\_\+stack}}\label{structlwt_ae97cdce617ee026378588f57a999f972}
+Pointer to the max address of the stack \hypertarget{structlwt_a62ea9a882e0a197b9b076e1e018048d7}{\index{lwt@{lwt}!min\+\_\+addr\+\_\+thread\+\_\+stack@{min\+\_\+addr\+\_\+thread\+\_\+stack}}
+\index{min\+\_\+addr\+\_\+thread\+\_\+stack@{min\+\_\+addr\+\_\+thread\+\_\+stack}!lwt@{lwt}}
+\subsubsection[{min\+\_\+addr\+\_\+thread\+\_\+stack}]{\setlength{\rightskip}{0pt plus 5cm}long$\ast$ lwt\+\_\+t\+::min\+\_\+addr\+\_\+thread\+\_\+stack}}\label{structlwt_a62ea9a882e0a197b9b076e1e018048d7}
+Pointer to the min address of the statck; used for malloc and free \hypertarget{structlwt_a1849cde569fc8f254db05365de570b0e}{\index{lwt@{lwt}!parent@{parent}}
+\index{parent@{parent}!lwt@{lwt}}
+\subsubsection[{parent}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+t\+::parent}}\label{structlwt_a1849cde569fc8f254db05365de570b0e}
+Parent thread \hypertarget{structlwt_a22ac5beef8503481294035218e73c3ef}{\index{lwt@{lwt}!return\+\_\+value@{return\+\_\+value}}
+\index{return\+\_\+value@{return\+\_\+value}!lwt@{lwt}}
+\subsubsection[{return\+\_\+value}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ lwt\+\_\+t\+::return\+\_\+value}}\label{structlwt_a22ac5beef8503481294035218e73c3ef}
+The return value from the routine \hypertarget{structlwt_acdcfc344e943154b9d3d11e1a41cb9f1}{\index{lwt@{lwt}!start\+\_\+routine@{start\+\_\+routine}}
+\index{start\+\_\+routine@{start\+\_\+routine}!lwt@{lwt}}
+\subsubsection[{start\+\_\+routine}]{\setlength{\rightskip}{0pt plus 5cm}{\bf lwt\+\_\+fnt\+\_\+t} lwt\+\_\+t\+::start\+\_\+routine}}\label{structlwt_acdcfc344e943154b9d3d11e1a41cb9f1}
+The start routine for the thread to run \hypertarget{structlwt_aba48cdf2f962d7ededf74923ddd33ea1}{\index{lwt@{lwt}!thread\+\_\+sp@{thread\+\_\+sp}}
+\index{thread\+\_\+sp@{thread\+\_\+sp}!lwt@{lwt}}
+\subsubsection[{thread\+\_\+sp}]{\setlength{\rightskip}{0pt plus 5cm}long$\ast$ lwt\+\_\+t\+::thread\+\_\+sp}}\label{structlwt_aba48cdf2f962d7ededf74923ddd33ea1}
+The current thread stack pointer for the thread 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{lwt_8h}{lwt.\+h}\end{DoxyCompactItemize}

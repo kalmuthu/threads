@@ -22,8 +22,17 @@
  */
 typedef enum
 {
+	/**
+	 * Thread state is runnable; it can be switched to
+	 */
 	LWT_INFO_NTHD_RUNNABLE,
+	/**
+	 * Thread state is blocked; waiting for another thread to complete
+	 */
 	LWT_INFO_NTHD_BLOCKED,
+	/**
+	 * Thread state is zombie; thread is dead and needs to be joined
+	 */
 	LWT_INFO_NTHD_ZOMBIES
 } lwt_info_t;
 
@@ -35,20 +44,50 @@ typedef struct lwt* lwt_t;
  */
 struct lwt
 {
+	/**
+	 * Pointer to the max address of the stack
+	 */
 	long * max_addr_thread_stack;
+	/**
+	 * Pointer to the min address of the statck; used for malloc and free
+	 */
 	long * min_addr_thread_stack;
+	/**
+	 * The current thread stack pointer for the thread
+	 */
 	long * thread_sp;
 
+	/**
+	 * Parent thread
+	 */
+	lwt_t parent;
+	/**
+	 * List of children threads
+	 */
+	list_t * children;
 
-	lwt_t parent; //parent thread
-	list_t * children; //children
+	/**
+	 * The start routine for the thread to run
+	 */
+	lwt_fnt_t start_routine;
+	/**
+	 * The args for the start_routine
+	 */
+	void * args;
+	/**
+	 * The return value from the routine
+	 */
+	void * return_value;
 
-	lwt_fnt_t start_routine; //start routine
-	void * args; //args to store for the routine
-	void * return_value; //return value from function
+	/**
+	 * The current status of the thread
+	 */
+	lwt_info_t info;
 
-	lwt_info_t info; //current status
-	int id; //thread id
+	/**
+	 * The id of the thread
+	 */
+	int id;
 };
 
 

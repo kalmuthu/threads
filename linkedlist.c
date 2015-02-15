@@ -5,7 +5,7 @@
 #import <stdio.h>
 
 /**
- * @brief create_node Allocates and intiializes a node with the provided value
+ * @brief Allocates and intiializes a node with the provided value
  * @param value The value to use
  * @return A new node
  */
@@ -18,7 +18,7 @@ node_t * create_node(void * value){
 }
 
 /**
- * @brief push_node Pushes the value to the front of the lsit
+ * @brief Pushes the value to the front of the lsit
  * @param head The pointer to the front of the list
  * @param value The value of the node to use
  */
@@ -34,7 +34,7 @@ void push_node(node_t ** head, void * value){
 }
 
 /**
- * @brief pop_node Pops the node from the head
+ * @brief Pops the node from the head
  * @param head The head of the list
  * @return The value at that head
  */
@@ -53,7 +53,7 @@ void * pop_node(node_t ** head){
 }
 
 /**
- * @brief remove_node Removes a node from the list
+ * @brief Removes a node from the list
  * @param head The head of the list
  * @param value The value to search for
  * @return The detached node if it exists in the list
@@ -83,7 +83,7 @@ node_t * remove_node(node_t ** head, void * value){
 }
 
 /**
- * @brief init_list Initializes the list
+ * @brief Initializes the list
  * @param list The list to init
  */
 void init_list(list_t * list){
@@ -94,7 +94,7 @@ void init_list(list_t * list){
 }
 
 /**
- * @brief peek_list Peeks at the head of the list and returns its value
+ * @brief Peeks at the head of the list and returns its value
  * @param list The list
  * @return The value of the head
  */
@@ -105,7 +105,7 @@ void * peek_list(list_t * list){
 }
 
 /**
- * @brief pop_list Pops the head of the list and returns its value
+ * @brief Pops the head of the list and returns its value
  * @param list The list
  * @return The value of the head
  */
@@ -125,7 +125,7 @@ void * pop_list(list_t * list){
 }
 
 /**
- * @brief push_list Pushes the node to the end of the list
+ * @brief Pushes the node to the end of the list
  * @param list The list to use
  * @param value The value to store in the list
  */
@@ -174,7 +174,7 @@ void push_head_list(list_t * list, void * value){
 }
 
 /**
- * @brief remove_list Removes the value from the list
+ * @brief Removes the value from the list
  * @param list The list to use
  * @param value The value to look for
  */

@@ -3,25 +3,56 @@
 #include <stdlib.h>
 #include <assert.h>
 
+/**
+ * @brief The initial thread id
+ */
 #define INIT_ID 1
+/**
+ * @brief The default id provided to threads before actually generating them
+ */
 #define DEFAULT_ID -1
 
-void __lwt_schedule(void);
+/**
+ * @brief Dispatch function for switching between threads
+ * @param next The next thead to switch to
+ * @param current The current thread
+ */
 extern void __lwt_dispatch(lwt_t next, lwt_t current);
+
+void __lwt_schedule(void);
 void __lwt_trampoline(void);
 void *__lwt_stack_get(void);
-void __lwt_stack_return(void *stk);
+void __lwt_stack_return(void * stack);
 
-//global counter for the id
+/**
+ * @brief Global counter for the thread id
+ */
 int __next_id = INIT_ID;
 
-//pointer to the current thread
+/**
+ * @brief Pointer to the current thread
+ */
 lwt_t __current_thread = NULL;
+/**
+ * @brief Pointer to the original/main thread
+ */
 lwt_t __original_thread = NULL;
 
+/**
+ * @brief List of all active threads created
+ */
 list_t * __current_threads = NULL;
+/**
+ * @brief List of all runnable threads
+ */
 list_t * __runnable_threads = NULL;
+/**
+ * @brief List of all blocked threads
+ */
 list_t * __blocked_threads = NULL;
+/**
+ * @brief List of all zombie threads
+ */
 list_t * __zombie_threads = NULL;
 
 /**
@@ -197,7 +228,7 @@ void __init_lwt(lwt_t thread){
 }
 
  /**
-  * Frees the provided stack
+  * @brief Frees the provided stack
   * @param stack The LWT stack to free
   */
  void __lwt_stack_return(void * stack){

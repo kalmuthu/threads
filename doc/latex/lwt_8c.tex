@@ -1,0 +1,410 @@
+\hypertarget{lwt_8c}{\section{lwt.\+c File Reference}
+\label{lwt_8c}\index{lwt.\+c@{lwt.\+c}}
+}
+{\ttfamily \#include \char`\"{}lwt.\+h\char`\"{}}\\*
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+{\ttfamily \#include $<$stdlib.\+h$>$}\\*
+{\ttfamily \#include $<$assert.\+h$>$}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{lwt_8c_a60c4f73d78cb83926e82d8775906b121}{I\+N\+I\+T\+\_\+\+I\+D}~1
+\begin{DoxyCompactList}\small\item\em The initial thread id. \end{DoxyCompactList}\item 
+\#define \hyperlink{lwt_8c_a50f28d60b2b6da9c769708953aaa34d0}{D\+E\+F\+A\+U\+L\+T\+\_\+\+I\+D}~-\/1
+\begin{DoxyCompactList}\small\item\em The default id provided to threads before actually generating them. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{lwt_8c_a1ca1b663b3b7bac0145b966bd885eca2}{\+\_\+\+\_\+lwt\+\_\+dispatch} (lwt\+\_\+t next, lwt\+\_\+t current)
+\begin{DoxyCompactList}\small\item\em Dispatch function for switching between threads. \end{DoxyCompactList}\item 
+void \hyperlink{lwt_8c_a28e1a37914ce5d32fa0db45bfd9814cd}{\+\_\+\+\_\+lwt\+\_\+schedule} ()
+\begin{DoxyCompactList}\small\item\em Schedules the next thread to switch to and dispatches. \end{DoxyCompactList}\item 
+void \hyperlink{lwt_8c_ab037c14eb89b6e35f439898b2bba032e}{\+\_\+\+\_\+lwt\+\_\+trampoline} ()
+\begin{DoxyCompactList}\small\item\em Drops in from being scheduled after the initialized thread is switched to and leaps to the function pointer provided. \end{DoxyCompactList}\item 
+void $\ast$ \hyperlink{lwt_8c_a5bc2cce82409ee709a9c41a1f6093df9}{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+get} ()
+\begin{DoxyCompactList}\small\item\em Allocates the stack for a L\+W\+T and returns it. \end{DoxyCompactList}\item 
+void \hyperlink{lwt_8c_a8ce2504eb84582927a550e4dc09caf9c}{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+return} (void $\ast$stack)
+\begin{DoxyCompactList}\small\item\em Frees the provided stack. \end{DoxyCompactList}\item 
+int \hyperlink{lwt_8c_a0004bb56e69e5ddd8128ca1f03d10b81}{\+\_\+\+\_\+get\+\_\+new\+\_\+id} ()
+\begin{DoxyCompactList}\small\item\em Counter for the id. \end{DoxyCompactList}\item 
+lwt\+\_\+t \hyperlink{lwt_8c_ac597df0a118cd4679310eaaaa031b40b}{lwt\+\_\+current} ()
+\begin{DoxyCompactList}\small\item\em Gets the current thread. \end{DoxyCompactList}\item 
+int \hyperlink{lwt_8c_a2de70c77a4e8500e84cd8beecae8a757}{lwt\+\_\+id} (lwt\+\_\+t thread)
+\begin{DoxyCompactList}\small\item\em Gets the thread id. \end{DoxyCompactList}\item 
+int \hyperlink{lwt_8c_a64fd4d406b656db93283cc4d1f7b7fc8}{lwt\+\_\+info} (\hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75}{lwt\+\_\+info\+\_\+t} t)
+\begin{DoxyCompactList}\small\item\em Gets the counts of the info. \end{DoxyCompactList}\item 
+void \hyperlink{lwt_8c_a4fb2b1f6ebf8a122bff74c7ecb577d62}{\+\_\+\+\_\+init\+\_\+lwt} (lwt\+\_\+t thread)
+\begin{DoxyCompactList}\small\item\em Initializes the provided thread. \end{DoxyCompactList}\item 
+void \hyperlink{lwt_8c_a8a6b00dda74d5aa4fdbe6ff53c139f13}{\+\_\+\+\_\+cleanup\+\_\+joined\+\_\+thread} (lwt\+\_\+t \hyperlink{structlwt}{lwt})
+\begin{DoxyCompactList}\small\item\em Cleans up the thread on join. \end{DoxyCompactList}\item 
+void \hyperlink{lwt_8c_a92e62c10371390f80104e048843e8c1f}{\+\_\+\+\_\+cleanup\+\_\+thread\+\_\+end} (list\+\_\+t $\ast$\hyperlink{structlist}{list})
+\begin{DoxyCompactList}\small\item\em Cleans up all threads on exit. \end{DoxyCompactList}\item 
+void $\ast$ \hyperlink{lwt_8c_a2f44ff0598abeb9aff82f796a4a41857}{lwt\+\_\+join} (lwt\+\_\+t thread)
+\begin{DoxyCompactList}\small\item\em Joins the provided thread. \end{DoxyCompactList}\item 
+void \hyperlink{lwt_8c_a251e05155a5fe3cb30f12cb259f99662}{lwt\+\_\+die} (void $\ast$value)
+\begin{DoxyCompactList}\small\item\em Prepares the current thread to be cleaned up. \end{DoxyCompactList}\item 
+int \hyperlink{lwt_8c_a91b99467a060f31cdb6d7319044ca2d4}{lwt\+\_\+yield} (lwt\+\_\+t \hyperlink{structlwt}{lwt})
+\begin{DoxyCompactList}\small\item\em Yields to the provided L\+W\+T. \end{DoxyCompactList}\item 
+\hyperlink{lwt_8c_a083b2e840cc4afee2f08f66c46f4d64d}{\+\_\+\+\_\+attribute\+\_\+\+\_\+} ((constructor))
+\begin{DoxyCompactList}\small\item\em Initializes the L\+W\+T by wrapping the current thread as a L\+W\+T. \end{DoxyCompactList}\item 
+\hyperlink{lwt_8c_a521aaa29708382a7af39b3f0e60e4a1f}{\+\_\+\+\_\+attribute\+\_\+\+\_\+} ((destructor))
+\begin{DoxyCompactList}\small\item\em Cleans up all remaining threads on exit. \end{DoxyCompactList}\item 
+lwt\+\_\+t \hyperlink{lwt_8c_ac423039bd3f9eae371e4e203abaaa971}{lwt\+\_\+create} (\hyperlink{lwt_8h_a58d5112b6c76cbcd033e124f6131a51a}{lwt\+\_\+fnt\+\_\+t} fn, void $\ast$data)
+\begin{DoxyCompactList}\small\item\em Creates a L\+W\+T using the provided function pointer and the data as input for it. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{lwt_8c_a70a8394091b913cd5ad11f3dfc64ea1b}{\+\_\+\+\_\+next\+\_\+id} = \hyperlink{lwt_8c_a60c4f73d78cb83926e82d8775906b121}{I\+N\+I\+T\+\_\+\+I\+D}
+\begin{DoxyCompactList}\small\item\em Global counter for the thread id. \end{DoxyCompactList}\item 
+lwt\+\_\+t \hyperlink{lwt_8c_a430110d1615f05bdcedb9f9218e220f4}{\+\_\+\+\_\+current\+\_\+thread} = N\+U\+L\+L
+\begin{DoxyCompactList}\small\item\em Pointer to the current thread. \end{DoxyCompactList}\item 
+lwt\+\_\+t \hyperlink{lwt_8c_aeeea6c9b3d8be29d1b5fa3d56730aa0b}{\+\_\+\+\_\+original\+\_\+thread} = N\+U\+L\+L
+\begin{DoxyCompactList}\small\item\em Pointer to the original/main thread. \end{DoxyCompactList}\item 
+list\+\_\+t $\ast$ \hyperlink{lwt_8c_a519bb013bd7322fcac9afc1cbf56fa34}{\+\_\+\+\_\+current\+\_\+threads} = N\+U\+L\+L
+\begin{DoxyCompactList}\small\item\em List of all active threads created. \end{DoxyCompactList}\item 
+list\+\_\+t $\ast$ \hyperlink{lwt_8c_a955caff028fad58585417025597e0173}{\+\_\+\+\_\+runnable\+\_\+threads} = N\+U\+L\+L
+\begin{DoxyCompactList}\small\item\em List of all runnable threads. \end{DoxyCompactList}\item 
+list\+\_\+t $\ast$ \hyperlink{lwt_8c_a9effee7623505590a3fe6841e513ef4b}{\+\_\+\+\_\+blocked\+\_\+threads} = N\+U\+L\+L
+\begin{DoxyCompactList}\small\item\em List of all blocked threads. \end{DoxyCompactList}\item 
+list\+\_\+t $\ast$ \hyperlink{lwt_8c_a5de292204dae05b3bc7a868b9ca01ae7}{\+\_\+\+\_\+zombie\+\_\+threads} = N\+U\+L\+L
+\begin{DoxyCompactList}\small\item\em List of all zombie threads. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{lwt_8c_a50f28d60b2b6da9c769708953aaa34d0}{\index{lwt.\+c@{lwt.\+c}!D\+E\+F\+A\+U\+L\+T\+\_\+\+I\+D@{D\+E\+F\+A\+U\+L\+T\+\_\+\+I\+D}}
+\index{D\+E\+F\+A\+U\+L\+T\+\_\+\+I\+D@{D\+E\+F\+A\+U\+L\+T\+\_\+\+I\+D}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{D\+E\+F\+A\+U\+L\+T\+\_\+\+I\+D}]{\setlength{\rightskip}{0pt plus 5cm}\#define D\+E\+F\+A\+U\+L\+T\+\_\+\+I\+D~-\/1}}\label{lwt_8c_a50f28d60b2b6da9c769708953aaa34d0}
+
+
+The default id provided to threads before actually generating them. 
+
+\hypertarget{lwt_8c_a60c4f73d78cb83926e82d8775906b121}{\index{lwt.\+c@{lwt.\+c}!I\+N\+I\+T\+\_\+\+I\+D@{I\+N\+I\+T\+\_\+\+I\+D}}
+\index{I\+N\+I\+T\+\_\+\+I\+D@{I\+N\+I\+T\+\_\+\+I\+D}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{I\+N\+I\+T\+\_\+\+I\+D}]{\setlength{\rightskip}{0pt plus 5cm}\#define I\+N\+I\+T\+\_\+\+I\+D~1}}\label{lwt_8c_a60c4f73d78cb83926e82d8775906b121}
+
+
+The initial thread id. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{lwt_8c_a083b2e840cc4afee2f08f66c46f4d64d}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+attribute\+\_\+\+\_\+@{\+\_\+\+\_\+attribute\+\_\+\+\_\+}}
+\index{\+\_\+\+\_\+attribute\+\_\+\+\_\+@{\+\_\+\+\_\+attribute\+\_\+\+\_\+}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+attribute\+\_\+\+\_\+}]{\setlength{\rightskip}{0pt plus 5cm}\+\_\+\+\_\+attribute\+\_\+\+\_\+ (
+\begin{DoxyParamCaption}
+\item[{(constructor)}]{}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a083b2e840cc4afee2f08f66c46f4d64d}
+
+
+Initializes the L\+W\+T by wrapping the current thread as a L\+W\+T. 
+
+\hypertarget{lwt_8c_a521aaa29708382a7af39b3f0e60e4a1f}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+attribute\+\_\+\+\_\+@{\+\_\+\+\_\+attribute\+\_\+\+\_\+}}
+\index{\+\_\+\+\_\+attribute\+\_\+\+\_\+@{\+\_\+\+\_\+attribute\+\_\+\+\_\+}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+attribute\+\_\+\+\_\+}]{\setlength{\rightskip}{0pt plus 5cm}\+\_\+\+\_\+attribute\+\_\+\+\_\+ (
+\begin{DoxyParamCaption}
+\item[{(destructor)}]{}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a521aaa29708382a7af39b3f0e60e4a1f}
+
+
+Cleans up all remaining threads on exit. 
+
+\hypertarget{lwt_8c_a8a6b00dda74d5aa4fdbe6ff53c139f13}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+cleanup\+\_\+joined\+\_\+thread@{\+\_\+\+\_\+cleanup\+\_\+joined\+\_\+thread}}
+\index{\+\_\+\+\_\+cleanup\+\_\+joined\+\_\+thread@{\+\_\+\+\_\+cleanup\+\_\+joined\+\_\+thread}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+cleanup\+\_\+joined\+\_\+thread}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+cleanup\+\_\+joined\+\_\+thread (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+t}]{lwt}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a8a6b00dda74d5aa4fdbe6ff53c139f13}
+
+
+Cleans up the thread on join. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lwt} & The thread to join on \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt_8c_a92e62c10371390f80104e048843e8c1f}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+cleanup\+\_\+thread\+\_\+end@{\+\_\+\+\_\+cleanup\+\_\+thread\+\_\+end}}
+\index{\+\_\+\+\_\+cleanup\+\_\+thread\+\_\+end@{\+\_\+\+\_\+cleanup\+\_\+thread\+\_\+end}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+cleanup\+\_\+thread\+\_\+end}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+cleanup\+\_\+thread\+\_\+end (
+\begin{DoxyParamCaption}
+\item[{list\+\_\+t $\ast$}]{list}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a92e62c10371390f80104e048843e8c1f}
+
+
+Cleans up all threads on exit. 
+
+\hypertarget{lwt_8c_a0004bb56e69e5ddd8128ca1f03d10b81}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+get\+\_\+new\+\_\+id@{\+\_\+\+\_\+get\+\_\+new\+\_\+id}}
+\index{\+\_\+\+\_\+get\+\_\+new\+\_\+id@{\+\_\+\+\_\+get\+\_\+new\+\_\+id}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+get\+\_\+new\+\_\+id}]{\setlength{\rightskip}{0pt plus 5cm}int \+\_\+\+\_\+get\+\_\+new\+\_\+id (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a0004bb56e69e5ddd8128ca1f03d10b81}
+
+
+Counter for the id. 
+
+\begin{DoxyReturn}{Returns}
+The next id to use 
+\end{DoxyReturn}
+\hypertarget{lwt_8c_a4fb2b1f6ebf8a122bff74c7ecb577d62}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+init\+\_\+lwt@{\+\_\+\+\_\+init\+\_\+lwt}}
+\index{\+\_\+\+\_\+init\+\_\+lwt@{\+\_\+\+\_\+init\+\_\+lwt}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+init\+\_\+lwt}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+init\+\_\+lwt (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+t}]{thread}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a4fb2b1f6ebf8a122bff74c7ecb577d62}
+
+
+Initializes the provided thread. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em thread} & The thread to init \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt_8c_a1ca1b663b3b7bac0145b966bd885eca2}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+lwt\+\_\+dispatch@{\+\_\+\+\_\+lwt\+\_\+dispatch}}
+\index{\+\_\+\+\_\+lwt\+\_\+dispatch@{\+\_\+\+\_\+lwt\+\_\+dispatch}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+lwt\+\_\+dispatch}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+lwt\+\_\+dispatch (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+t}]{next, }
+\item[{lwt\+\_\+t}]{current}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a1ca1b663b3b7bac0145b966bd885eca2}
+
+
+Dispatch function for switching between threads. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em next} & The next thead to switch to \\
+\hline
+{\em current} & The current thread \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt_8c_a28e1a37914ce5d32fa0db45bfd9814cd}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+lwt\+\_\+schedule@{\+\_\+\+\_\+lwt\+\_\+schedule}}
+\index{\+\_\+\+\_\+lwt\+\_\+schedule@{\+\_\+\+\_\+lwt\+\_\+schedule}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+lwt\+\_\+schedule}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+lwt\+\_\+schedule (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a28e1a37914ce5d32fa0db45bfd9814cd}
+
+
+Schedules the next thread to switch to and dispatches. 
+
+\hypertarget{lwt_8c_a5bc2cce82409ee709a9c41a1f6093df9}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+lwt\+\_\+stack\+\_\+get@{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+get}}
+\index{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+get@{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+get}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+get}]{\setlength{\rightskip}{0pt plus 5cm}void $\ast$ \+\_\+\+\_\+lwt\+\_\+stack\+\_\+get (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a5bc2cce82409ee709a9c41a1f6093df9}
+
+
+Allocates the stack for a L\+W\+T and returns it. 
+
+\hypertarget{lwt_8c_a8ce2504eb84582927a550e4dc09caf9c}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+lwt\+\_\+stack\+\_\+return@{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+return}}
+\index{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+return@{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+return}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+return}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+lwt\+\_\+stack\+\_\+return (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{stack}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a8ce2504eb84582927a550e4dc09caf9c}
+
+
+Frees the provided stack. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em stack} & The L\+W\+T stack to free \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt_8c_ab037c14eb89b6e35f439898b2bba032e}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+lwt\+\_\+trampoline@{\+\_\+\+\_\+lwt\+\_\+trampoline}}
+\index{\+\_\+\+\_\+lwt\+\_\+trampoline@{\+\_\+\+\_\+lwt\+\_\+trampoline}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+lwt\+\_\+trampoline}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+lwt\+\_\+trampoline (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_ab037c14eb89b6e35f439898b2bba032e}
+
+
+Drops in from being scheduled after the initialized thread is switched to and leaps to the function pointer provided. 
+
+\hypertarget{lwt_8c_ac423039bd3f9eae371e4e203abaaa971}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+create@{lwt\+\_\+create}}
+\index{lwt\+\_\+create@{lwt\+\_\+create}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{lwt\+\_\+create}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+create (
+\begin{DoxyParamCaption}
+\item[{{\bf lwt\+\_\+fnt\+\_\+t}}]{fn, }
+\item[{void $\ast$}]{data}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_ac423039bd3f9eae371e4e203abaaa971}
+
+
+Creates a L\+W\+T using the provided function pointer and the data as input for it. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fn} & The function pointer to use \\
+\hline
+{\em data} & The data to the function \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A pointer to the initialized L\+W\+T 
+\end{DoxyReturn}
+\hypertarget{lwt_8c_ac597df0a118cd4679310eaaaa031b40b}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+current@{lwt\+\_\+current}}
+\index{lwt\+\_\+current@{lwt\+\_\+current}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{lwt\+\_\+current}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+current (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_ac597df0a118cd4679310eaaaa031b40b}
+
+
+Gets the current thread. 
+
+\begin{DoxyReturn}{Returns}
+The current thread 
+\end{DoxyReturn}
+\hypertarget{lwt_8c_a251e05155a5fe3cb30f12cb259f99662}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+die@{lwt\+\_\+die}}
+\index{lwt\+\_\+die@{lwt\+\_\+die}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{lwt\+\_\+die}]{\setlength{\rightskip}{0pt plus 5cm}void lwt\+\_\+die (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{value}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a251e05155a5fe3cb30f12cb259f99662}
+
+
+Prepares the current thread to be cleaned up. 
+
+\hypertarget{lwt_8c_a2de70c77a4e8500e84cd8beecae8a757}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+id@{lwt\+\_\+id}}
+\index{lwt\+\_\+id@{lwt\+\_\+id}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{lwt\+\_\+id}]{\setlength{\rightskip}{0pt plus 5cm}int lwt\+\_\+id (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+t}]{thread}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a2de70c77a4e8500e84cd8beecae8a757}
+
+
+Gets the thread id. 
+
+\begin{DoxyReturn}{Returns}
+The id of the thread 
+\end{DoxyReturn}
+\hypertarget{lwt_8c_a64fd4d406b656db93283cc4d1f7b7fc8}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+info@{lwt\+\_\+info}}
+\index{lwt\+\_\+info@{lwt\+\_\+info}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{lwt\+\_\+info}]{\setlength{\rightskip}{0pt plus 5cm}int lwt\+\_\+info (
+\begin{DoxyParamCaption}
+\item[{{\bf lwt\+\_\+info\+\_\+t}}]{t}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a64fd4d406b656db93283cc4d1f7b7fc8}
+
+
+Gets the counts of the info. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em t} & The info enum to get the counts \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The count for the info enum provided 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75}{lwt\+\_\+info\+\_\+t} 
+\end{DoxySeeAlso}
+\hypertarget{lwt_8c_a2f44ff0598abeb9aff82f796a4a41857}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+join@{lwt\+\_\+join}}
+\index{lwt\+\_\+join@{lwt\+\_\+join}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{lwt\+\_\+join}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ lwt\+\_\+join (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+t}]{thread}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a2f44ff0598abeb9aff82f796a4a41857}
+
+
+Joins the provided thread. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em thread} & The thread to join on \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt_8c_a91b99467a060f31cdb6d7319044ca2d4}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+yield@{lwt\+\_\+yield}}
+\index{lwt\+\_\+yield@{lwt\+\_\+yield}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{lwt\+\_\+yield}]{\setlength{\rightskip}{0pt plus 5cm}int lwt\+\_\+yield (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+t}]{lwt}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a91b99467a060f31cdb6d7319044ca2d4}
+
+
+Yields to the provided L\+W\+T. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lwt} & The thread to yield to \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Will just schedule normally if L\+W\+T\+\_\+\+N\+U\+L\+L is provided 
+\end{DoxyNote}
+\begin{DoxyReturn}{Returns}
+0 if successful 
+\end{DoxyReturn}
+
+
+\subsection{Variable Documentation}
+\hypertarget{lwt_8c_a9effee7623505590a3fe6841e513ef4b}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+blocked\+\_\+threads@{\+\_\+\+\_\+blocked\+\_\+threads}}
+\index{\+\_\+\+\_\+blocked\+\_\+threads@{\+\_\+\+\_\+blocked\+\_\+threads}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+blocked\+\_\+threads}]{\setlength{\rightskip}{0pt plus 5cm}list\+\_\+t$\ast$ \+\_\+\+\_\+blocked\+\_\+threads = N\+U\+L\+L}}\label{lwt_8c_a9effee7623505590a3fe6841e513ef4b}
+
+
+List of all blocked threads. 
+
+\hypertarget{lwt_8c_a430110d1615f05bdcedb9f9218e220f4}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+current\+\_\+thread@{\+\_\+\+\_\+current\+\_\+thread}}
+\index{\+\_\+\+\_\+current\+\_\+thread@{\+\_\+\+\_\+current\+\_\+thread}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+current\+\_\+thread}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t \+\_\+\+\_\+current\+\_\+thread = N\+U\+L\+L}}\label{lwt_8c_a430110d1615f05bdcedb9f9218e220f4}
+
+
+Pointer to the current thread. 
+
+\hypertarget{lwt_8c_a519bb013bd7322fcac9afc1cbf56fa34}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+current\+\_\+threads@{\+\_\+\+\_\+current\+\_\+threads}}
+\index{\+\_\+\+\_\+current\+\_\+threads@{\+\_\+\+\_\+current\+\_\+threads}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+current\+\_\+threads}]{\setlength{\rightskip}{0pt plus 5cm}list\+\_\+t$\ast$ \+\_\+\+\_\+current\+\_\+threads = N\+U\+L\+L}}\label{lwt_8c_a519bb013bd7322fcac9afc1cbf56fa34}
+
+
+List of all active threads created. 
+
+\hypertarget{lwt_8c_a70a8394091b913cd5ad11f3dfc64ea1b}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+next\+\_\+id@{\+\_\+\+\_\+next\+\_\+id}}
+\index{\+\_\+\+\_\+next\+\_\+id@{\+\_\+\+\_\+next\+\_\+id}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+next\+\_\+id}]{\setlength{\rightskip}{0pt plus 5cm}int \+\_\+\+\_\+next\+\_\+id = {\bf I\+N\+I\+T\+\_\+\+I\+D}}}\label{lwt_8c_a70a8394091b913cd5ad11f3dfc64ea1b}
+
+
+Global counter for the thread id. 
+
+\hypertarget{lwt_8c_aeeea6c9b3d8be29d1b5fa3d56730aa0b}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+original\+\_\+thread@{\+\_\+\+\_\+original\+\_\+thread}}
+\index{\+\_\+\+\_\+original\+\_\+thread@{\+\_\+\+\_\+original\+\_\+thread}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+original\+\_\+thread}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t \+\_\+\+\_\+original\+\_\+thread = N\+U\+L\+L}}\label{lwt_8c_aeeea6c9b3d8be29d1b5fa3d56730aa0b}
+
+
+Pointer to the original/main thread. 
+
+\hypertarget{lwt_8c_a955caff028fad58585417025597e0173}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+runnable\+\_\+threads@{\+\_\+\+\_\+runnable\+\_\+threads}}
+\index{\+\_\+\+\_\+runnable\+\_\+threads@{\+\_\+\+\_\+runnable\+\_\+threads}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+runnable\+\_\+threads}]{\setlength{\rightskip}{0pt plus 5cm}list\+\_\+t$\ast$ \+\_\+\+\_\+runnable\+\_\+threads = N\+U\+L\+L}}\label{lwt_8c_a955caff028fad58585417025597e0173}
+
+
+List of all runnable threads. 
+
+\hypertarget{lwt_8c_a5de292204dae05b3bc7a868b9ca01ae7}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+zombie\+\_\+threads@{\+\_\+\+\_\+zombie\+\_\+threads}}
+\index{\+\_\+\+\_\+zombie\+\_\+threads@{\+\_\+\+\_\+zombie\+\_\+threads}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+zombie\+\_\+threads}]{\setlength{\rightskip}{0pt plus 5cm}list\+\_\+t$\ast$ \+\_\+\+\_\+zombie\+\_\+threads = N\+U\+L\+L}}\label{lwt_8c_a5de292204dae05b3bc7a868b9ca01ae7}
+
+
+List of all zombie threads. 
+

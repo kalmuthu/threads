@@ -2,23 +2,38 @@
 #define LINKED_LIST_H
 
 /**
- * @brief node_t Basic Node structure
+ * @brief Basic Node structure
  * Holds pointer to next node and value
  */
 typedef struct node node_t;
 struct node{
+	/**
+	 * Pointer to the next node in the list
+	 */
 	node_t * next;
+	/**
+	 * The value held by the node
+	 */
 	void * value;
 };
 
 /**
- * @brief list_t Linked list structure
+ * @brief Linked list structure
  * Holds pointers to head and tail
  */
 typedef struct list list_t;
 struct list{
+	/**
+	 * The head of the list
+	 */
 	node_t * head;
+	/**
+	 * The tail of the list
+	 */
 	node_t * tail;
+	/**
+	 * The count of elements in the list
+	 */
 	int count;
 };
 

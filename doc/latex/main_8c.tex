@@ -1,0 +1,145 @@
+\hypertarget{main_8c}{\section{main.\+c File Reference}
+\label{main_8c}\index{main.\+c@{main.\+c}}
+}
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+{\ttfamily \#include $<$stdlib.\+h$>$}\\*
+{\ttfamily \#include $<$assert.\+h$>$}\\*
+{\ttfamily \#include \char`\"{}lwt.\+h\char`\"{}}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{main_8c_ac24e1ca366317fc627e4ba6ec3cbc67b}{rdtscll}(val)~\+\_\+\+\_\+asm\+\_\+\+\_\+ \+\_\+\+\_\+volatile\+\_\+\+\_\+(\char`\"{}rdtsc\char`\"{} \+: \char`\"{}=A\char`\"{} (val))
+\item 
+\#define \hyperlink{main_8c_ab5b92945430bd0cb7a04673282cf70c3}{I\+T\+E\+R}~10000
+\item 
+\#define \hyperlink{main_8c_a3db88558f13bd13a54a3de94274b332c}{I\+S\+\_\+\+R\+E\+S\+E\+T}()
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void $\ast$ \hyperlink{main_8c_ae14ebcd5dbd5dc45bb763e27bfdab8be}{fn\+\_\+bounce} (void $\ast$d)
+\item 
+void $\ast$ \hyperlink{main_8c_ae27eac94e8bd220bd0eb50f4d162a76c}{fn\+\_\+null} (void $\ast$d)
+\item 
+void \hyperlink{main_8c_a3da997789e6bfbfb86c7c7a18b1e968b}{test\+\_\+perf} (void)
+\item 
+void $\ast$ \hyperlink{main_8c_a30645ee9e662784cc10b862398ebcc1b}{fn\+\_\+identity} (void $\ast$d)
+\item 
+void $\ast$ \hyperlink{main_8c_a2239ef46ee61712a03e136bdf12f48f8}{fn\+\_\+nested\+\_\+joins} (void $\ast$d)
+\item 
+void $\ast$ \hyperlink{main_8c_a24b5f091923e0e385cdc00c7203743e8}{fn\+\_\+sequence} (void $\ast$d)
+\item 
+void $\ast$ \hyperlink{main_8c_abb3978a7add7702306e8e04a08da168a}{fn\+\_\+join} (void $\ast$d)
+\item 
+void \hyperlink{main_8c_a5e23c5a942628a1f2d682009e0366655}{test\+\_\+crt\+\_\+join\+\_\+sched} (void)
+\item 
+int \hyperlink{main_8c_a840291bc02cba5474a4cb46a9b9566fe}{main} (void)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+volatile int \hyperlink{main_8c_a545d0b226289b96d49f8744423287519}{sched} \mbox{[}2\mbox{]} = \{0, 0\}
+\item 
+volatile int \hyperlink{main_8c_ad25cac179548d50aa5d5bf5739de6e22}{curr} = 0
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{main_8c_a3db88558f13bd13a54a3de94274b332c}{\index{main.\+c@{main.\+c}!I\+S\+\_\+\+R\+E\+S\+E\+T@{I\+S\+\_\+\+R\+E\+S\+E\+T}}
+\index{I\+S\+\_\+\+R\+E\+S\+E\+T@{I\+S\+\_\+\+R\+E\+S\+E\+T}!main.\+c@{main.\+c}}
+\subsubsection[{I\+S\+\_\+\+R\+E\+S\+E\+T}]{\setlength{\rightskip}{0pt plus 5cm}\#define I\+S\+\_\+\+R\+E\+S\+E\+T(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{main_8c_a3db88558f13bd13a54a3de94274b332c}
+{\bfseries Value\+:}
+\begin{DoxyCode}
+assert( \hyperlink{lwt_8c_a64fd4d406b656db93283cc4d1f7b7fc8}{lwt\_info}(\hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75ae4b17e581e13f286e6f10c22cf043c4f}{LWT\_INFO\_NTHD\_RUNNABLE}) == 1 &&  \(\backslash\)
+        \hyperlink{lwt_8c_a64fd4d406b656db93283cc4d1f7b7fc8}{lwt\_info}(\hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75ac30e6a5e22c52f77696c3b28815fd6b9}{LWT\_INFO\_NTHD\_ZOMBIES}) == 0 &&        \(\backslash\)
+        \hyperlink{lwt_8c_a64fd4d406b656db93283cc4d1f7b7fc8}{lwt\_info}(\hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75a2575a3edce296b761e59a983fc3536ec}{LWT\_INFO\_NTHD\_BLOCKED}) == 0)
+\end{DoxyCode}
+\hypertarget{main_8c_ab5b92945430bd0cb7a04673282cf70c3}{\index{main.\+c@{main.\+c}!I\+T\+E\+R@{I\+T\+E\+R}}
+\index{I\+T\+E\+R@{I\+T\+E\+R}!main.\+c@{main.\+c}}
+\subsubsection[{I\+T\+E\+R}]{\setlength{\rightskip}{0pt plus 5cm}\#define I\+T\+E\+R~10000}}\label{main_8c_ab5b92945430bd0cb7a04673282cf70c3}
+\hypertarget{main_8c_ac24e1ca366317fc627e4ba6ec3cbc67b}{\index{main.\+c@{main.\+c}!rdtscll@{rdtscll}}
+\index{rdtscll@{rdtscll}!main.\+c@{main.\+c}}
+\subsubsection[{rdtscll}]{\setlength{\rightskip}{0pt plus 5cm}\#define rdtscll(
+\begin{DoxyParamCaption}
+\item[{}]{val}
+\end{DoxyParamCaption}
+)~\+\_\+\+\_\+asm\+\_\+\+\_\+ \+\_\+\+\_\+volatile\+\_\+\+\_\+(\char`\"{}rdtsc\char`\"{} \+: \char`\"{}=A\char`\"{} (val))}}\label{main_8c_ac24e1ca366317fc627e4ba6ec3cbc67b}
+
+
+\subsection{Function Documentation}
+\hypertarget{main_8c_ae14ebcd5dbd5dc45bb763e27bfdab8be}{\index{main.\+c@{main.\+c}!fn\+\_\+bounce@{fn\+\_\+bounce}}
+\index{fn\+\_\+bounce@{fn\+\_\+bounce}!main.\+c@{main.\+c}}
+\subsubsection[{fn\+\_\+bounce}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ fn\+\_\+bounce (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{d}
+\end{DoxyParamCaption}
+)}}\label{main_8c_ae14ebcd5dbd5dc45bb763e27bfdab8be}
+\hypertarget{main_8c_a30645ee9e662784cc10b862398ebcc1b}{\index{main.\+c@{main.\+c}!fn\+\_\+identity@{fn\+\_\+identity}}
+\index{fn\+\_\+identity@{fn\+\_\+identity}!main.\+c@{main.\+c}}
+\subsubsection[{fn\+\_\+identity}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ fn\+\_\+identity (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{d}
+\end{DoxyParamCaption}
+)}}\label{main_8c_a30645ee9e662784cc10b862398ebcc1b}
+\hypertarget{main_8c_abb3978a7add7702306e8e04a08da168a}{\index{main.\+c@{main.\+c}!fn\+\_\+join@{fn\+\_\+join}}
+\index{fn\+\_\+join@{fn\+\_\+join}!main.\+c@{main.\+c}}
+\subsubsection[{fn\+\_\+join}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ fn\+\_\+join (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{d}
+\end{DoxyParamCaption}
+)}}\label{main_8c_abb3978a7add7702306e8e04a08da168a}
+\hypertarget{main_8c_a2239ef46ee61712a03e136bdf12f48f8}{\index{main.\+c@{main.\+c}!fn\+\_\+nested\+\_\+joins@{fn\+\_\+nested\+\_\+joins}}
+\index{fn\+\_\+nested\+\_\+joins@{fn\+\_\+nested\+\_\+joins}!main.\+c@{main.\+c}}
+\subsubsection[{fn\+\_\+nested\+\_\+joins}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ fn\+\_\+nested\+\_\+joins (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{d}
+\end{DoxyParamCaption}
+)}}\label{main_8c_a2239ef46ee61712a03e136bdf12f48f8}
+\hypertarget{main_8c_ae27eac94e8bd220bd0eb50f4d162a76c}{\index{main.\+c@{main.\+c}!fn\+\_\+null@{fn\+\_\+null}}
+\index{fn\+\_\+null@{fn\+\_\+null}!main.\+c@{main.\+c}}
+\subsubsection[{fn\+\_\+null}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ fn\+\_\+null (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{d}
+\end{DoxyParamCaption}
+)}}\label{main_8c_ae27eac94e8bd220bd0eb50f4d162a76c}
+\hypertarget{main_8c_a24b5f091923e0e385cdc00c7203743e8}{\index{main.\+c@{main.\+c}!fn\+\_\+sequence@{fn\+\_\+sequence}}
+\index{fn\+\_\+sequence@{fn\+\_\+sequence}!main.\+c@{main.\+c}}
+\subsubsection[{fn\+\_\+sequence}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ fn\+\_\+sequence (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{d}
+\end{DoxyParamCaption}
+)}}\label{main_8c_a24b5f091923e0e385cdc00c7203743e8}
+\hypertarget{main_8c_a840291bc02cba5474a4cb46a9b9566fe}{\index{main.\+c@{main.\+c}!main@{main}}
+\index{main@{main}!main.\+c@{main.\+c}}
+\subsubsection[{main}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{main_8c_a840291bc02cba5474a4cb46a9b9566fe}
+\hypertarget{main_8c_a5e23c5a942628a1f2d682009e0366655}{\index{main.\+c@{main.\+c}!test\+\_\+crt\+\_\+join\+\_\+sched@{test\+\_\+crt\+\_\+join\+\_\+sched}}
+\index{test\+\_\+crt\+\_\+join\+\_\+sched@{test\+\_\+crt\+\_\+join\+\_\+sched}!main.\+c@{main.\+c}}
+\subsubsection[{test\+\_\+crt\+\_\+join\+\_\+sched}]{\setlength{\rightskip}{0pt plus 5cm}void test\+\_\+crt\+\_\+join\+\_\+sched (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{main_8c_a5e23c5a942628a1f2d682009e0366655}
+\hypertarget{main_8c_a3da997789e6bfbfb86c7c7a18b1e968b}{\index{main.\+c@{main.\+c}!test\+\_\+perf@{test\+\_\+perf}}
+\index{test\+\_\+perf@{test\+\_\+perf}!main.\+c@{main.\+c}}
+\subsubsection[{test\+\_\+perf}]{\setlength{\rightskip}{0pt plus 5cm}void test\+\_\+perf (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{main_8c_a3da997789e6bfbfb86c7c7a18b1e968b}
+
+
+\subsection{Variable Documentation}
+\hypertarget{main_8c_ad25cac179548d50aa5d5bf5739de6e22}{\index{main.\+c@{main.\+c}!curr@{curr}}
+\index{curr@{curr}!main.\+c@{main.\+c}}
+\subsubsection[{curr}]{\setlength{\rightskip}{0pt plus 5cm}volatile int curr = 0}}\label{main_8c_ad25cac179548d50aa5d5bf5739de6e22}
+\hypertarget{main_8c_a545d0b226289b96d49f8744423287519}{\index{main.\+c@{main.\+c}!sched@{sched}}
+\index{sched@{sched}!main.\+c@{main.\+c}}
+\subsubsection[{sched}]{\setlength{\rightskip}{0pt plus 5cm}volatile int sched\mbox{[}2\mbox{]} = \{0, 0\}}}\label{main_8c_a545d0b226289b96d49f8744423287519}
