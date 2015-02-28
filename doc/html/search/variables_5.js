@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['max_5faddr_5fthread_5fstack',['max_addr_thread_stack',['../structlwt.html#ae97cdce617ee026378588f57a999f972',1,'lwt']]],
-  ['min_5faddr_5fthread_5fstack',['min_addr_thread_stack',['../structlwt.html#a62ea9a882e0a197b9b076e1e018048d7',1,'lwt']]]
+  ['next_5fcurrent',['next_current',['../structlwt.html#a96a9b5218a20b704188442a3056601ae',1,'lwt']]],
+  ['next_5frunnable',['next_runnable',['../structlwt.html#a1636aae4155df6a60c90c7ab737687e4',1,'lwt']]],
+  ['next_5fsibling',['next_sibling',['../structlwt.html#a5557ab4e2bdd3634b38f5035461767d6',1,'lwt']]]
 ];

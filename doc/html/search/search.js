@@ -7,11 +7,11 @@
 
 var indexSectionsWithContent =
 {
-  0: "_acdefhilmnprstv",
-  1: "ln",
+  0: "_acdfilmnprst",
+  1: "l",
   2: "lm",
-  3: "_cefilmprt",
-  4: "_achimnprstv",
+  3: "_flmt",
+  4: "_acimnprst",
   5: "l",
   6: "l",
   7: "l",

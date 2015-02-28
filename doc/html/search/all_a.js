@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['next',['next',['../structnode.html#a3eaaa938f4adef906b28c0afcaf511d6',1,'node']]],
-  ['node',['node',['../structnode.html',1,'']]],
-  ['num_5fpages',['NUM_PAGES',['../lwt_8h.html#ae12c40b3b2496ea64cbd1f626d4a5817',1,'lwt.h']]]
+  ['rdtscll',['rdtscll',['../main_8c.html#ac24e1ca366317fc627e4ba6ec3cbc67b',1,'main.c']]],
+  ['return_5fvalue',['return_value',['../structlwt.html#a22ac5beef8503481294035218e73c3ef',1,'lwt']]]
 ];

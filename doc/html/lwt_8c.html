@@ -109,7 +109,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a1ca1b663b3b7bac0145b966bd885eca2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch function for switching between threads.  <a href="#a1ca1b663b3b7bac0145b966bd885eca2">More...</a><br /></td></tr>
 <tr class="separator:a1ca1b663b3b7bac0145b966bd885eca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28e1a37914ce5d32fa0db45bfd9814cd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a28e1a37914ce5d32fa0db45bfd9814cd">__lwt_schedule</a> ()</td></tr>
-<tr class="memdesc:a28e1a37914ce5d32fa0db45bfd9814cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schedules the next thread to switch to and dispatches.  <a href="#a28e1a37914ce5d32fa0db45bfd9814cd">More...</a><br /></td></tr>
+<tr class="memdesc:a28e1a37914ce5d32fa0db45bfd9814cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schedules the next_current thread to switch to and dispatches.  <a href="#a28e1a37914ce5d32fa0db45bfd9814cd">More...</a><br /></td></tr>
 <tr class="separator:a28e1a37914ce5d32fa0db45bfd9814cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab037c14eb89b6e35f439898b2bba032e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#ab037c14eb89b6e35f439898b2bba032e">__lwt_trampoline</a> ()</td></tr>
 <tr class="memdesc:ab037c14eb89b6e35f439898b2bba032e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drops in from being scheduled after the initialized thread is switched to and leaps to the function pointer provided.  <a href="#ab037c14eb89b6e35f439898b2bba032e">More...</a><br /></td></tr>
@@ -132,15 +132,15 @@ Functions</h2></td></tr>
 <tr class="memitem:a64fd4d406b656db93283cc4d1f7b7fc8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a64fd4d406b656db93283cc4d1f7b7fc8">lwt_info</a> (<a class="el" href="lwt_8h.html#a1148b40d53237025b24f0b603b387e75">lwt_info_t</a> t)</td></tr>
 <tr class="memdesc:a64fd4d406b656db93283cc4d1f7b7fc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the counts of the info.  <a href="#a64fd4d406b656db93283cc4d1f7b7fc8">More...</a><br /></td></tr>
 <tr class="separator:a64fd4d406b656db93283cc4d1f7b7fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c8b578fbce095178a0407dfdcbcc076"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a6c8b578fbce095178a0407dfdcbcc076">__init_lwt_main</a> (lwt_t thread)</td></tr>
+<tr class="memdesc:a6c8b578fbce095178a0407dfdcbcc076"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the main thread.  <a href="#a6c8b578fbce095178a0407dfdcbcc076">More...</a><br /></td></tr>
+<tr class="separator:a6c8b578fbce095178a0407dfdcbcc076"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4fb2b1f6ebf8a122bff74c7ecb577d62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a4fb2b1f6ebf8a122bff74c7ecb577d62">__init_lwt</a> (lwt_t thread)</td></tr>
 <tr class="memdesc:a4fb2b1f6ebf8a122bff74c7ecb577d62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the provided thread.  <a href="#a4fb2b1f6ebf8a122bff74c7ecb577d62">More...</a><br /></td></tr>
 <tr class="separator:a4fb2b1f6ebf8a122bff74c7ecb577d62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a6b00dda74d5aa4fdbe6ff53c139f13"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a8a6b00dda74d5aa4fdbe6ff53c139f13">__cleanup_joined_thread</a> (lwt_t <a class="el" href="structlwt.html">lwt</a>)</td></tr>
 <tr class="memdesc:a8a6b00dda74d5aa4fdbe6ff53c139f13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleans up the thread on join.  <a href="#a8a6b00dda74d5aa4fdbe6ff53c139f13">More...</a><br /></td></tr>
 <tr class="separator:a8a6b00dda74d5aa4fdbe6ff53c139f13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92e62c10371390f80104e048843e8c1f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a92e62c10371390f80104e048843e8c1f">__cleanup_thread_end</a> (list_t *<a class="el" href="structlist.html">list</a>)</td></tr>
-<tr class="memdesc:a92e62c10371390f80104e048843e8c1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleans up all threads on exit.  <a href="#a92e62c10371390f80104e048843e8c1f">More...</a><br /></td></tr>
-<tr class="separator:a92e62c10371390f80104e048843e8c1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f44ff0598abeb9aff82f796a4a41857"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a2f44ff0598abeb9aff82f796a4a41857">lwt_join</a> (lwt_t thread)</td></tr>
 <tr class="memdesc:a2f44ff0598abeb9aff82f796a4a41857"><td class="mdescLeft">&#160;</td><td class="mdescRight">Joins the provided thread.  <a href="#a2f44ff0598abeb9aff82f796a4a41857">More...</a><br /></td></tr>
 <tr class="separator:a2f44ff0598abeb9aff82f796a4a41857"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,18 +171,15 @@ Variables</h2></td></tr>
 <tr class="memitem:aeeea6c9b3d8be29d1b5fa3d56730aa0b"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#aeeea6c9b3d8be29d1b5fa3d56730aa0b">__original_thread</a> = NULL</td></tr>
 <tr class="memdesc:aeeea6c9b3d8be29d1b5fa3d56730aa0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the original/main thread.  <a href="#aeeea6c9b3d8be29d1b5fa3d56730aa0b">More...</a><br /></td></tr>
 <tr class="separator:aeeea6c9b3d8be29d1b5fa3d56730aa0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a519bb013bd7322fcac9afc1cbf56fa34"><td class="memItemLeft" align="right" valign="top">list_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a519bb013bd7322fcac9afc1cbf56fa34">__current_threads</a> = NULL</td></tr>
-<tr class="memdesc:a519bb013bd7322fcac9afc1cbf56fa34"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of all active threads created.  <a href="#a519bb013bd7322fcac9afc1cbf56fa34">More...</a><br /></td></tr>
-<tr class="separator:a519bb013bd7322fcac9afc1cbf56fa34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a955caff028fad58585417025597e0173"><td class="memItemLeft" align="right" valign="top">list_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a955caff028fad58585417025597e0173">__runnable_threads</a> = NULL</td></tr>
-<tr class="memdesc:a955caff028fad58585417025597e0173"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of all runnable threads.  <a href="#a955caff028fad58585417025597e0173">More...</a><br /></td></tr>
-<tr class="separator:a955caff028fad58585417025597e0173"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9effee7623505590a3fe6841e513ef4b"><td class="memItemLeft" align="right" valign="top">list_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a9effee7623505590a3fe6841e513ef4b">__blocked_threads</a> = NULL</td></tr>
-<tr class="memdesc:a9effee7623505590a3fe6841e513ef4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of all blocked threads.  <a href="#a9effee7623505590a3fe6841e513ef4b">More...</a><br /></td></tr>
-<tr class="separator:a9effee7623505590a3fe6841e513ef4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5de292204dae05b3bc7a868b9ca01ae7"><td class="memItemLeft" align="right" valign="top">list_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a5de292204dae05b3bc7a868b9ca01ae7">__zombie_threads</a> = NULL</td></tr>
-<tr class="memdesc:a5de292204dae05b3bc7a868b9ca01ae7"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of all zombie threads.  <a href="#a5de292204dae05b3bc7a868b9ca01ae7">More...</a><br /></td></tr>
-<tr class="separator:a5de292204dae05b3bc7a868b9ca01ae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76551a653685898ff8ce3d9cc7abe6f9"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a76551a653685898ff8ce3d9cc7abe6f9">__current_threads</a> = NULL</td></tr>
+<tr class="memdesc:a76551a653685898ff8ce3d9cc7abe6f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of all active threads created.  <a href="#a76551a653685898ff8ce3d9cc7abe6f9">More...</a><br /></td></tr>
+<tr class="separator:a76551a653685898ff8ce3d9cc7abe6f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23e554fc9c19096a07af8f8196237d20"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a23e554fc9c19096a07af8f8196237d20">__runnable_threads_head</a> = NULL</td></tr>
+<tr class="memdesc:a23e554fc9c19096a07af8f8196237d20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Head of the list of all runnable threads.  <a href="#a23e554fc9c19096a07af8f8196237d20">More...</a><br /></td></tr>
+<tr class="separator:a23e554fc9c19096a07af8f8196237d20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12cac713d6b987fc95573483636d43e1"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a12cac713d6b987fc95573483636d43e1">__runnable_threads_tail</a> = NULL</td></tr>
+<tr class="memdesc:a12cac713d6b987fc95573483636d43e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tail of the list of all runnable threads.  <a href="#a12cac713d6b987fc95573483636d43e1">More...</a><br /></td></tr>
+<tr class="separator:a12cac713d6b987fc95573483636d43e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a class="anchor" id="a50f28d60b2b6da9c769708953aaa34d0"></a>
@@ -274,24 +271,6 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a92e62c10371390f80104e048843e8c1f"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void __cleanup_thread_end </td>
-          <td>(</td>
-          <td class="paramtype">list_t *&#160;</td>
-          <td class="paramname"><em>list</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Cleans up all threads on exit. </p>
-
-</div>
-</div>
 <a class="anchor" id="a0004bb56e69e5ddd8128ca1f03d10b81"></a>
 <div class="memitem">
 <div class="memproto">
@@ -334,6 +313,30 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a6c8b578fbce095178a0407dfdcbcc076"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void __init_lwt_main </td>
+          <td>(</td>
+          <td class="paramtype">lwt_t&#160;</td>
+          <td class="paramname"><em>thread</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initializes the main thread. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">thread</td><td>The main thread </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="a1ca1b663b3b7bac0145b966bd885eca2"></a>
 <div class="memitem">
 <div class="memproto">
@@ -361,7 +364,7 @@ Variables</h2></td></tr>
 <p>Dispatch function for switching between threads. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">next</td><td>The next thead to switch to </td></tr>
+    <tr><td class="paramname">next</td><td>The next thread to switch to </td></tr>
     <tr><td class="paramname">current</td><td>The current thread </td></tr>
   </table>
   </dd>
@@ -383,7 +386,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Schedules the next thread to switch to and dispatches. </p>
+<p>Schedules the next_current thread to switch to and dispatches. </p>
 
 </div>
 </div>
@@ -615,20 +618,6 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
-<a class="anchor" id="a9effee7623505590a3fe6841e513ef4b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">list_t* __blocked_threads = NULL</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>List of all blocked threads. </p>
-
-</div>
-</div>
 <a class="anchor" id="a430110d1615f05bdcedb9f9218e220f4"></a>
 <div class="memitem">
 <div class="memproto">
@@ -643,12 +632,12 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a519bb013bd7322fcac9afc1cbf56fa34"></a>
+<a class="anchor" id="a76551a653685898ff8ce3d9cc7abe6f9"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">list_t* __current_threads = NULL</td>
+          <td class="memname">lwt_t __current_threads = NULL</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -685,38 +674,38 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a955caff028fad58585417025597e0173"></a>
+<a class="anchor" id="a23e554fc9c19096a07af8f8196237d20"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">list_t* __runnable_threads = NULL</td>
+          <td class="memname">lwt_t __runnable_threads_head = NULL</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>List of all runnable threads. </p>
+<p>Head of the list of all runnable threads. </p>
 
 </div>
 </div>
-<a class="anchor" id="a5de292204dae05b3bc7a868b9ca01ae7"></a>
+<a class="anchor" id="a12cac713d6b987fc95573483636d43e1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">list_t* __zombie_threads = NULL</td>
+          <td class="memname">lwt_t __runnable_threads_tail = NULL</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>List of all zombie threads. </p>
+<p>Tail of the list of all runnable threads. </p>
 
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Feb 15 2015 00:56:38 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Feb 28 2015 06:33:23 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>

@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['rdtscll',['rdtscll',['../main_8c.html#ac24e1ca366317fc627e4ba6ec3cbc67b',1,'main.c']]],
-  ['remove_5flist',['remove_list',['../linkedlist_8c.html#a2deefeb136c8c7fde9edbc8081e89a2c',1,'remove_list(list_t *list, void *value):&#160;linkedlist.c'],['../linkedlist_8h.html#a2deefeb136c8c7fde9edbc8081e89a2c',1,'remove_list(list_t *list, void *value):&#160;linkedlist.c']]],
-  ['remove_5fnode',['remove_node',['../linkedlist_8c.html#a765a0d114fca2418871ad5b7a1f8b60d',1,'remove_node(node_t **head, void *value):&#160;linkedlist.c'],['../linkedlist_8h.html#a765a0d114fca2418871ad5b7a1f8b60d',1,'remove_node(node_t **head, void *value):&#160;linkedlist.c']]],
-  ['return_5fvalue',['return_value',['../structlwt.html#a22ac5beef8503481294035218e73c3ef',1,'lwt']]]
+  ['test_5fcrt_5fjoin_5fsched',['test_crt_join_sched',['../main_8c.html#a5e23c5a942628a1f2d682009e0366655',1,'main.c']]],
+  ['test_5fperf',['test_perf',['../main_8c.html#a3da997789e6bfbfb86c7c7a18b1e968b',1,'main.c']]],
+  ['thread_5fsp',['thread_sp',['../structlwt.html#aba48cdf2f962d7ededf74923ddd33ea1',1,'lwt']]]
 ];

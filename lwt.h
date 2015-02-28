@@ -7,12 +7,11 @@
 #ifndef LWT_H_
 #define LWT_H_
 
-#include "linkedlist.h"
 #include <stdlib.h>
 
 #define PAGE_SIZE 4096
 #define NUM_PAGES 5
-#define STACK_SIZE 4096*5
+#define STACK_SIZE 4096*4
 
 #define LWT_NULL NULL
 #define LWT_YIELD_NO_LWT_TO_YIELD 1
@@ -64,7 +63,33 @@ struct lwt
 	/**
 	 * List of children threads
 	 */
-	list_t * children;
+	lwt_t children;
+	/**
+	 * Previous sibling
+	 */
+	lwt_t previous_sibling;
+	/**
+	 * Next sibling
+	 */
+	lwt_t next_sibling;
+
+	/**
+	 * Previous current thread
+	 */
+	lwt_t previous_current;
+	/**
+	 * Next current thread
+	 */
+	lwt_t next_current;
+
+	/**
+	 * Previous runnable thread
+	 */
+	lwt_t previous_runnable;
+	/**
+	 * Next runnable thread
+	 */
+	lwt_t next_runnable;
 
 	/**
 	 * The start routine for the thread to run

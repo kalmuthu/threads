@@ -18,7 +18,7 @@
 void \hyperlink{lwt_8c_a1ca1b663b3b7bac0145b966bd885eca2}{\+\_\+\+\_\+lwt\+\_\+dispatch} (lwt\+\_\+t next, lwt\+\_\+t current)
 \begin{DoxyCompactList}\small\item\em Dispatch function for switching between threads. \end{DoxyCompactList}\item 
 void \hyperlink{lwt_8c_a28e1a37914ce5d32fa0db45bfd9814cd}{\+\_\+\+\_\+lwt\+\_\+schedule} ()
-\begin{DoxyCompactList}\small\item\em Schedules the next thread to switch to and dispatches. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Schedules the next\+\_\+current thread to switch to and dispatches. \end{DoxyCompactList}\item 
 void \hyperlink{lwt_8c_ab037c14eb89b6e35f439898b2bba032e}{\+\_\+\+\_\+lwt\+\_\+trampoline} ()
 \begin{DoxyCompactList}\small\item\em Drops in from being scheduled after the initialized thread is switched to and leaps to the function pointer provided. \end{DoxyCompactList}\item 
 void $\ast$ \hyperlink{lwt_8c_a5bc2cce82409ee709a9c41a1f6093df9}{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+get} ()
@@ -33,12 +33,12 @@ int \hyperlink{lwt_8c_a2de70c77a4e8500e84cd8beecae8a757}{lwt\+\_\+id} (lwt\+\_\+
 \begin{DoxyCompactList}\small\item\em Gets the thread id. \end{DoxyCompactList}\item 
 int \hyperlink{lwt_8c_a64fd4d406b656db93283cc4d1f7b7fc8}{lwt\+\_\+info} (\hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75}{lwt\+\_\+info\+\_\+t} t)
 \begin{DoxyCompactList}\small\item\em Gets the counts of the info. \end{DoxyCompactList}\item 
+void \hyperlink{lwt_8c_a6c8b578fbce095178a0407dfdcbcc076}{\+\_\+\+\_\+init\+\_\+lwt\+\_\+main} (lwt\+\_\+t thread)
+\begin{DoxyCompactList}\small\item\em Initializes the main thread. \end{DoxyCompactList}\item 
 void \hyperlink{lwt_8c_a4fb2b1f6ebf8a122bff74c7ecb577d62}{\+\_\+\+\_\+init\+\_\+lwt} (lwt\+\_\+t thread)
 \begin{DoxyCompactList}\small\item\em Initializes the provided thread. \end{DoxyCompactList}\item 
 void \hyperlink{lwt_8c_a8a6b00dda74d5aa4fdbe6ff53c139f13}{\+\_\+\+\_\+cleanup\+\_\+joined\+\_\+thread} (lwt\+\_\+t \hyperlink{structlwt}{lwt})
 \begin{DoxyCompactList}\small\item\em Cleans up the thread on join. \end{DoxyCompactList}\item 
-void \hyperlink{lwt_8c_a92e62c10371390f80104e048843e8c1f}{\+\_\+\+\_\+cleanup\+\_\+thread\+\_\+end} (list\+\_\+t $\ast$\hyperlink{structlist}{list})
-\begin{DoxyCompactList}\small\item\em Cleans up all threads on exit. \end{DoxyCompactList}\item 
 void $\ast$ \hyperlink{lwt_8c_a2f44ff0598abeb9aff82f796a4a41857}{lwt\+\_\+join} (lwt\+\_\+t thread)
 \begin{DoxyCompactList}\small\item\em Joins the provided thread. \end{DoxyCompactList}\item 
 void \hyperlink{lwt_8c_a251e05155a5fe3cb30f12cb259f99662}{lwt\+\_\+die} (void $\ast$value)
@@ -60,14 +60,12 @@ lwt\+\_\+t \hyperlink{lwt_8c_a430110d1615f05bdcedb9f9218e220f4}{\+\_\+\+\_\+curr
 \begin{DoxyCompactList}\small\item\em Pointer to the current thread. \end{DoxyCompactList}\item 
 lwt\+\_\+t \hyperlink{lwt_8c_aeeea6c9b3d8be29d1b5fa3d56730aa0b}{\+\_\+\+\_\+original\+\_\+thread} = N\+U\+L\+L
 \begin{DoxyCompactList}\small\item\em Pointer to the original/main thread. \end{DoxyCompactList}\item 
-list\+\_\+t $\ast$ \hyperlink{lwt_8c_a519bb013bd7322fcac9afc1cbf56fa34}{\+\_\+\+\_\+current\+\_\+threads} = N\+U\+L\+L
+lwt\+\_\+t \hyperlink{lwt_8c_a76551a653685898ff8ce3d9cc7abe6f9}{\+\_\+\+\_\+current\+\_\+threads} = N\+U\+L\+L
 \begin{DoxyCompactList}\small\item\em List of all active threads created. \end{DoxyCompactList}\item 
-list\+\_\+t $\ast$ \hyperlink{lwt_8c_a955caff028fad58585417025597e0173}{\+\_\+\+\_\+runnable\+\_\+threads} = N\+U\+L\+L
-\begin{DoxyCompactList}\small\item\em List of all runnable threads. \end{DoxyCompactList}\item 
-list\+\_\+t $\ast$ \hyperlink{lwt_8c_a9effee7623505590a3fe6841e513ef4b}{\+\_\+\+\_\+blocked\+\_\+threads} = N\+U\+L\+L
-\begin{DoxyCompactList}\small\item\em List of all blocked threads. \end{DoxyCompactList}\item 
-list\+\_\+t $\ast$ \hyperlink{lwt_8c_a5de292204dae05b3bc7a868b9ca01ae7}{\+\_\+\+\_\+zombie\+\_\+threads} = N\+U\+L\+L
-\begin{DoxyCompactList}\small\item\em List of all zombie threads. \end{DoxyCompactList}\end{DoxyCompactItemize}
+lwt\+\_\+t \hyperlink{lwt_8c_a23e554fc9c19096a07af8f8196237d20}{\+\_\+\+\_\+runnable\+\_\+threads\+\_\+head} = N\+U\+L\+L
+\begin{DoxyCompactList}\small\item\em Head of the list of all runnable threads. \end{DoxyCompactList}\item 
+lwt\+\_\+t \hyperlink{lwt_8c_a12cac713d6b987fc95573483636d43e1}{\+\_\+\+\_\+runnable\+\_\+threads\+\_\+tail} = N\+U\+L\+L
+\begin{DoxyCompactList}\small\item\em Tail of the list of all runnable threads. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Macro Definition Documentation}
@@ -126,17 +124,6 @@ Cleans up the thread on join.
 {\em lwt} & The thread to join on \\
 \hline
 \end{DoxyParams}
-\hypertarget{lwt_8c_a92e62c10371390f80104e048843e8c1f}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+cleanup\+\_\+thread\+\_\+end@{\+\_\+\+\_\+cleanup\+\_\+thread\+\_\+end}}
-\index{\+\_\+\+\_\+cleanup\+\_\+thread\+\_\+end@{\+\_\+\+\_\+cleanup\+\_\+thread\+\_\+end}!lwt.\+c@{lwt.\+c}}
-\subsubsection[{\+\_\+\+\_\+cleanup\+\_\+thread\+\_\+end}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+cleanup\+\_\+thread\+\_\+end (
-\begin{DoxyParamCaption}
-\item[{list\+\_\+t $\ast$}]{list}
-\end{DoxyParamCaption}
-)}}\label{lwt_8c_a92e62c10371390f80104e048843e8c1f}
-
-
-Cleans up all threads on exit. 
-
 \hypertarget{lwt_8c_a0004bb56e69e5ddd8128ca1f03d10b81}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+get\+\_\+new\+\_\+id@{\+\_\+\+\_\+get\+\_\+new\+\_\+id}}
 \index{\+\_\+\+\_\+get\+\_\+new\+\_\+id@{\+\_\+\+\_\+get\+\_\+new\+\_\+id}!lwt.\+c@{lwt.\+c}}
 \subsubsection[{\+\_\+\+\_\+get\+\_\+new\+\_\+id}]{\setlength{\rightskip}{0pt plus 5cm}int \+\_\+\+\_\+get\+\_\+new\+\_\+id (
@@ -167,6 +154,22 @@ Initializes the provided thread.
 {\em thread} & The thread to init \\
 \hline
 \end{DoxyParams}
+\hypertarget{lwt_8c_a6c8b578fbce095178a0407dfdcbcc076}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+init\+\_\+lwt\+\_\+main@{\+\_\+\+\_\+init\+\_\+lwt\+\_\+main}}
+\index{\+\_\+\+\_\+init\+\_\+lwt\+\_\+main@{\+\_\+\+\_\+init\+\_\+lwt\+\_\+main}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+init\+\_\+lwt\+\_\+main}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+init\+\_\+lwt\+\_\+main (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+t}]{thread}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a6c8b578fbce095178a0407dfdcbcc076}
+
+
+Initializes the main thread. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em thread} & The main thread \\
+\hline
+\end{DoxyParams}
 \hypertarget{lwt_8c_a1ca1b663b3b7bac0145b966bd885eca2}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+lwt\+\_\+dispatch@{\+\_\+\+\_\+lwt\+\_\+dispatch}}
 \index{\+\_\+\+\_\+lwt\+\_\+dispatch@{\+\_\+\+\_\+lwt\+\_\+dispatch}!lwt.\+c@{lwt.\+c}}
 \subsubsection[{\+\_\+\+\_\+lwt\+\_\+dispatch}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+lwt\+\_\+dispatch (
@@ -181,7 +184,7 @@ Dispatch function for switching between threads.
 
 
 \begin{DoxyParams}{Parameters}
-{\em next} & The next thead to switch to \\
+{\em next} & The next thread to switch to \\
 \hline
 {\em current} & The current thread \\
 \hline
@@ -195,7 +198,7 @@ Dispatch function for switching between threads.
 )}}\label{lwt_8c_a28e1a37914ce5d32fa0db45bfd9814cd}
 
 
-Schedules the next thread to switch to and dispatches. 
+Schedules the next\+\_\+current thread to switch to and dispatches. 
 
 \hypertarget{lwt_8c_a5bc2cce82409ee709a9c41a1f6093df9}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+lwt\+\_\+stack\+\_\+get@{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+get}}
 \index{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+get@{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+get}!lwt.\+c@{lwt.\+c}}
@@ -359,13 +362,6 @@ Will just schedule normally if L\+W\+T\+\_\+\+N\+U\+L\+L is provided
 
 
 \subsection{Variable Documentation}
-\hypertarget{lwt_8c_a9effee7623505590a3fe6841e513ef4b}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+blocked\+\_\+threads@{\+\_\+\+\_\+blocked\+\_\+threads}}
-\index{\+\_\+\+\_\+blocked\+\_\+threads@{\+\_\+\+\_\+blocked\+\_\+threads}!lwt.\+c@{lwt.\+c}}
-\subsubsection[{\+\_\+\+\_\+blocked\+\_\+threads}]{\setlength{\rightskip}{0pt plus 5cm}list\+\_\+t$\ast$ \+\_\+\+\_\+blocked\+\_\+threads = N\+U\+L\+L}}\label{lwt_8c_a9effee7623505590a3fe6841e513ef4b}
-
-
-List of all blocked threads. 
-
 \hypertarget{lwt_8c_a430110d1615f05bdcedb9f9218e220f4}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+current\+\_\+thread@{\+\_\+\+\_\+current\+\_\+thread}}
 \index{\+\_\+\+\_\+current\+\_\+thread@{\+\_\+\+\_\+current\+\_\+thread}!lwt.\+c@{lwt.\+c}}
 \subsubsection[{\+\_\+\+\_\+current\+\_\+thread}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t \+\_\+\+\_\+current\+\_\+thread = N\+U\+L\+L}}\label{lwt_8c_a430110d1615f05bdcedb9f9218e220f4}
@@ -373,9 +369,9 @@ List of all blocked threads.
 
 Pointer to the current thread. 
 
-\hypertarget{lwt_8c_a519bb013bd7322fcac9afc1cbf56fa34}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+current\+\_\+threads@{\+\_\+\+\_\+current\+\_\+threads}}
+\hypertarget{lwt_8c_a76551a653685898ff8ce3d9cc7abe6f9}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+current\+\_\+threads@{\+\_\+\+\_\+current\+\_\+threads}}
 \index{\+\_\+\+\_\+current\+\_\+threads@{\+\_\+\+\_\+current\+\_\+threads}!lwt.\+c@{lwt.\+c}}
-\subsubsection[{\+\_\+\+\_\+current\+\_\+threads}]{\setlength{\rightskip}{0pt plus 5cm}list\+\_\+t$\ast$ \+\_\+\+\_\+current\+\_\+threads = N\+U\+L\+L}}\label{lwt_8c_a519bb013bd7322fcac9afc1cbf56fa34}
+\subsubsection[{\+\_\+\+\_\+current\+\_\+threads}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t \+\_\+\+\_\+current\+\_\+threads = N\+U\+L\+L}}\label{lwt_8c_a76551a653685898ff8ce3d9cc7abe6f9}
 
 
 List of all active threads created. 
@@ -394,17 +390,17 @@ Global counter for the thread id.
 
 Pointer to the original/main thread. 
 
-\hypertarget{lwt_8c_a955caff028fad58585417025597e0173}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+runnable\+\_\+threads@{\+\_\+\+\_\+runnable\+\_\+threads}}
-\index{\+\_\+\+\_\+runnable\+\_\+threads@{\+\_\+\+\_\+runnable\+\_\+threads}!lwt.\+c@{lwt.\+c}}
-\subsubsection[{\+\_\+\+\_\+runnable\+\_\+threads}]{\setlength{\rightskip}{0pt plus 5cm}list\+\_\+t$\ast$ \+\_\+\+\_\+runnable\+\_\+threads = N\+U\+L\+L}}\label{lwt_8c_a955caff028fad58585417025597e0173}
+\hypertarget{lwt_8c_a23e554fc9c19096a07af8f8196237d20}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+runnable\+\_\+threads\+\_\+head@{\+\_\+\+\_\+runnable\+\_\+threads\+\_\+head}}
+\index{\+\_\+\+\_\+runnable\+\_\+threads\+\_\+head@{\+\_\+\+\_\+runnable\+\_\+threads\+\_\+head}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+runnable\+\_\+threads\+\_\+head}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t \+\_\+\+\_\+runnable\+\_\+threads\+\_\+head = N\+U\+L\+L}}\label{lwt_8c_a23e554fc9c19096a07af8f8196237d20}
 
 
-List of all runnable threads. 
+Head of the list of all runnable threads. 
 
-\hypertarget{lwt_8c_a5de292204dae05b3bc7a868b9ca01ae7}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+zombie\+\_\+threads@{\+\_\+\+\_\+zombie\+\_\+threads}}
-\index{\+\_\+\+\_\+zombie\+\_\+threads@{\+\_\+\+\_\+zombie\+\_\+threads}!lwt.\+c@{lwt.\+c}}
-\subsubsection[{\+\_\+\+\_\+zombie\+\_\+threads}]{\setlength{\rightskip}{0pt plus 5cm}list\+\_\+t$\ast$ \+\_\+\+\_\+zombie\+\_\+threads = N\+U\+L\+L}}\label{lwt_8c_a5de292204dae05b3bc7a868b9ca01ae7}
+\hypertarget{lwt_8c_a12cac713d6b987fc95573483636d43e1}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+runnable\+\_\+threads\+\_\+tail@{\+\_\+\+\_\+runnable\+\_\+threads\+\_\+tail}}
+\index{\+\_\+\+\_\+runnable\+\_\+threads\+\_\+tail@{\+\_\+\+\_\+runnable\+\_\+threads\+\_\+tail}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+runnable\+\_\+threads\+\_\+tail}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t \+\_\+\+\_\+runnable\+\_\+threads\+\_\+tail = N\+U\+L\+L}}\label{lwt_8c_a12cac713d6b987fc95573483636d43e1}
 
 
-List of all zombie threads. 
+Tail of the list of all runnable threads. 
 
