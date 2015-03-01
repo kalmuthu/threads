@@ -922,7 +922,7 @@ main(int argc, char *argv[])
 	return 0;
 }
 */
-
+/*
 void * child_function(lwt_chan_t main_channel){
 	//create child channel
 	lwt_chan_t child_channel = lwt_chan(0);
@@ -976,5 +976,87 @@ main(int argc, char *argv[]){
 	lwt_chan_deref(main_channel);
 	lwt_join(child);
 	printf("PARENT COUNT: %d\n", count);
+	return 0;
+}
+*/
+
+void * child_function_1(lwt_chan_t main_channel){
+	printf("Starting child function 1\n");
+	//create the channel
+	lwt_chan_t child_1_channel = lwt_chan(0);
+	//send it to parent
+	lwt_snd_chan(main_channel, child_1_channel);
+	//receive child 2 channel
+	lwt_chan_t child_2_channel = lwt_rcv_chan(child_1_channel);
+	int count = 1;
+	while(count < 100){
+		printf("CHILD 1 COUNT: %d\n", count);
+		//send count
+		lwt_snd(child_2_channel, (void *)count);
+		printf("RECEIVING CHILD 2 COUNT\n");
+		//receive count
+		count = (int)lwt_rcv(child_1_channel);
+		if(count >= 100){
+			break;
+		}
+		//update count
+		count++;
+	}
+	lwt_chan_deref(main_channel);
+	lwt_chan_deref(child_2_channel);
+	lwt_chan_deref(child_1_channel);
+	printf("CHILD 1 COUNT: %d\n", count);
+	return 0;
+}
+
+void * child_function_2(lwt_chan_t main_channel){
+	printf("Starting child function 2\n");
+	//create the channel
+	lwt_chan_t child_2_channel = lwt_chan(0);
+	//send it to parent
+	lwt_snd_chan(main_channel, child_2_channel);
+	//receive child 1 channel
+	lwt_chan_t child_1_channel = lwt_rcv_chan(child_2_channel);
+	int count = (int)lwt_rcv(child_2_channel);
+	while(count < 100){
+		printf("CHILD 2 COUNT: %d\n", count);
+		//update count
+		count++;
+		printf("SENDING COUNT TO CHILD 1\n");
+		lwt_snd(child_1_channel, (int)count);
+		if(count >= 100){
+			break;
+		}
+		printf("RECEVING COUNT FROM CHILD 1\n");
+		count = (int)lwt_rcv(child_2_channel);
+	}
+	lwt_chan_deref(main_channel);
+	lwt_chan_deref(child_1_channel);
+	lwt_chan_deref(child_2_channel);
+	printf("CHILD 2 COUNT: %d\n", count);
+	return 0;
+}
+
+int
+main(int argc, char *argv[]){
+	printf("Starting channels test\n");
+	//create channel
+	lwt_chan_t main_channel = lwt_chan(0);
+	//create child threads
+	lwt_t child_1 = lwt_create_chan(child_function_1, main_channel);
+	lwt_t child_2 = lwt_create_chan(child_function_2, main_channel);
+	//receive channels
+	lwt_chan_t child_1_channel = lwt_rcv_chan(main_channel);
+	lwt_chan_t child_2_channel = lwt_rcv_chan(main_channel);
+	//send channels
+	lwt_snd_chan(child_2_channel, child_1_channel);
+	lwt_snd_chan(child_1_channel, child_2_channel);
+	//join threads
+	lwt_join(child_1);
+	lwt_join(child_2);
+	lwt_chan_deref(child_1_channel);
+	lwt_chan_deref(child_2_channel);
+	lwt_chan_deref(main_channel);
+
 	return 0;
 }
