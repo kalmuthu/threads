@@ -32,12 +32,27 @@ typedef enum
 	/**
 	 * Thread state is zombie; thread is dead and needs to be joined
 	 */
-	LWT_INFO_NTHD_ZOMBIES
+	LWT_INFO_NTHD_ZOMBIES,
+	/**
+	 * Number of channels that are active
+	 */
+	LWT_INFO_NCHAN,
+	/**
+	 * Number of threads blocked sending
+	 */
+	LWT_INFO_NSENDING,
+	/**
+	 * Number of threads blocked receiving
+	 */
+	LWT_INFO_NRECEVING
 } lwt_info_t;
 
 typedef void *(*lwt_fnt_t)(void *); //function pointer definition
 
 typedef struct lwt* lwt_t;
+typedef struct lwt_channel *lwt_chan_t;
+
+typedef void *(*lwt_chan_fn_t)(lwt_chan_t);
 /**
  * @brief The Lightweight Thread (LWT) struct
  */
@@ -92,6 +107,27 @@ struct lwt
 	lwt_t next_runnable;
 
 	/**
+	 * Previous sender thread
+	 */
+	lwt_t previous_sender;
+	/**
+	 * Next sender thread
+	 */
+	lwt_t next_sender;
+	/**
+	 * Previous blocked sender thread
+	 */
+	lwt_t previous_blocked_sender;
+	/**
+	 * Next blocked sender thread
+	 */
+	lwt_t next_blocked_sender;
+	/**
+	 * List of receiving channels associated with the thread
+	 */
+	lwt_chan_t receiving_channels;
+
+	/**
 	 * The start routine for the thread to run
 	 */
 	lwt_fnt_t start_routine;
@@ -115,6 +151,41 @@ struct lwt
 	int id;
 };
 
+struct lwt_channel{
+	/**
+	 * The list of senders
+	 */
+	lwt_t senders;
+	/**
+	 * The head of the blocked senders
+	 */
+	lwt_t blocked_senders_head;
+	/**
+	 * The tail of the blocked senders
+	 */
+	lwt_t blocked_senders_tail;
+	/**
+	 * The receiving thread
+	 */
+	lwt_t receiver;
+	/**
+	 * The blocked receiver
+	 */
+	lwt_t blocked_receiver;
+	/**
+	 * Buffer to be passed to channel
+	 */
+	void * buffer;
+	/**
+	 * Previous sibling channel
+	 */
+	lwt_chan_t previous_sibling;
+	/**
+	 * Next sibling channel
+	 */
+	lwt_chan_t next_sibling;
+};
+
 
 lwt_t lwt_create(lwt_fnt_t fn, void * data);
 void *lwt_join(lwt_t);
@@ -123,6 +194,14 @@ int lwt_yield(lwt_t);
 lwt_t lwt_current();
 int lwt_id(lwt_t);
 int lwt_info(lwt_info_t t);
+
+lwt_chan_t lwt_chan(int);
+void lwt_chan_deref(lwt_chan_t);
+int lwt_snd(lwt_chan_t, void *);
+void * lwt_rcv(lwt_chan_t);
+int lwt_snd_chan(lwt_chan_t, lwt_chan_t);
+lwt_chan_t lwt_rcv_chan(lwt_chan_t);
+lwt_t lwt_create_chan(lwt_chan_fn_t, lwt_chan_t);
 
 
 #endif /* LWT_H_ */
