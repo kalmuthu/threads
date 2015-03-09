@@ -981,7 +981,7 @@ main(int argc, char *argv[]){
 	return 0;
 }
 */
-
+/*
 void * child_function_1(lwt_chan_t main_channel){
 	printf("Starting child function 1\n");
 	//create the channel
@@ -1062,3 +1062,4 @@ main(int argc, char *argv[]){
 
 	return 0;
 }
+*/
