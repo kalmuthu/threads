@@ -752,7 +752,7 @@ void lwt_chan_deref(lwt_chan_t c){
 		}
 	}
 	if(!c->receiver && !c->senders){
-		printf("FREEING CHANNEL: %d!!\n", (int)c);
+		//printf("FREEING CHANNEL: %d!!\n", (int)c);
 		free(c);
 	}
 }

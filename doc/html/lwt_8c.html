@@ -83,8 +83,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#define-members">Macros</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">lwt.c File Reference</div>  </div>
 </div><!--header-->
@@ -120,15 +119,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a8ce2504eb84582927a550e4dc09caf9c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a8ce2504eb84582927a550e4dc09caf9c">__lwt_stack_return</a> (void *stack)</td></tr>
 <tr class="memdesc:a8ce2504eb84582927a550e4dc09caf9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees the provided stack.  <a href="#a8ce2504eb84582927a550e4dc09caf9c">More...</a><br /></td></tr>
 <tr class="separator:a8ce2504eb84582927a550e4dc09caf9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0004bb56e69e5ddd8128ca1f03d10b81"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a0004bb56e69e5ddd8128ca1f03d10b81">__get_new_id</a> ()</td></tr>
-<tr class="memdesc:a0004bb56e69e5ddd8128ca1f03d10b81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counter for the id.  <a href="#a0004bb56e69e5ddd8128ca1f03d10b81">More...</a><br /></td></tr>
-<tr class="separator:a0004bb56e69e5ddd8128ca1f03d10b81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac597df0a118cd4679310eaaaa031b40b"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#ac597df0a118cd4679310eaaaa031b40b">lwt_current</a> ()</td></tr>
-<tr class="memdesc:ac597df0a118cd4679310eaaaa031b40b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current thread.  <a href="#ac597df0a118cd4679310eaaaa031b40b">More...</a><br /></td></tr>
-<tr class="separator:ac597df0a118cd4679310eaaaa031b40b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2de70c77a4e8500e84cd8beecae8a757"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a2de70c77a4e8500e84cd8beecae8a757">lwt_id</a> (lwt_t thread)</td></tr>
 <tr class="memdesc:a2de70c77a4e8500e84cd8beecae8a757"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the thread id.  <a href="#a2de70c77a4e8500e84cd8beecae8a757">More...</a><br /></td></tr>
 <tr class="separator:a2de70c77a4e8500e84cd8beecae8a757"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac597df0a118cd4679310eaaaa031b40b"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#ac597df0a118cd4679310eaaaa031b40b">lwt_current</a> ()</td></tr>
+<tr class="memdesc:ac597df0a118cd4679310eaaaa031b40b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current thread.  <a href="#ac597df0a118cd4679310eaaaa031b40b">More...</a><br /></td></tr>
+<tr class="separator:ac597df0a118cd4679310eaaaa031b40b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64fd4d406b656db93283cc4d1f7b7fc8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a64fd4d406b656db93283cc4d1f7b7fc8">lwt_info</a> (<a class="el" href="lwt_8h.html#a1148b40d53237025b24f0b603b387e75">lwt_info_t</a> t)</td></tr>
 <tr class="memdesc:a64fd4d406b656db93283cc4d1f7b7fc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the counts of the info.  <a href="#a64fd4d406b656db93283cc4d1f7b7fc8">More...</a><br /></td></tr>
 <tr class="separator:a64fd4d406b656db93283cc4d1f7b7fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -159,27 +155,27 @@ Functions</h2></td></tr>
 <tr class="memitem:ac423039bd3f9eae371e4e203abaaa971"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#ac423039bd3f9eae371e4e203abaaa971">lwt_create</a> (<a class="el" href="lwt_8h.html#a58d5112b6c76cbcd033e124f6131a51a">lwt_fnt_t</a> fn, void *data)</td></tr>
 <tr class="memdesc:ac423039bd3f9eae371e4e203abaaa971"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a LWT using the provided function pointer and the data as input for it.  <a href="#ac423039bd3f9eae371e4e203abaaa971">More...</a><br /></td></tr>
 <tr class="separator:ac423039bd3f9eae371e4e203abaaa971"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:a70a8394091b913cd5ad11f3dfc64ea1b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a70a8394091b913cd5ad11f3dfc64ea1b">__next_id</a> = <a class="el" href="lwt_8c.html#a60c4f73d78cb83926e82d8775906b121">INIT_ID</a></td></tr>
-<tr class="memdesc:a70a8394091b913cd5ad11f3dfc64ea1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Global counter for the thread id.  <a href="#a70a8394091b913cd5ad11f3dfc64ea1b">More...</a><br /></td></tr>
-<tr class="separator:a70a8394091b913cd5ad11f3dfc64ea1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a430110d1615f05bdcedb9f9218e220f4"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a430110d1615f05bdcedb9f9218e220f4">__current_thread</a> = NULL</td></tr>
-<tr class="memdesc:a430110d1615f05bdcedb9f9218e220f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the current thread.  <a href="#a430110d1615f05bdcedb9f9218e220f4">More...</a><br /></td></tr>
-<tr class="separator:a430110d1615f05bdcedb9f9218e220f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeeea6c9b3d8be29d1b5fa3d56730aa0b"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#aeeea6c9b3d8be29d1b5fa3d56730aa0b">__original_thread</a> = NULL</td></tr>
-<tr class="memdesc:aeeea6c9b3d8be29d1b5fa3d56730aa0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the original/main thread.  <a href="#aeeea6c9b3d8be29d1b5fa3d56730aa0b">More...</a><br /></td></tr>
-<tr class="separator:aeeea6c9b3d8be29d1b5fa3d56730aa0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76551a653685898ff8ce3d9cc7abe6f9"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a76551a653685898ff8ce3d9cc7abe6f9">__current_threads</a> = NULL</td></tr>
-<tr class="memdesc:a76551a653685898ff8ce3d9cc7abe6f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of all active threads created.  <a href="#a76551a653685898ff8ce3d9cc7abe6f9">More...</a><br /></td></tr>
-<tr class="separator:a76551a653685898ff8ce3d9cc7abe6f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23e554fc9c19096a07af8f8196237d20"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a23e554fc9c19096a07af8f8196237d20">__runnable_threads_head</a> = NULL</td></tr>
-<tr class="memdesc:a23e554fc9c19096a07af8f8196237d20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Head of the list of all runnable threads.  <a href="#a23e554fc9c19096a07af8f8196237d20">More...</a><br /></td></tr>
-<tr class="separator:a23e554fc9c19096a07af8f8196237d20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12cac713d6b987fc95573483636d43e1"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a12cac713d6b987fc95573483636d43e1">__runnable_threads_tail</a> = NULL</td></tr>
-<tr class="memdesc:a12cac713d6b987fc95573483636d43e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tail of the list of all runnable threads.  <a href="#a12cac713d6b987fc95573483636d43e1">More...</a><br /></td></tr>
-<tr class="separator:a12cac713d6b987fc95573483636d43e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accefa163ae797369e139b46be72f3d6c"><td class="memItemLeft" align="right" valign="top">lwt_chan_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#accefa163ae797369e139b46be72f3d6c">lwt_chan</a> (int sz)</td></tr>
+<tr class="memdesc:accefa163ae797369e139b46be72f3d6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the channel on the receiving thread.  <a href="#accefa163ae797369e139b46be72f3d6c">More...</a><br /></td></tr>
+<tr class="separator:accefa163ae797369e139b46be72f3d6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39cae21665613361656a303ba52dd539"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a39cae21665613361656a303ba52dd539">lwt_chan_deref</a> (lwt_chan_t c)</td></tr>
+<tr class="memdesc:a39cae21665613361656a303ba52dd539"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocates the channel only if no threads still have references to the channel.  <a href="#a39cae21665613361656a303ba52dd539">More...</a><br /></td></tr>
+<tr class="separator:a39cae21665613361656a303ba52dd539"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac22405d674622a470c679d38711e59b5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#ac22405d674622a470c679d38711e59b5">lwt_snd</a> (lwt_chan_t c, void *data)</td></tr>
+<tr class="memdesc:ac22405d674622a470c679d38711e59b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends the data over the channel to the receiver.  <a href="#ac22405d674622a470c679d38711e59b5">More...</a><br /></td></tr>
+<tr class="separator:ac22405d674622a470c679d38711e59b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6480ceb4e2108f3cee290b265e044830"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a6480ceb4e2108f3cee290b265e044830">lwt_rcv</a> (lwt_chan_t c)</td></tr>
+<tr class="memdesc:a6480ceb4e2108f3cee290b265e044830"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receives the data from the channel and returns it.  <a href="#a6480ceb4e2108f3cee290b265e044830">More...</a><br /></td></tr>
+<tr class="separator:a6480ceb4e2108f3cee290b265e044830"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed8b4b6376d52e0356ee47c0de47ec8e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#aed8b4b6376d52e0356ee47c0de47ec8e">lwt_snd_chan</a> (lwt_chan_t c, lwt_chan_t sending)</td></tr>
+<tr class="memdesc:aed8b4b6376d52e0356ee47c0de47ec8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends sending over the channel c.  <a href="#aed8b4b6376d52e0356ee47c0de47ec8e">More...</a><br /></td></tr>
+<tr class="separator:aed8b4b6376d52e0356ee47c0de47ec8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8059163b49905cef2705fb0455133b8"><td class="memItemLeft" align="right" valign="top">lwt_chan_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#ac8059163b49905cef2705fb0455133b8">lwt_rcv_chan</a> (lwt_chan_t c)</td></tr>
+<tr class="memdesc:ac8059163b49905cef2705fb0455133b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receives the data over the channel.  <a href="#ac8059163b49905cef2705fb0455133b8">More...</a><br /></td></tr>
+<tr class="separator:ac8059163b49905cef2705fb0455133b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96e39d148740bce16787190774de4993"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt_8c.html#a96e39d148740bce16787190774de4993">lwt_create_chan</a> (<a class="el" href="lwt_8h.html#a093f62106d888d547207e375daf75678">lwt_chan_fn_t</a> fn, lwt_chan_t c)</td></tr>
+<tr class="memdesc:a96e39d148740bce16787190774de4993"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a lwt with the channel as an arg.  <a href="#a96e39d148740bce16787190774de4993">More...</a><br /></td></tr>
+<tr class="separator:a96e39d148740bce16787190774de4993"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a class="anchor" id="a50f28d60b2b6da9c769708953aaa34d0"></a>
@@ -268,24 +264,6 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a class="anchor" id="a0004bb56e69e5ddd8128ca1f03d10b81"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int __get_new_id </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Counter for the id. </p>
-<dl class="section return"><dt>Returns</dt><dd>The next id to use </dd></dl>
 
 </div>
 </div>
@@ -450,6 +428,55 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="accefa163ae797369e139b46be72f3d6c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lwt_chan_t lwt_chan </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sz</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates the channel on the receiving thread. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sz</td><td>The size of the buffer </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the initialized channel </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a39cae21665613361656a303ba52dd539"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lwt_chan_deref </td>
+          <td>(</td>
+          <td class="paramtype">lwt_chan_t&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deallocates the channel only if no threads still have references to the channel. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">c</td><td>The channel to deallocate </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="ac423039bd3f9eae371e4e203abaaa971"></a>
 <div class="memitem">
 <div class="memproto">
@@ -483,6 +510,41 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A pointer to the initialized LWT </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a96e39d148740bce16787190774de4993"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lwt_t lwt_create_chan </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="lwt_8h.html#a093f62106d888d547207e375daf75678">lwt_chan_fn_t</a>&#160;</td>
+          <td class="paramname"><em>fn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">lwt_chan_t&#160;</td>
+          <td class="paramname"><em>c</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a lwt with the channel as an arg. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fn</td><td>The function to use to create the thread </td></tr>
+    <tr><td class="paramname">c</td><td>The channel to send </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -591,6 +653,127 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a6480ceb4e2108f3cee290b265e044830"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* lwt_rcv </td>
+          <td>(</td>
+          <td class="paramtype">lwt_chan_t&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Receives the data from the channel and returns it. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">c</td><td>The channel to receive from </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The data from the channel </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ac8059163b49905cef2705fb0455133b8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lwt_chan_t lwt_rcv_chan </td>
+          <td>(</td>
+          <td class="paramtype">lwt_chan_t&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Receives the data over the channel. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">c</td><td>The channel to use for receiving </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The channel being sent over c </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ac22405d674622a470c679d38711e59b5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lwt_snd </td>
+          <td>(</td>
+          <td class="paramtype">lwt_chan_t&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sends the data over the channel to the receiver. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">c</td><td>The channel to use for sending </td></tr>
+    <tr><td class="paramname">data</td><td>The data for sending </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>-1 if there is no receiver; 0 if successful </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aed8b4b6376d52e0356ee47c0de47ec8e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lwt_snd_chan </td>
+          <td>(</td>
+          <td class="paramtype">lwt_chan_t&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">lwt_chan_t&#160;</td>
+          <td class="paramname"><em>sending</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sends sending over the channel c. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">c</td><td>The channel to send sending across </td></tr>
+    <tr><td class="paramname">sending</td><td>The channel to send </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="a91b99467a060f31cdb6d7319044ca2d4"></a>
 <div class="memitem">
 <div class="memproto">
@@ -617,95 +800,10 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<h2 class="groupheader">Variable Documentation</h2>
-<a class="anchor" id="a430110d1615f05bdcedb9f9218e220f4"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">lwt_t __current_thread = NULL</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Pointer to the current thread. </p>
-
-</div>
-</div>
-<a class="anchor" id="a76551a653685898ff8ce3d9cc7abe6f9"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">lwt_t __current_threads = NULL</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>List of all active threads created. </p>
-
-</div>
-</div>
-<a class="anchor" id="a70a8394091b913cd5ad11f3dfc64ea1b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int __next_id = <a class="el" href="lwt_8c.html#a60c4f73d78cb83926e82d8775906b121">INIT_ID</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Global counter for the thread id. </p>
-
-</div>
-</div>
-<a class="anchor" id="aeeea6c9b3d8be29d1b5fa3d56730aa0b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">lwt_t __original_thread = NULL</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Pointer to the original/main thread. </p>
-
-</div>
-</div>
-<a class="anchor" id="a23e554fc9c19096a07af8f8196237d20"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">lwt_t __runnable_threads_head = NULL</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Head of the list of all runnable threads. </p>
-
-</div>
-</div>
-<a class="anchor" id="a12cac713d6b987fc95573483636d43e1"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">lwt_t __runnable_threads_tail = NULL</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Tail of the list of all runnable threads. </p>
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 28 2015 06:33:23 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Mar 10 2015 01:53:40 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>

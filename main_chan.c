@@ -5,17 +5,35 @@
 #include <time.h>
 
 #define ITER 10000
-#define SZ 100
+#define MERGE_SZ 1000
 
+/**
+ * @brief Struct for passing the args to merge sort around
+ */
 struct msort_args{
+	/**
+	 * @brief The int array holding randomly generated data
+	 */
 	int * data;
+	/**
+	 * @brief The int array for swap space
+	 */
 	int * swap;
+	/**
+	 * @brief The begin index of the segment
+	 */
 	int begin_index;
+	/**
+	 * @brief THe end index of the segment
+	 */
 	int end_index;
 };
 
 /**
- * Merge sort in parallel (adapted from wikipedia: http://en.wikipedia.org/wiki/Merge_sort#Parallel_merge_sort)
+ * @brief Merge sort in parallel
+ * @param main_channel The channel from the main thread
+ * @return 0 if successful
+ * @note Adapted from wikipedia: http://en.wikipedia.org/wiki/Merge_sort#Parallel_merge_sort)
  */
 void * msort(lwt_chan_t main_channel){
 	//create channel
@@ -91,18 +109,22 @@ void * msort(lwt_chan_t main_channel){
 	return 0;
 }
 
-void merge_sort(){
+/**
+ * @brief Runs the merge sort test
+ * Tests being able to create multiple child channels and joining them properly
+ */
+void merge_sort_test(){
 	struct msort_args * args = (struct msort_args *)malloc(sizeof(struct msort_args));
-	args->data = (int *)malloc(sizeof(int) * SZ);
-	args->swap = (int *)malloc(sizeof(int) * SZ);
+	args->data = (int *)malloc(sizeof(int) * MERGE_SZ);
+	args->swap = (int *)malloc(sizeof(int) * MERGE_SZ);
 	args->begin_index = 0;
-	args->end_index = SZ;
+	args->end_index = MERGE_SZ;
 
 	//prep data
 	int index;
 	srand(time(NULL));
 	printf("Data is: [");
-	for(index = 0; index < SZ; ++index){
+	for(index = 0; index < MERGE_SZ; ++index){
 		args->data[index] = rand();
 		printf(" %d", args->data[index]);
 	}
@@ -126,7 +148,7 @@ void merge_sort(){
 	//validate args
 	int prev = args->data[0];
 	printf("Sorted data: [ %d", prev);
-	for(index = 1; index < SZ; ++index){
+	for(index = 1; index < MERGE_SZ; ++index){
 		assert(args->data[index] >= prev);
 		prev = args->data[index];
 		printf(" %d", prev);
@@ -138,6 +160,12 @@ void merge_sort(){
 	free(args);
 }
 
+/**
+ * @brief Ping channel test
+ * @param main_channel The channel from the main thread
+ * @return 0 if successful
+ * Sends count out to many siblings; tests that they receive and update it properly
+ */
 void * child_ping(lwt_chan_t main_channel){
 	printf("Starting child ping channel\n");
 	//create the channel
@@ -179,6 +207,11 @@ void * child_ping(lwt_chan_t main_channel){
 	return 0;
 }
 
+/**
+ * @brief Receives a count, updates it and sends it back
+ * @param main_channel The channel from the main thread
+ * @return 0 if successful
+ */
 void * child_pong(lwt_chan_t main_channel){
 	printf("Starting child function 2\n");
 	//create the channel
@@ -207,7 +240,10 @@ void * child_pong(lwt_chan_t main_channel){
 	return 0;
 }
 
-void test1(){
+/**
+ * @brief Runs the ping/pong test
+ */
+void ping_pong_test(){
 	printf("Starting channels test\n");
 		//create channel
 		lwt_chan_t main_channel = lwt_chan(0);
@@ -249,8 +285,11 @@ void test1(){
 		free(pong_lwts);
 }
 
+/**
+ * Main function
+ */
 int main(){
-	//test1();
-	merge_sort();
+	ping_pong_test();
+	merge_sort_test();
 	return 0;
 }

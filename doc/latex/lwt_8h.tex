@@ -6,7 +6,9 @@
 \begin{DoxyCompactItemize}
 \item 
 struct \hyperlink{structlwt}{lwt\+\_\+t}
-\begin{DoxyCompactList}\small\item\em The Lightweight Thread (L\+W\+T) struct. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em The Lightweight Thread (L\+W\+T) struct. \end{DoxyCompactList}\item 
+struct \hyperlink{structlwt__channel}{lwt\+\_\+chan\+\_\+t}
+\end{DoxyCompactItemize}
 \subsection*{Macros}
 \begin{DoxyCompactItemize}
 \item 
@@ -24,13 +26,20 @@ struct \hyperlink{structlwt}{lwt\+\_\+t}
 \begin{DoxyCompactItemize}
 \item 
 typedef void $\ast$($\ast$ \hyperlink{lwt_8h_a58d5112b6c76cbcd033e124f6131a51a}{lwt\+\_\+fnt\+\_\+t} )(void $\ast$)
+\item 
+typedef void $\ast$($\ast$ \hyperlink{lwt_8h_a093f62106d888d547207e375daf75678}{lwt\+\_\+chan\+\_\+fn\+\_\+t} )(lwt\+\_\+chan\+\_\+t)
 \end{DoxyCompactItemize}
 \subsection*{Enumerations}
 \begin{DoxyCompactItemize}
 \item 
-enum \hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75}{lwt\+\_\+info\+\_\+t} \{ \hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75ae4b17e581e13f286e6f10c22cf043c4f}{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+T\+H\+D\+\_\+\+R\+U\+N\+N\+A\+B\+L\+E}, 
+enum \hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75}{lwt\+\_\+info\+\_\+t} \{ \\*
+\hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75ae4b17e581e13f286e6f10c22cf043c4f}{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+T\+H\+D\+\_\+\+R\+U\+N\+N\+A\+B\+L\+E}, 
 \hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75a2575a3edce296b761e59a983fc3536ec}{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+T\+H\+D\+\_\+\+B\+L\+O\+C\+K\+E\+D}, 
-\hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75ac30e6a5e22c52f77696c3b28815fd6b9}{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+T\+H\+D\+\_\+\+Z\+O\+M\+B\+I\+E\+S}
+\hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75ac30e6a5e22c52f77696c3b28815fd6b9}{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+T\+H\+D\+\_\+\+Z\+O\+M\+B\+I\+E\+S}, 
+\hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75a9031541d133d0f4d825c370905054f6f}{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+C\+H\+A\+N}, 
+\\*
+\hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75a302956aae294627303e81474a5c42a23}{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+S\+E\+N\+D\+I\+N\+G}, 
+\hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75a18645a3381bfbf4d3f8c0f5174139a92}{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+R\+E\+C\+E\+V\+I\+N\+G}
  \}
 \begin{DoxyCompactList}\small\item\em The various statuses for a L\+W\+T. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Functions}
@@ -49,7 +58,21 @@ lwt\+\_\+t \hyperlink{lwt_8h_ac597df0a118cd4679310eaaaa031b40b}{lwt\+\_\+current
 int \hyperlink{lwt_8h_acd18fef441bb06e139c9443120cee4c5}{lwt\+\_\+id} (lwt\+\_\+t)
 \begin{DoxyCompactList}\small\item\em Gets the thread id. \end{DoxyCompactList}\item 
 int \hyperlink{lwt_8h_a64fd4d406b656db93283cc4d1f7b7fc8}{lwt\+\_\+info} (\hyperlink{lwt_8h_a1148b40d53237025b24f0b603b387e75}{lwt\+\_\+info\+\_\+t} t)
-\begin{DoxyCompactList}\small\item\em Gets the counts of the info. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Gets the counts of the info. \end{DoxyCompactList}\item 
+lwt\+\_\+chan\+\_\+t \hyperlink{lwt_8h_adaeb1141d83bc6d3daa7043386b282f9}{lwt\+\_\+chan} (int)
+\begin{DoxyCompactList}\small\item\em Creates the channel on the receiving thread. \end{DoxyCompactList}\item 
+void \hyperlink{lwt_8h_a4e353b789a0bff2574ccd510a775e6ea}{lwt\+\_\+chan\+\_\+deref} (lwt\+\_\+chan\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Deallocates the channel only if no threads still have references to the channel. \end{DoxyCompactList}\item 
+int \hyperlink{lwt_8h_a799c178599fad96e2fb4ae42b62cb605}{lwt\+\_\+snd} (lwt\+\_\+chan\+\_\+t, void $\ast$)
+\begin{DoxyCompactList}\small\item\em Sends the data over the channel to the receiver. \end{DoxyCompactList}\item 
+void $\ast$ \hyperlink{lwt_8h_a766cb30576ec1859c5e313ddae89d985}{lwt\+\_\+rcv} (lwt\+\_\+chan\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Receives the data from the channel and returns it. \end{DoxyCompactList}\item 
+int \hyperlink{lwt_8h_a58e316e064ab15eb385a81754164058a}{lwt\+\_\+snd\+\_\+chan} (lwt\+\_\+chan\+\_\+t, lwt\+\_\+chan\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Sends sending over the channel c. \end{DoxyCompactList}\item 
+lwt\+\_\+chan\+\_\+t \hyperlink{lwt_8h_adcab922fc81de1128ec94e55e8ee3c31}{lwt\+\_\+rcv\+\_\+chan} (lwt\+\_\+chan\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Receives the data over the channel. \end{DoxyCompactList}\item 
+lwt\+\_\+t \hyperlink{lwt_8h_aab2e4ac7dd8a27ac565014ace28a9879}{lwt\+\_\+create\+\_\+chan} (\hyperlink{lwt_8h_a093f62106d888d547207e375daf75678}{lwt\+\_\+chan\+\_\+fn\+\_\+t}, lwt\+\_\+chan\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Creates a lwt with the channel as an arg. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Macro Definition Documentation}
@@ -71,6 +94,9 @@ int \hyperlink{lwt_8h_a64fd4d406b656db93283cc4d1f7b7fc8}{lwt\+\_\+info} (\hyperl
 
 
 \subsection{Typedef Documentation}
+\hypertarget{lwt_8h_a093f62106d888d547207e375daf75678}{\index{lwt.\+h@{lwt.\+h}!lwt\+\_\+chan\+\_\+fn\+\_\+t@{lwt\+\_\+chan\+\_\+fn\+\_\+t}}
+\index{lwt\+\_\+chan\+\_\+fn\+\_\+t@{lwt\+\_\+chan\+\_\+fn\+\_\+t}!lwt.\+h@{lwt.\+h}}
+\subsubsection[{lwt\+\_\+chan\+\_\+fn\+\_\+t}]{\setlength{\rightskip}{0pt plus 5cm}typedef void$\ast$($\ast$ lwt\+\_\+chan\+\_\+fn\+\_\+t)(lwt\+\_\+chan\+\_\+t)}}\label{lwt_8h_a093f62106d888d547207e375daf75678}
 \hypertarget{lwt_8h_a58d5112b6c76cbcd033e124f6131a51a}{\index{lwt.\+h@{lwt.\+h}!lwt\+\_\+fnt\+\_\+t@{lwt\+\_\+fnt\+\_\+t}}
 \index{lwt\+\_\+fnt\+\_\+t@{lwt\+\_\+fnt\+\_\+t}!lwt.\+h@{lwt.\+h}}
 \subsubsection[{lwt\+\_\+fnt\+\_\+t}]{\setlength{\rightskip}{0pt plus 5cm}typedef void$\ast$($\ast$ lwt\+\_\+fnt\+\_\+t)(void $\ast$)}}\label{lwt_8h_a58d5112b6c76cbcd033e124f6131a51a}
@@ -93,11 +119,52 @@ The various statuses for a L\+W\+T.
 \hypertarget{lwt_8h_a1148b40d53237025b24f0b603b387e75a2575a3edce296b761e59a983fc3536ec}{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+T\+H\+D\+\_\+\+B\+L\+O\+C\+K\+E\+D}\label{lwt_8h_a1148b40d53237025b24f0b603b387e75a2575a3edce296b761e59a983fc3536ec}
 }]Thread state is blocked; waiting for another thread to complete \index{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+T\+H\+D\+\_\+\+Z\+O\+M\+B\+I\+E\+S@{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+T\+H\+D\+\_\+\+Z\+O\+M\+B\+I\+E\+S}!lwt.\+h@{lwt.\+h}}\index{lwt.\+h@{lwt.\+h}!L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+T\+H\+D\+\_\+\+Z\+O\+M\+B\+I\+E\+S@{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+T\+H\+D\+\_\+\+Z\+O\+M\+B\+I\+E\+S}}\item[{\em 
 \hypertarget{lwt_8h_a1148b40d53237025b24f0b603b387e75ac30e6a5e22c52f77696c3b28815fd6b9}{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+T\+H\+D\+\_\+\+Z\+O\+M\+B\+I\+E\+S}\label{lwt_8h_a1148b40d53237025b24f0b603b387e75ac30e6a5e22c52f77696c3b28815fd6b9}
-}]Thread state is zombie; thread is dead and needs to be joined \end{description}
+}]Thread state is zombie; thread is dead and needs to be joined \index{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+C\+H\+A\+N@{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+C\+H\+A\+N}!lwt.\+h@{lwt.\+h}}\index{lwt.\+h@{lwt.\+h}!L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+C\+H\+A\+N@{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+C\+H\+A\+N}}\item[{\em 
+\hypertarget{lwt_8h_a1148b40d53237025b24f0b603b387e75a9031541d133d0f4d825c370905054f6f}{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+C\+H\+A\+N}\label{lwt_8h_a1148b40d53237025b24f0b603b387e75a9031541d133d0f4d825c370905054f6f}
+}]Number of channels that are active \index{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+S\+E\+N\+D\+I\+N\+G@{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+S\+E\+N\+D\+I\+N\+G}!lwt.\+h@{lwt.\+h}}\index{lwt.\+h@{lwt.\+h}!L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+S\+E\+N\+D\+I\+N\+G@{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+S\+E\+N\+D\+I\+N\+G}}\item[{\em 
+\hypertarget{lwt_8h_a1148b40d53237025b24f0b603b387e75a302956aae294627303e81474a5c42a23}{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+S\+E\+N\+D\+I\+N\+G}\label{lwt_8h_a1148b40d53237025b24f0b603b387e75a302956aae294627303e81474a5c42a23}
+}]Number of threads blocked sending \index{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+R\+E\+C\+E\+V\+I\+N\+G@{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+R\+E\+C\+E\+V\+I\+N\+G}!lwt.\+h@{lwt.\+h}}\index{lwt.\+h@{lwt.\+h}!L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+R\+E\+C\+E\+V\+I\+N\+G@{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+R\+E\+C\+E\+V\+I\+N\+G}}\item[{\em 
+\hypertarget{lwt_8h_a1148b40d53237025b24f0b603b387e75a18645a3381bfbf4d3f8c0f5174139a92}{L\+W\+T\+\_\+\+I\+N\+F\+O\+\_\+\+N\+R\+E\+C\+E\+V\+I\+N\+G}\label{lwt_8h_a1148b40d53237025b24f0b603b387e75a18645a3381bfbf4d3f8c0f5174139a92}
+}]Number of threads blocked receiving \end{description}
 \end{Desc}
 
 
 \subsection{Function Documentation}
+\hypertarget{lwt_8h_adaeb1141d83bc6d3daa7043386b282f9}{\index{lwt.\+h@{lwt.\+h}!lwt\+\_\+chan@{lwt\+\_\+chan}}
+\index{lwt\+\_\+chan@{lwt\+\_\+chan}!lwt.\+h@{lwt.\+h}}
+\subsubsection[{lwt\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+chan\+\_\+t lwt\+\_\+chan (
+\begin{DoxyParamCaption}
+\item[{int}]{sz}
+\end{DoxyParamCaption}
+)}}\label{lwt_8h_adaeb1141d83bc6d3daa7043386b282f9}
+
+
+Creates the channel on the receiving thread. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sz} & The size of the buffer \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A pointer to the initialized channel 
+\end{DoxyReturn}
+\hypertarget{lwt_8h_a4e353b789a0bff2574ccd510a775e6ea}{\index{lwt.\+h@{lwt.\+h}!lwt\+\_\+chan\+\_\+deref@{lwt\+\_\+chan\+\_\+deref}}
+\index{lwt\+\_\+chan\+\_\+deref@{lwt\+\_\+chan\+\_\+deref}!lwt.\+h@{lwt.\+h}}
+\subsubsection[{lwt\+\_\+chan\+\_\+deref}]{\setlength{\rightskip}{0pt plus 5cm}void lwt\+\_\+chan\+\_\+deref (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{c}
+\end{DoxyParamCaption}
+)}}\label{lwt_8h_a4e353b789a0bff2574ccd510a775e6ea}
+
+
+Deallocates the channel only if no threads still have references to the channel. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The channel to deallocate \\
+\hline
+\end{DoxyParams}
 \hypertarget{lwt_8h_ac423039bd3f9eae371e4e203abaaa971}{\index{lwt.\+h@{lwt.\+h}!lwt\+\_\+create@{lwt\+\_\+create}}
 \index{lwt\+\_\+create@{lwt\+\_\+create}!lwt.\+h@{lwt.\+h}}
 \subsubsection[{lwt\+\_\+create}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+create (
@@ -120,6 +187,25 @@ Creates a L\+W\+T using the provided function pointer and the data as input for 
 \begin{DoxyReturn}{Returns}
 A pointer to the initialized L\+W\+T 
 \end{DoxyReturn}
+\hypertarget{lwt_8h_aab2e4ac7dd8a27ac565014ace28a9879}{\index{lwt.\+h@{lwt.\+h}!lwt\+\_\+create\+\_\+chan@{lwt\+\_\+create\+\_\+chan}}
+\index{lwt\+\_\+create\+\_\+chan@{lwt\+\_\+create\+\_\+chan}!lwt.\+h@{lwt.\+h}}
+\subsubsection[{lwt\+\_\+create\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+create\+\_\+chan (
+\begin{DoxyParamCaption}
+\item[{{\bf lwt\+\_\+chan\+\_\+fn\+\_\+t}}]{fn, }
+\item[{lwt\+\_\+chan\+\_\+t}]{c}
+\end{DoxyParamCaption}
+)}}\label{lwt_8h_aab2e4ac7dd8a27ac565014ace28a9879}
+
+
+Creates a lwt with the channel as an arg. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fn} & The function to use to create the thread \\
+\hline
+{\em c} & The channel to send \\
+\hline
+\end{DoxyParams}
 \hypertarget{lwt_8h_ac597df0a118cd4679310eaaaa031b40b}{\index{lwt.\+h@{lwt.\+h}!lwt\+\_\+current@{lwt\+\_\+current}}
 \index{lwt\+\_\+current@{lwt\+\_\+current}!lwt.\+h@{lwt.\+h}}
 \subsubsection[{lwt\+\_\+current}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+current (
@@ -195,6 +281,85 @@ Joins the provided thread.
 
 \begin{DoxyParams}{Parameters}
 {\em thread} & The thread to join on \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt_8h_a766cb30576ec1859c5e313ddae89d985}{\index{lwt.\+h@{lwt.\+h}!lwt\+\_\+rcv@{lwt\+\_\+rcv}}
+\index{lwt\+\_\+rcv@{lwt\+\_\+rcv}!lwt.\+h@{lwt.\+h}}
+\subsubsection[{lwt\+\_\+rcv}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ lwt\+\_\+rcv (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{c}
+\end{DoxyParamCaption}
+)}}\label{lwt_8h_a766cb30576ec1859c5e313ddae89d985}
+
+
+Receives the data from the channel and returns it. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The channel to receive from \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The data from the channel 
+\end{DoxyReturn}
+\hypertarget{lwt_8h_adcab922fc81de1128ec94e55e8ee3c31}{\index{lwt.\+h@{lwt.\+h}!lwt\+\_\+rcv\+\_\+chan@{lwt\+\_\+rcv\+\_\+chan}}
+\index{lwt\+\_\+rcv\+\_\+chan@{lwt\+\_\+rcv\+\_\+chan}!lwt.\+h@{lwt.\+h}}
+\subsubsection[{lwt\+\_\+rcv\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+chan\+\_\+t lwt\+\_\+rcv\+\_\+chan (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{c}
+\end{DoxyParamCaption}
+)}}\label{lwt_8h_adcab922fc81de1128ec94e55e8ee3c31}
+
+
+Receives the data over the channel. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The channel to use for receiving \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The channel being sent over c 
+\end{DoxyReturn}
+\hypertarget{lwt_8h_a799c178599fad96e2fb4ae42b62cb605}{\index{lwt.\+h@{lwt.\+h}!lwt\+\_\+snd@{lwt\+\_\+snd}}
+\index{lwt\+\_\+snd@{lwt\+\_\+snd}!lwt.\+h@{lwt.\+h}}
+\subsubsection[{lwt\+\_\+snd}]{\setlength{\rightskip}{0pt plus 5cm}int lwt\+\_\+snd (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{c, }
+\item[{void $\ast$}]{data}
+\end{DoxyParamCaption}
+)}}\label{lwt_8h_a799c178599fad96e2fb4ae42b62cb605}
+
+
+Sends the data over the channel to the receiver. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The channel to use for sending \\
+\hline
+{\em data} & The data for sending \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/1 if there is no receiver; 0 if successful 
+\end{DoxyReturn}
+\hypertarget{lwt_8h_a58e316e064ab15eb385a81754164058a}{\index{lwt.\+h@{lwt.\+h}!lwt\+\_\+snd\+\_\+chan@{lwt\+\_\+snd\+\_\+chan}}
+\index{lwt\+\_\+snd\+\_\+chan@{lwt\+\_\+snd\+\_\+chan}!lwt.\+h@{lwt.\+h}}
+\subsubsection[{lwt\+\_\+snd\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}int lwt\+\_\+snd\+\_\+chan (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{c, }
+\item[{lwt\+\_\+chan\+\_\+t}]{sending}
+\end{DoxyParamCaption}
+)}}\label{lwt_8h_a58e316e064ab15eb385a81754164058a}
+
+
+Sends sending over the channel c. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The channel to send sending across \\
+\hline
+{\em sending} & The channel to send \\
 \hline
 \end{DoxyParams}
 \hypertarget{lwt_8h_a79bf3cbd0bd9a660ecc02d510890657c}{\index{lwt.\+h@{lwt.\+h}!lwt\+\_\+yield@{lwt\+\_\+yield}}

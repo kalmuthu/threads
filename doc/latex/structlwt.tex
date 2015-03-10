@@ -35,6 +35,16 @@ lwt\+\_\+t \hyperlink{structlwt_acb89e009a8cb87cbd5d71ab5ca08911b}{previous\+\_\
 \item 
 lwt\+\_\+t \hyperlink{structlwt_a1636aae4155df6a60c90c7ab737687e4}{next\+\_\+runnable}
 \item 
+lwt\+\_\+t \hyperlink{structlwt_ae9ef76c08e20117f01976c5c7cfb28b9}{previous\+\_\+sender}
+\item 
+lwt\+\_\+t \hyperlink{structlwt_a77161e9127f308ba8540546c705cc3d9}{next\+\_\+sender}
+\item 
+lwt\+\_\+t \hyperlink{structlwt_a2060a9eb6fe521e93c509e10e2778907}{previous\+\_\+blocked\+\_\+sender}
+\item 
+lwt\+\_\+t \hyperlink{structlwt_a3998a6f0e9400a8cd5534b76a9bdb843}{next\+\_\+blocked\+\_\+sender}
+\item 
+lwt\+\_\+chan\+\_\+t \hyperlink{structlwt_ac857ca0e804faec3a2dc17ff1ee0f22d}{receiving\+\_\+channels}
+\item 
 \hyperlink{lwt_8h_a58d5112b6c76cbcd033e124f6131a51a}{lwt\+\_\+fnt\+\_\+t} \hyperlink{structlwt_acdcfc344e943154b9d3d11e1a41cb9f1}{start\+\_\+routine}
 \item 
 void $\ast$ \hyperlink{structlwt_a6e870b21b996bc5c62b6cbd04328e784}{args}
@@ -69,28 +79,43 @@ The current status of the thread \hypertarget{structlwt_ae97cdce617ee026378588f5
 Pointer to the max address of the stack \hypertarget{structlwt_a62ea9a882e0a197b9b076e1e018048d7}{\index{lwt@{lwt}!min\+\_\+addr\+\_\+thread\+\_\+stack@{min\+\_\+addr\+\_\+thread\+\_\+stack}}
 \index{min\+\_\+addr\+\_\+thread\+\_\+stack@{min\+\_\+addr\+\_\+thread\+\_\+stack}!lwt@{lwt}}
 \subsubsection[{min\+\_\+addr\+\_\+thread\+\_\+stack}]{\setlength{\rightskip}{0pt plus 5cm}long$\ast$ lwt\+\_\+t\+::min\+\_\+addr\+\_\+thread\+\_\+stack}}\label{structlwt_a62ea9a882e0a197b9b076e1e018048d7}
-Pointer to the min address of the statck; used for malloc and free \hypertarget{structlwt_a96a9b5218a20b704188442a3056601ae}{\index{lwt@{lwt}!next\+\_\+current@{next\+\_\+current}}
+Pointer to the min address of the statck; used for malloc and free \hypertarget{structlwt_a3998a6f0e9400a8cd5534b76a9bdb843}{\index{lwt@{lwt}!next\+\_\+blocked\+\_\+sender@{next\+\_\+blocked\+\_\+sender}}
+\index{next\+\_\+blocked\+\_\+sender@{next\+\_\+blocked\+\_\+sender}!lwt@{lwt}}
+\subsubsection[{next\+\_\+blocked\+\_\+sender}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+t\+::next\+\_\+blocked\+\_\+sender}}\label{structlwt_a3998a6f0e9400a8cd5534b76a9bdb843}
+Next blocked sender thread \hypertarget{structlwt_a96a9b5218a20b704188442a3056601ae}{\index{lwt@{lwt}!next\+\_\+current@{next\+\_\+current}}
 \index{next\+\_\+current@{next\+\_\+current}!lwt@{lwt}}
 \subsubsection[{next\+\_\+current}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+t\+::next\+\_\+current}}\label{structlwt_a96a9b5218a20b704188442a3056601ae}
 Next current thread \hypertarget{structlwt_a1636aae4155df6a60c90c7ab737687e4}{\index{lwt@{lwt}!next\+\_\+runnable@{next\+\_\+runnable}}
 \index{next\+\_\+runnable@{next\+\_\+runnable}!lwt@{lwt}}
 \subsubsection[{next\+\_\+runnable}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+t\+::next\+\_\+runnable}}\label{structlwt_a1636aae4155df6a60c90c7ab737687e4}
-Next runnable thread \hypertarget{structlwt_a5557ab4e2bdd3634b38f5035461767d6}{\index{lwt@{lwt}!next\+\_\+sibling@{next\+\_\+sibling}}
+Next runnable thread \hypertarget{structlwt_a77161e9127f308ba8540546c705cc3d9}{\index{lwt@{lwt}!next\+\_\+sender@{next\+\_\+sender}}
+\index{next\+\_\+sender@{next\+\_\+sender}!lwt@{lwt}}
+\subsubsection[{next\+\_\+sender}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+t\+::next\+\_\+sender}}\label{structlwt_a77161e9127f308ba8540546c705cc3d9}
+Next sender thread \hypertarget{structlwt_a5557ab4e2bdd3634b38f5035461767d6}{\index{lwt@{lwt}!next\+\_\+sibling@{next\+\_\+sibling}}
 \index{next\+\_\+sibling@{next\+\_\+sibling}!lwt@{lwt}}
 \subsubsection[{next\+\_\+sibling}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+t\+::next\+\_\+sibling}}\label{structlwt_a5557ab4e2bdd3634b38f5035461767d6}
 Next sibling \hypertarget{structlwt_a1849cde569fc8f254db05365de570b0e}{\index{lwt@{lwt}!parent@{parent}}
 \index{parent@{parent}!lwt@{lwt}}
 \subsubsection[{parent}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+t\+::parent}}\label{structlwt_a1849cde569fc8f254db05365de570b0e}
-Parent thread \hypertarget{structlwt_afe18cb4e9b5f4c60289674d2298993a2}{\index{lwt@{lwt}!previous\+\_\+current@{previous\+\_\+current}}
+Parent thread \hypertarget{structlwt_a2060a9eb6fe521e93c509e10e2778907}{\index{lwt@{lwt}!previous\+\_\+blocked\+\_\+sender@{previous\+\_\+blocked\+\_\+sender}}
+\index{previous\+\_\+blocked\+\_\+sender@{previous\+\_\+blocked\+\_\+sender}!lwt@{lwt}}
+\subsubsection[{previous\+\_\+blocked\+\_\+sender}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+t\+::previous\+\_\+blocked\+\_\+sender}}\label{structlwt_a2060a9eb6fe521e93c509e10e2778907}
+Previous blocked sender thread \hypertarget{structlwt_afe18cb4e9b5f4c60289674d2298993a2}{\index{lwt@{lwt}!previous\+\_\+current@{previous\+\_\+current}}
 \index{previous\+\_\+current@{previous\+\_\+current}!lwt@{lwt}}
 \subsubsection[{previous\+\_\+current}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+t\+::previous\+\_\+current}}\label{structlwt_afe18cb4e9b5f4c60289674d2298993a2}
 Previous current thread \hypertarget{structlwt_acb89e009a8cb87cbd5d71ab5ca08911b}{\index{lwt@{lwt}!previous\+\_\+runnable@{previous\+\_\+runnable}}
 \index{previous\+\_\+runnable@{previous\+\_\+runnable}!lwt@{lwt}}
 \subsubsection[{previous\+\_\+runnable}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+t\+::previous\+\_\+runnable}}\label{structlwt_acb89e009a8cb87cbd5d71ab5ca08911b}
-Previous runnable thread \hypertarget{structlwt_a28f05f6ebc974d92415a55b8e190670e}{\index{lwt@{lwt}!previous\+\_\+sibling@{previous\+\_\+sibling}}
+Previous runnable thread \hypertarget{structlwt_ae9ef76c08e20117f01976c5c7cfb28b9}{\index{lwt@{lwt}!previous\+\_\+sender@{previous\+\_\+sender}}
+\index{previous\+\_\+sender@{previous\+\_\+sender}!lwt@{lwt}}
+\subsubsection[{previous\+\_\+sender}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+t\+::previous\+\_\+sender}}\label{structlwt_ae9ef76c08e20117f01976c5c7cfb28b9}
+Previous sender thread \hypertarget{structlwt_a28f05f6ebc974d92415a55b8e190670e}{\index{lwt@{lwt}!previous\+\_\+sibling@{previous\+\_\+sibling}}
 \index{previous\+\_\+sibling@{previous\+\_\+sibling}!lwt@{lwt}}
 \subsubsection[{previous\+\_\+sibling}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+t\+::previous\+\_\+sibling}}\label{structlwt_a28f05f6ebc974d92415a55b8e190670e}
-Previous sibling \hypertarget{structlwt_a22ac5beef8503481294035218e73c3ef}{\index{lwt@{lwt}!return\+\_\+value@{return\+\_\+value}}
+Previous sibling \hypertarget{structlwt_ac857ca0e804faec3a2dc17ff1ee0f22d}{\index{lwt@{lwt}!receiving\+\_\+channels@{receiving\+\_\+channels}}
+\index{receiving\+\_\+channels@{receiving\+\_\+channels}!lwt@{lwt}}
+\subsubsection[{receiving\+\_\+channels}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+chan\+\_\+t lwt\+\_\+t\+::receiving\+\_\+channels}}\label{structlwt_ac857ca0e804faec3a2dc17ff1ee0f22d}
+List of receiving channels associated with the thread \hypertarget{structlwt_a22ac5beef8503481294035218e73c3ef}{\index{lwt@{lwt}!return\+\_\+value@{return\+\_\+value}}
 \index{return\+\_\+value@{return\+\_\+value}!lwt@{lwt}}
 \subsubsection[{return\+\_\+value}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ lwt\+\_\+t\+::return\+\_\+value}}\label{structlwt_a22ac5beef8503481294035218e73c3ef}
 The return value from the routine \hypertarget{structlwt_acdcfc344e943154b9d3d11e1a41cb9f1}{\index{lwt@{lwt}!start\+\_\+routine@{start\+\_\+routine}}

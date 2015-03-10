@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['test_5fcrt_5fjoin_5fsched',['test_crt_join_sched',['../main_8c.html#a5e23c5a942628a1f2d682009e0366655',1,'main.c']]],
-  ['test_5fperf',['test_perf',['../main_8c.html#a3da997789e6bfbfb86c7c7a18b1e968b',1,'main.c']]],
-  ['thread_5fsp',['thread_sp',['../structlwt.html#aba48cdf2f962d7ededf74923ddd33ea1',1,'lwt']]]
+  ['rdtscll',['rdtscll',['../main_8c.html#ac24e1ca366317fc627e4ba6ec3cbc67b',1,'main.c']]],
+  ['receiver',['receiver',['../structlwt__channel.html#a740680d836200bfc87150333e4d62785',1,'lwt_channel']]],
+  ['receiving_5fchannels',['receiving_channels',['../structlwt.html#ac857ca0e804faec3a2dc17ff1ee0f22d',1,'lwt']]],
+  ['return_5fvalue',['return_value',['../structlwt.html#a22ac5beef8503481294035218e73c3ef',1,'lwt']]]
 ];
