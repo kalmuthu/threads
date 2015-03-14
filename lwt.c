@@ -11,6 +11,10 @@
  * @brief The default id provided to threads before actually generating them
  */
 #define DEFAULT_ID -1
+/**
+ * @brief The size of the pool
+ */
+#define POOL_SIZE 100
 
 /**
  * @brief Dispatch function for switching between threads
@@ -53,12 +57,23 @@ static lwt_t runnable_threads_head = NULL;
 static lwt_t runnable_threads_tail = NULL;
 
 /**
+ * @brief Head of ready pool threads
+ */
+static lwt_t ready_pool_threads_head = NULL;
+
+/**
+ * @brief Tail of ready pool threads
+ */
+static lwt_t ready_pool_threads_tail = NULL;
+
+/**
  * @brief Counter for the id
  * @return The next id to use
  */
 static int get_new_id(){
 	return next_id++; //return and then increment
 }
+
 
 /**
  * @brief Inserts the new thread before the old thread in the current list
@@ -123,6 +138,7 @@ static void insert_before_chan(lwt_chan_t old, lwt_chan_t new){
 	}
 	old->previous_sibling = new;
 }
+
 
 /**
  * @brief Insert the new thread after the old thread in the current thread list
@@ -268,6 +284,27 @@ static void insert_runnable_head(lwt_t thread){
 }
 
 /**
+ * @brief Inserts the thread to the head of the pool
+ * @param thread The thread to be inserted
+ */
+static void insert_ready_pool_thread_head(lwt_t thread){
+	if(ready_pool_threads_head){
+		//thread will be new head
+		thread->previous_ready_pool_thread = NULL;
+		thread->next_ready_pool_thread = ready_pool_threads_head;
+		ready_pool_threads_head->previous_ready_pool_thread = thread;
+		ready_pool_threads_head = thread;
+	}
+	else{
+		//thread will be new head and tail
+		thread->previous_ready_pool_thread = NULL;
+		thread->next_ready_pool_thread = NULL;
+		ready_pool_threads_head = thread;
+		ready_pool_threads_tail = thread;
+	}
+}
+
+/**
  * @brief Inserts the given thread to the head of the blocked sender list
  * @param channel The channel blocking the sender
  * @param thread The thread being blocked
@@ -307,6 +344,27 @@ static void insert_runnable_tail(lwt_t thread){
 		thread->next_runnable = NULL;
 		runnable_threads_head = thread;
 		runnable_threads_tail = thread;
+	}
+}
+
+/**
+ * @brief Inserts the pool thread at the tail of the ready pool
+ * @param thread The thread to be pushed
+ */
+static void insert_ready_pool_thread_tail(lwt_t thread){
+	if(ready_pool_threads_tail){
+		//thread will be new tail
+		thread->next_ready_pool_thread = NULL;
+		thread->previous_ready_pool_thread = ready_pool_threads_tail;
+		ready_pool_threads_tail->next_ready_pool_thread = thread;
+		ready_pool_threads_tail = thread;
+	}
+	else{
+		//thread will be head and tail
+		thread->previous_ready_pool_thread = NULL;
+		thread->next_ready_pool_thread = NULL;
+		ready_pool_threads_head = thread;
+		ready_pool_threads_tail = thread;
 	}
 }
 
@@ -351,6 +409,27 @@ static void remove_from_runnable_threads(lwt_t thread){
 	//update tail
 	if(thread == runnable_threads_tail){
 		runnable_threads_tail = runnable_threads_tail->previous_runnable;
+	}
+}
+
+/**
+ * @brief Removes the thread from the ready pool
+ * @param thread The thread to be removed
+ */
+static void remove_ready_pool_thread(lwt_t thread){
+	if(thread->next_ready_pool_thread){
+		thread->next_ready_pool_thread->previous_ready_pool_thread = thread->previous_ready_pool_thread;
+	}
+	if(thread->previous_ready_pool_thread){
+		thread->previous_ready_pool_thread->next_ready_pool_thread = thread->next_ready_pool_thread;
+	}
+	//adjust head
+	if(thread == ready_pool_threads_head){
+		ready_pool_threads_head = ready_pool_threads_head->next_ready_pool_thread;
+	}
+	//adjust tail
+	if(thread == ready_pool_threads_tail){
+		ready_pool_threads_tail = ready_pool_threads_tail->previous_ready_pool_thread;
 	}
 }
 
@@ -470,52 +549,55 @@ void __init_lwt_main(lwt_t thread){
  * @brief Initializes the provided thread
  * @param thread The thread to init
  */
-void __init_lwt(lwt_t thread){
-	//check that the id hasn't been initialized
-	if(thread->id < INIT_ID){
-		//set id
-		thread->id = get_new_id(); //return id and increment TODO implement atomically
+void __init_new_lwt(lwt_t thread){
 
-		thread->min_addr_thread_stack = __lwt_stack_get();
-		thread->max_addr_thread_stack = (long *)(thread->min_addr_thread_stack + STACK_SIZE);
-		assert(thread->max_addr_thread_stack);
-		thread->thread_sp = thread->max_addr_thread_stack - 1;
-		//add the function
-		*(thread->thread_sp--) = (long)(__lwt_trampoline);
+	thread->min_addr_thread_stack = __lwt_stack_get();
+	thread->max_addr_thread_stack = (long *)(thread->min_addr_thread_stack + STACK_SIZE);
+	assert(thread->max_addr_thread_stack);
 
-		*(thread->thread_sp--) = (long)0; //ebp
-		*(thread->thread_sp--) = (long)0;//ebx
-		*(thread->thread_sp--) = (long)0;//edi
-		*(thread->thread_sp) = (long)0;//esi
+	thread->previous_current = NULL;
+	thread->next_current = NULL;
 
-		//set up parent
-		thread->parent = current_thread;
-		thread->children = NULL;
+	//add to the list of threads
+	insert_after_current(current_thread, thread);
+}
 
-		thread->previous_sibling = NULL;
-		thread->next_sibling = NULL;
+/**
+ * @brief Reinitializes the given thread
+ * @param thread The thread to reinitialize
+ */
+void __reinit_lwt(lwt_t thread){
+	//set id
+	thread->id = get_new_id(); //return id and increment TODO implement atomically
 
-		thread->previous_sender = NULL;
-		thread->next_sender = NULL;
-		thread->receiving_channels = NULL;
-		thread->next_blocked_sender = NULL;
-		thread->previous_blocked_sender = NULL;
+	thread->thread_sp = thread->max_addr_thread_stack - 1;
+	//add the function
+	*(thread->thread_sp--) = (long)(__lwt_trampoline);
 
-		//add to parent (only initial thread won't have the parent)
-		if(current_thread->children){
-			insert_after_sibling(current_thread->children, thread);
-		}
-		else{
-			current_thread->children = thread;
-		}
+	*(thread->thread_sp--) = (long)0; //ebp
+	*(thread->thread_sp--) = (long)0;//ebx
+	*(thread->thread_sp--) = (long)0;//edi
+	*(thread->thread_sp) = (long)0;//esi
 
-		//add to the list of threads
-		insert_after_current(current_thread, thread);
+	//set up parent
+	thread->parent = NULL;
+	thread->children = NULL;
 
-		//add to run queue
-		thread->info = LWT_INFO_NTHD_RUNNABLE;
-		insert_runnable_tail(thread);
-	}
+	thread->previous_sibling = NULL;
+	thread->next_sibling = NULL;
+
+	thread->previous_sender = NULL;
+	thread->next_sender = NULL;
+	thread->receiving_channels = NULL;
+	thread->next_blocked_sender = NULL;
+	thread->previous_blocked_sender = NULL;
+
+	thread->previous_ready_pool_thread = NULL;
+	thread->next_ready_pool_thread = NULL;
+
+	//add to ready pool
+	thread->info = LWT_INFO_NTHD_READY_POOL;
+	insert_ready_pool_thread_tail(thread);
 }
 
 /**
@@ -539,9 +621,10 @@ void __init_lwt(lwt_t thread){
   * @brief Drops in from being scheduled after the initialized thread is switched to and leaps to the function pointer provided
   */
  void __lwt_trampoline(){
-	assert(current_thread->start_routine);
-	void * value = current_thread->start_routine(current_thread->args);
-	lwt_die(value);
+	 //wait until there's a job available
+	 assert(current_thread->start_routine);
+	 void * value = current_thread->start_routine(current_thread->args);
+	 lwt_die(value);
 }
 
 /**
@@ -552,13 +635,8 @@ void __init_lwt(lwt_t thread){
 	if(lwt->parent == NULL){
 		return; //ignore original and double frees
 	}
-	//remove from current threads
-	remove_current(lwt);
-	//clear up resources
-	if(lwt->min_addr_thread_stack){
-		__lwt_stack_return(lwt->min_addr_thread_stack);
-	}
-	free(lwt);
+	//reinit thread
+	__reinit_lwt(lwt);
 }
 
 /**
@@ -646,8 +724,8 @@ int lwt_yield(lwt_t lwt){
  * @brief Schedules the next_current thread to switch to and dispatches
  */
 void __lwt_schedule(){
-
-	if(runnable_threads_head && runnable_threads_head != current_thread){
+	if(runnable_threads_head &&
+			runnable_threads_head != current_thread){
 		lwt_t curr_thread = current_thread;
 		//move current thread to the end of the queue
 		if(current_thread->info == LWT_INFO_NTHD_RUNNABLE){
@@ -667,9 +745,20 @@ void __lwt_schedule(){
  * @brief Initializes the LWT by wrapping the current thread as a LWT
  */
 __attribute__((constructor)) void __init__(){
+	//assert pool size >= 1
+	assert(POOL_SIZE >= 1);
 	lwt_t curr_thread = (lwt_t)malloc(sizeof(struct lwt));
 	assert(curr_thread);
 	__init_lwt_main(curr_thread);
+	//set up pool
+	int num_threads;
+	lwt_t new_pool_thread;
+	for(num_threads = 0; num_threads < POOL_SIZE; ++num_threads){
+		new_pool_thread = (lwt_t)malloc(sizeof(struct lwt));
+		assert(new_pool_thread);
+		__init_new_lwt(new_pool_thread);
+		__reinit_lwt(new_pool_thread);
+	}
 }
 
 /**
@@ -691,6 +780,9 @@ __attribute__((destructor)) void __destroy__(){
 			rcv_channels = next_channel;
 		}
 		if(current_thread != original_thread){
+			printf("FREEING STACK!!\n");
+			//remove stack
+			__lwt_stack_return(current_thread->min_addr_thread_stack);
 			free(current_thread);
 		}
 		current_thread = next;
@@ -706,12 +798,24 @@ __attribute__((destructor)) void __destroy__(){
  * @return A pointer to the initialized LWT
  */
 lwt_t lwt_create(lwt_fnt_t fn, void * data){
-	lwt_t thread = (lwt_t)malloc(sizeof(struct lwt));
-	assert(thread);
+	//wait until there's a free thread
+	while(!ready_pool_threads_head){
+		lwt_yield(LWT_NULL);
+	}
+
+	//pop the head of the ready pool list
+	lwt_t thread = ready_pool_threads_head;
+	remove_ready_pool_thread(thread);
+	//set thread's parent
+	thread->parent = current_thread;
+	//set status
+	thread->info = LWT_INFO_NTHD_RUNNABLE;
+
 	thread->start_routine = fn;
 	thread->args = data;
-	thread->id = DEFAULT_ID;
-	__init_lwt(thread);
+
+	//insert into runnable list
+	insert_runnable_tail(thread);
 
 	return thread;
 }
@@ -724,6 +828,7 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data){
 lwt_chan_t lwt_chan(int sz){
 	assert(sz == 0);
 	lwt_chan_t channel = (lwt_chan_t)malloc(sizeof(struct lwt_channel));
+	assert(channel);
 	channel->receiver = current_thread;
 	channel->blocked_receiver = NULL;
 	channel->buffer = NULL;
@@ -741,6 +846,12 @@ lwt_chan_t lwt_chan(int sz){
  */
 void lwt_chan_deref(lwt_chan_t c){
 	if(c->receiver == current_thread){
+		if(c->next_sibling || c->previous_sibling){
+			remove_channel(c);
+		}
+		else{
+			c->receiver->receiving_channels = NULL;
+		}
 		c->receiver = NULL;
 	}
 	else if(c->senders){
@@ -752,7 +863,7 @@ void lwt_chan_deref(lwt_chan_t c){
 		}
 	}
 	if(!c->receiver && !c->senders){
-		//printf("FREEING CHANNEL: %d!!\n", (int)c);
+		printf("FREEING CHANNEL: %d!!\n", (int)c);
 		free(c);
 	}
 }
@@ -776,14 +887,14 @@ int lwt_snd(lwt_chan_t c, void * data){
 	channel_insert_blocked_sender_tail(c, current_thread);
 	//check receiver is waiting
 	while(!c->blocked_receiver){
-		lwt_yield(c->receiver);
+		lwt_yield(LWT_NULL);
 	}
 	//check if we can go ahead and send
 	while(c->blocked_senders_head && c->blocked_senders_head != current_thread){
-		lwt_yield(c->blocked_senders_head);
+		lwt_yield(LWT_NULL);
 	}
 	while(c->buffer){
-		lwt_yield(c->receiver);
+		lwt_yield(LWT_NULL);
 	}
 	//send data
 	c->buffer = data;

@@ -11,7 +11,7 @@
 
 #define PAGE_SIZE 4096
 #define NUM_PAGES 5
-#define STACK_SIZE 4096*4
+#define STACK_SIZE PAGE_SIZE*NUM_PAGES
 
 #define LWT_NULL NULL
 #define LWT_YIELD_NO_LWT_TO_YIELD 1
@@ -34,6 +34,10 @@ typedef enum
 	 */
 	LWT_INFO_NTHD_ZOMBIES,
 	/**
+	 * Number of ready pool threads
+	 */
+	LWT_INFO_NTHD_READY_POOL,
+	/**
 	 * Number of channels that are active
 	 */
 	LWT_INFO_NCHAN,
@@ -53,6 +57,7 @@ typedef struct lwt* lwt_t;
 typedef struct lwt_channel *lwt_chan_t;
 
 typedef void *(*lwt_chan_fn_t)(lwt_chan_t);
+
 /**
  * @brief The Lightweight Thread (LWT) struct
  */
@@ -105,6 +110,15 @@ struct lwt
 	 * Next runnable thread
 	 */
 	lwt_t next_runnable;
+
+	/**
+	 * Previous ready pool thread
+	 */
+	lwt_t previous_ready_pool_thread;
+	/**
+	 * Next ready pool thread
+	 */
+	lwt_t next_ready_pool_thread;
 
 	/**
 	 * Previous sender thread

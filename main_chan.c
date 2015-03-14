@@ -4,8 +4,8 @@
 #include <assert.h>
 #include <time.h>
 
-#define ITER 10000
-#define MERGE_SZ 1000
+#define ITER 80
+#define MERGE_SZ 80
 
 /**
  * @brief Struct for passing the args to merge sort around
@@ -79,6 +79,7 @@ void * msort(lwt_chan_t main_channel){
 	//dereference channels
 	lwt_chan_deref(l_chan);
 	lwt_chan_deref(r_chan);
+	printf("DEREF MY CHILD CHANNEl\n");
 	lwt_chan_deref(my_channel);
 	//free args
 	free(l_args);
@@ -137,13 +138,17 @@ void merge_sort_test(){
 	//receive child channel
 	lwt_chan_t child_channel = lwt_rcv_chan(main_channel);
 	//send args
+	printf("SEND TO CHILDREN\n");
 	lwt_snd(child_channel, args);
+	printf("SEND COMPLETE\n");
 	//receive args
 	assert(lwt_rcv(main_channel));
 	//join child
 	lwt_join(child);
 	//dereference channel
+	printf("child channel\n");
 	lwt_chan_deref(child_channel);
+	printf("main channel\n");
 	lwt_chan_deref(main_channel);
 	//validate args
 	int prev = args->data[0];
