@@ -724,6 +724,8 @@ int lwt_yield(lwt_t lwt){
  * @brief Schedules the next_current thread to switch to and dispatches
  */
 void __lwt_schedule(){
+	assert(runnable_threads_head);
+	assert(runnable_threads_head != current_thread);
 	if(runnable_threads_head &&
 			runnable_threads_head != current_thread){
 		lwt_t curr_thread = current_thread;
@@ -846,6 +848,7 @@ lwt_chan_t lwt_chan(int sz){
  */
 void lwt_chan_deref(lwt_chan_t c){
 	if(c->receiver == current_thread){
+		printf("Removing receiver\n");
 		if(c->next_sibling || c->previous_sibling){
 			remove_channel(c);
 		}
@@ -858,7 +861,7 @@ void lwt_chan_deref(lwt_chan_t c){
 		if(c->senders->next_sender || c->senders->previous_sender){
 			remove_sender(current_thread);
 		}
-		else{
+		else if(c->senders->id == current_thread->id){
 			c->senders = NULL;
 		}
 	}
