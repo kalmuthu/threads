@@ -327,6 +327,50 @@ static void channel_insert_blocked_sender_head(lwt_chan_t channel, lwt_t thread)
 }
 
 /**
+ * @brief Inserts the channel into the head of the group
+ * @param group The channel group to insert into
+ * @param channel The channel to add
+ */
+static void channel_insert_into_group_head(lwt_cgrp_t group, lwt_chan_t channel){
+	if(group->channel_head){
+		//channel will be new head
+		channel->next_channel_in_group = group->channel_head->next_channel_in_group;
+		channel->previous_channel_in_group = NULL;
+		group->channel_head->previous_channel_in_group = channel;
+		group->channel_head = channel;
+	}
+	else{
+		//channel will be head and tail
+		channel->previous_channel_in_group = NULL;
+		channel->next_channel_in_group = NULL;
+		group->channel_head = channel;
+		group->channel_tail = channel;
+	}
+}
+
+/**
+ * @brief  Adds the channel to the event queue
+ * @param group The group to add the event to
+ * @param event The event to add
+ */
+static void insert_into_event_head(lwt_cgrp_t group, struct event * event){
+	if(group->event_head){
+		//event will be new head
+		event->next_event = group->event_head;
+		event->previous_event = NULL;
+		group->event_head->next_event = event;
+		group->event_head = event;
+	}
+	else{
+		//channel will be new head and tail
+		event->next_event = NULL;
+		event->previous_event = NULL;
+		group->event_head = event;
+		group->event_tail = event;
+	}
+}
+
+/**
  * @brief Inserts the given thread to the tail of the runnable thread list
  * @param thread The new thread to be inserted in the list of runnable threads
  */
@@ -387,6 +431,48 @@ static void channel_insert_blocked_sender_tail(lwt_chan_t channel, lwt_t thread)
 		thread->next_blocked_sender = NULL;
 		channel->blocked_senders_head = thread;
 		channel->blocked_senders_tail = thread;
+	}
+}
+
+/**
+ * @brief Adds the channel to the tail of the list
+ * @param group The group to append to
+ * @param channel The channel to add
+ */
+static void channel_insert_group_tail(lwt_cgrp_t group, lwt_chan_t channel){
+	if(group->channel_tail){
+		//channel becomes new tail
+		channel->previous_channel_in_group = group->channel_tail;
+		channel->next_channel_in_group = NULL;
+		group->channel_tail->next_channel_in_group = channel;
+		group->channel_tail = channel;
+	}
+	else{
+		//channel becomes head and tail
+		channel->previous_channel_in_group = NULL;
+		channel->next_channel_in_group = NULL;
+		group->channel_head = channel;
+		group->channel_tail = channel;
+	}
+}
+
+/**
+ * @brief Inserts the channel to the end of the event queue
+ * @param group The channel group to append to
+ * @param event The event to add
+ */
+static void insert_event_tail(lwt_cgrp_t group, struct event * event){
+	if(group->event_tail){
+		event->previous_event = group->event_tail;
+		event->next_event = NULL;
+		group->event_tail->next_event = event;
+		group->event_tail = event;
+	}
+	else{
+		event->previous_event = NULL;
+		event->next_event = NULL;
+		group->event_head = event;
+		group->event_tail = event;
 	}
 }
 
@@ -457,18 +543,61 @@ static void channel_remove_from_blocked_sender(lwt_chan_t c, lwt_t thread){
 }
 
 /**
+ * @brief Removes the channel from the group
+ * @param channel The channel to remove
+ * @param group The group to remove the channel from
+ */
+static void channel_remove_channel_from_group(lwt_chan_t channel, lwt_cgrp_t group){
+	//detach
+	if(channel->previous_channel_in_group){
+		channel->previous_channel_in_group->next_channel_in_group = channel->next_channel_in_group;
+	}
+	if(channel->next_channel_in_group){
+		channel->next_channel_in_group->previous_channel_in_group = channel->previous_channel_in_group;
+	}
+	if(channel == group->channel_head){
+		group->channel_head = group->channel_head->next_channel_in_group;
+	}
+	if(channel == group->channel_tail){
+		group->channel_tail = group->channel_tail->previous_channel_in_group;
+	}
+}
+
+/**
+ * @brief Removes the channel from the event queue
+ * @param event The event to remove
+ * @param group The group to alter
+ */
+static void remove_event_from_group(struct event * event, lwt_cgrp_t group){
+	if(event->previous_event){
+		event->previous_event->next_event = event->next_event;
+	}
+	if(event->next_event){
+		event->next_event->previous_event = event->previous_event;
+	}
+	if(event == group->event_head){
+		group->event_head = group->event_head->next_event;
+	}
+	if(event == group->event_tail){
+		group->event_tail = group->event_tail->previous_event;
+	}
+}
+
+/**
  * @brief Pushes the data into the buffer
  * @param c The channel to add the data to
  * @param data The data to add
  * If the buffer is full, it will block until it has capacity
  */
-static void push_data_into_buffer(lwt_chan_t c, void * data){
+static void push_data_into_async_buffer(lwt_chan_t c, void * data){
 	//check that the buffer isn't at capacity
 	while(c->num_entries >= c->buffer_size){
+		current_thread->info = LWT_INFO_NSENDING;
 		lwt_yield(LWT_NULL);
 	}
 	//insert data into buffer
-	c->buffer[c->end_index] = data;
+	c->async_buffer[c->end_index] = (struct event *)malloc(sizeof(struct event));
+	init_event(c->async_buffer[c->end_index], c, data);
 	//update end index
 	if(c->end_index < (c->buffer_size - 1)){
 		c->end_index++;
@@ -478,6 +607,12 @@ static void push_data_into_buffer(lwt_chan_t c, void * data){
 	}
 	//increment the num of entries
 	c->num_entries++;
+	//update status
+	current_thread->info = LWT_INFO_NTHD_RUNNABLE;
+	//check if receiver is trying to receive
+	if(c->receiver && c->receiver->info == LWT_INFO_NRECEIVING){
+		lwt_yield(c->receiver);
+	}
 }
 
 /**
@@ -486,18 +621,19 @@ static void push_data_into_buffer(lwt_chan_t c, void * data){
  * @param data The data to remove
  * If the buffer is empty, it will block until there is something to read
  */
-static void * pop_data_from_buffer(lwt_chan_t c){
-	lwt_t sender = c->blocked_senders_head;
-	while(c->num_entries <= 0){
-		sender->info = LWT_INFO_NTHD_RUNNABLE;
-		lwt_yield(sender);
+static void * pop_data_from_async_buffer(lwt_chan_t c){
+	struct event * event = c->async_buffer[c->start_index];
+	while(!event){
+		current_thread->info = LWT_INFO_NRECEIVING;
+		lwt_yield(LWT_NULL);
+		event = c->async_buffer[c->start_index];
 	}
-	channel_remove_from_blocked_sender(c, sender);
-	//update status
-	c->blocked_receiver = NULL;
-	void * data = c->buffer[c->start_index];
+	//update buffer value
+	void * data = event->data;
+	free_event(event);
+	c->async_buffer[c->start_index] = NULL;
 	//update start index
-	if(c->start_index < (c->start_index - 1)){
+	if(c->start_index < (c->buffer_size - 1)){
 		c->start_index++;
 	}
 	else{
@@ -505,7 +641,30 @@ static void * pop_data_from_buffer(lwt_chan_t c){
 	}
 	//decrement the number of entries
 	c->num_entries--;
+	//update status
+	current_thread->info = LWT_INFO_NTHD_RUNNABLE;
 	return data;
+}
+
+/**
+ * Initializes the event
+ */
+void init_event(struct event * event_t, lwt_chan_t channel, void * data){
+	event_t->data = data;
+	event_t->channel = channel;
+	event_t->data = data;
+	event_t->previous_event = NULL;
+	event_t->next_event = NULL;
+	if(channel->channel_group){
+		insert_event_tail(channel->channel_group, event_t);
+	}
+}
+
+void free_event(struct event * event_t){
+	if(event_t->channel->channel_group){
+		remove_event_from_group(event_t, event_t->channel->channel_group);
+	}
+	free(event_t);
 }
 
 /**
@@ -830,7 +989,18 @@ __attribute__((destructor)) void __destroy__(){
 		rcv_channels = current_thread->receiving_channels;
 		while(rcv_channels){
 			next_channel = rcv_channels->next_sibling;
-			free(rcv_channels->buffer);
+			if(rcv_channels->async_buffer){
+				int index;
+				for(index = 0; index < rcv_channels->buffer_size; ++index){
+					if(rcv_channels->async_buffer[index]){
+						free(rcv_channels->async_buffer[index]);
+					}
+				}
+				free(rcv_channels->async_buffer);
+			}
+			if(rcv_channels->sync_buffer){
+				free(rcv_channels->sync_buffer);
+			}
 			free(rcv_channels);
 			rcv_channels = next_channel;
 		}
@@ -882,26 +1052,38 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data){
  */
 lwt_chan_t lwt_chan(int sz){
 	assert(sz >= 0);
-	if(sz == 0){
-		sz = 1;
-	}
 	lwt_chan_t channel = (lwt_chan_t)malloc(sizeof(struct lwt_channel));
 	assert(channel);
 	channel->receiver = current_thread;
 	channel->blocked_receiver = NULL;
-	channel->buffer = NULL;
 	channel->next_sibling = NULL;
 	channel->previous_sibling = NULL;
 	channel->senders = NULL;
 	channel->blocked_senders_head = NULL;
 	channel->blocked_senders_tail = NULL;
 	//prepare buffer
-	channel->buffer = (void **)malloc(sizeof(void *) * sz);
-	assert(channel->buffer);
+	if(sz > 0){
+		channel->async_buffer = (struct event **)malloc(sizeof(struct event *) * sz);
+		assert(channel->async_buffer);
+		int index;
+		for(index = 0; index < sz; ++index){
+			channel->async_buffer[index] = NULL;
+		}
+	}
+	else{
+		channel->async_buffer = NULL;
+	}
+	channel->sync_buffer = NULL;
 	channel->start_index = 0;
 	channel->end_index = 0;
 	channel->buffer_size = sz;
 	channel->num_entries = 0;
+	//prepare group
+	channel->channel_group = NULL;
+	channel->previous_channel_in_group = NULL;
+	channel->next_channel_in_group = NULL;
+	//mark
+	channel->mark = NULL;
 	return channel;
 }
 
@@ -930,7 +1112,9 @@ void lwt_chan_deref(lwt_chan_t c){
 	}
 	if(!c->receiver && !c->senders){
 		printf("FREEING CHANNEL: %d!!\n", (int)c);
-		free(c->buffer);
+		if(c->async_buffer){
+			free(c->async_buffer);
+		}
 		free(c);
 	}
 }
@@ -944,31 +1128,39 @@ void lwt_chan_deref(lwt_chan_t c){
 int lwt_snd(lwt_chan_t c, void * data){
 	//data must not be NULL
 	assert(data);
-	//check if there is a receiver
-	if(!c || !c->receiver){
-		perror("No receiver for sending channel\n");
-		return -1;
+	if(c->buffer_size > 0){
+		push_data_into_async_buffer(c, data);
 	}
-	//block
-	current_thread->info = LWT_INFO_NSENDING;
-	channel_insert_blocked_sender_tail(c, current_thread);
-	//check receiver is waiting
-	while(!c->blocked_receiver){
-		lwt_yield(LWT_NULL);
-	}
-	//check if we can go ahead and send
-	while(c->blocked_senders_head && c->blocked_senders_head != current_thread){
-		lwt_yield(LWT_NULL);
-	}
+	else{
+		//check if there is a receiver
+		if(!c || !c->receiver){
+			perror("No receiver for sending channel\n");
+			return -1;
+		}
+		//block
+		current_thread->info = LWT_INFO_NSENDING;
+		channel_insert_blocked_sender_tail(c, current_thread);
+		//check receiver is waiting
+		while(!c->blocked_receiver){
+			lwt_yield(LWT_NULL);
+		}
+		//check if we can go ahead and send
+		while(c->blocked_senders_head && c->blocked_senders_head != current_thread){
+			lwt_yield(LWT_NULL);
+		}
+		while(c->sync_buffer){
+			lwt_yield(LWT_NULL);
+		}
+		//send data
+		c->sync_buffer = (struct event *)malloc(sizeof(struct event));
+		init_event(c->sync_buffer, c, data);
 
-	push_data_into_buffer(c, data);
-	int current_size = c->num_entries;
-
-	//send data
-	while(current_size == c->num_entries){
-		//yield to receiver
-		c->receiver->info = LWT_INFO_NTHD_RUNNABLE;
-		lwt_yield(c->receiver);
+		//wait until receiver picks up buffer
+		while(c->sync_buffer){
+			//yield to receiver
+			c->receiver->info = LWT_INFO_NTHD_RUNNABLE;
+			lwt_yield(c->receiver);
+		}
 	}
 	return 0;
 }
@@ -981,17 +1173,38 @@ int lwt_snd(lwt_chan_t c, void * data){
 void * lwt_rcv(lwt_chan_t c){
 	//ensure only the thread creating the channel is receiving on it
 	assert(c->receiver == current_thread);
-	if(!c || !c->senders){
-		perror("NO Senders for receiving channel\n");
-		return NULL;
+	if(c->buffer_size > 0){
+		return pop_data_from_async_buffer(c);
 	}
-	current_thread->info = LWT_INFO_NRECEVING;
-	c->blocked_receiver = current_thread;
-	//block until there's a sender
-	while(!c->blocked_senders_head){
-		lwt_yield(LWT_NULL);
+	else{
+		if(!c || !c->senders){
+			perror("NO Senders for receiving channel\n");
+			return NULL;
+		}
+		current_thread->info = LWT_INFO_NRECEIVING;
+		c->blocked_receiver = current_thread;
+		//ensure buffer is empty
+		while(c->sync_buffer){
+			lwt_yield(LWT_NULL);
+		}
+		//block until there's a sender
+		while(!c->blocked_senders_head){
+			lwt_yield(LWT_NULL);
+		}
+		//detach the head
+		lwt_t sender = c->blocked_senders_head;
+		while(!c->sync_buffer){
+			sender->info = LWT_INFO_NTHD_RUNNABLE;
+			lwt_yield(sender);
+		}
+		channel_remove_from_blocked_sender(c, sender);
+
+		c->blocked_receiver = NULL;
+		void * data = c->sync_buffer->data;
+		free_event(c->sync_buffer);
+		c->sync_buffer = NULL;
+		return data;
 	}
-	return pop_data_from_buffer(c);
 }
 
 /**
@@ -1035,6 +1248,107 @@ lwt_t lwt_create_chan(lwt_chan_fn_t fn, lwt_chan_t c){
 	}
 	return new_thread;
 }
+
+/**
+ * @brief Creates a group of channels
+ * @return The group of channels
+ * @note By default, the group is empty
+ */
+lwt_cgrp_t lwt_cgrp(){
+	lwt_cgrp_t group = (lwt_cgrp_t)malloc(sizeof(struct lwt_cgrp));
+	group->channel_head = NULL;
+	group->channel_tail = NULL;
+	group->event_head = NULL;
+	group->event_tail = NULL;
+	return group;
+}
+
+/**
+ * @brief Frees the group if there are no pending events
+ * @param group The channel group to free
+ * @return 0 if successful; -1 if there are pending events
+ */
+int lwt_cgrp_free(lwt_cgrp_t group){
+	if(group->event_head){
+		return -1;
+	}
+	free(group);
+	return 0;
+}
+
+/**
+ * @brief Adds the channel to the group if the channel hasn't already been added to a group
+ * @param group The group to add the channel to
+ * @param channel The channel to add
+ * @return 0 if successful; -1 if the channel is already part of a group
+ */
+int lwt_cgrp_add(lwt_cgrp_t group, lwt_chan_t channel){
+	if(channel->channel_group){
+		return -1;
+	}
+	channel->channel_group = group;
+	channel_insert_group_tail(channel, group);
+	return 0;
+}
+
+/**
+ * @brief Removes the channel from the group
+ * @param group The group to remove the channel from
+ * @param channel The channel to remove
+ * @return 0 if successful; -1 if the channel isn't part of the group; 1 if the group has a pending event
+ */
+int lwt_cgrp_rem(lwt_cgrp_t group, lwt_chan_t channel){
+	if(channel->channel_group != group){
+		return -1;
+	}
+	if(group->event_head){
+		return 1;
+	}
+	channel_remove_channel_from_group(channel, group);
+	return 0;
+}
+
+/**
+ * @brief Waits until there is a pending event in the queue
+ * @param group The group to wait for
+ * @return The event in the queue
+ */
+lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t group){
+	//wait until there is an event in the queue
+	while(!group->event_head){
+		lwt_yield(LWT_NULL);
+	}
+	return group->event_head->channel;
+}
+
+/**
+ * @brief Marks the channel
+ * @param channel The channel to mark
+ * @param mark The marker to set
+ */
+void lwt_chan_mark_set(lwt_chan_t channel, void * mark){
+	//wait until a mark is empty
+	while(channel->mark){
+		lwt_yield(LWT_NULL);
+	}
+	channel->mark = mark;
+}
+
+/**
+ * @brief Grabs the mark from the channel
+ * @param
+ */
+void * lwt_chan_mark_get(lwt_chan_t channel){
+	//wait until a mark is available
+	while(!channel->mark){
+		lwt_yield(LWT_NULL);
+	}
+	void * mark = channel->mark;
+	channel->mark = NULL;
+	return mark;
+}
+
+
 
 /*
  * Test cases

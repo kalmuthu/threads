@@ -290,11 +290,37 @@ void ping_pong_test(){
 		free(pong_lwts);
 }
 
+void * child_multiple_channels(lwt_chan_t main_channel){
+	lwt_snd(main_channel, (void *)(lwt_current()->id % ITER + 1));
+	return 0;
+}
+
+void test_multiple_channels(){
+	lwt_chan_t main_channel = lwt_chan(ITER);
+	lwt_t * threads = (lwt_t *)malloc(sizeof(lwt_t) * ITER);
+	int index;
+	for(index = 0; index < ITER; ++index){
+		threads[index] = lwt_create_chan(child_multiple_channels, main_channel);
+	}
+	int count = 0;
+	for(index = 0; index < ITER; ++index){
+		printf("CURRENT INDEX: %d\n", index);
+		count += (int)lwt_rcv(main_channel);
+	}
+	for(index = 0; index < ITER; ++index){
+		lwt_join(threads[index]);
+	}
+	free(threads);
+	assert(count == 3240);
+	printf("COUNT: %d\n", count);
+}
+
 /**
  * Main function
  */
 int main(){
 	ping_pong_test();
 	merge_sort_test();
+	test_multiple_channels();
 	return 0;
 }

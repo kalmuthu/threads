@@ -48,13 +48,14 @@ typedef enum
 	/**
 	 * Number of threads blocked receiving
 	 */
-	LWT_INFO_NRECEVING
+	LWT_INFO_NRECEIVING
 } lwt_info_t;
 
 typedef void *(*lwt_fnt_t)(void *); //function pointer definition
 
 typedef struct lwt* lwt_t;
 typedef struct lwt_channel *lwt_chan_t;
+typedef struct lwt_cgrp *lwt_cgrp_t;
 
 typedef void *(*lwt_chan_fn_t)(lwt_chan_t);
 
@@ -167,6 +168,13 @@ struct lwt
 	int id;
 };
 
+struct event{
+	struct event * previous_event;
+	struct event * next_event;
+	lwt_chan_t channel;
+	void * data;
+};
+
 struct lwt_channel{
 	/**
 	 * The list of senders
@@ -189,9 +197,13 @@ struct lwt_channel{
 	 */
 	lwt_t blocked_receiver;
 	/**
-	 * Buffer to be passed to channel
+	 * Sync buffer to be passed to the channel
 	 */
-	void ** buffer;
+	struct event * sync_buffer;
+	/**
+	 * Async Buffer to be passed to the channel
+	 */
+	struct event ** async_buffer;
 	/**
 	 * Start index of the buffer
 	 */
@@ -216,6 +228,42 @@ struct lwt_channel{
 	 * Next sibling channel
 	 */
 	lwt_chan_t next_sibling;
+
+	/**
+	 * Channel group
+	 */
+	lwt_cgrp_t channel_group;
+	/**
+	 * Previous channel in group
+	 */
+	lwt_chan_t previous_channel_in_group;
+	/**
+	 * Next channel in group
+	 */
+	lwt_chan_t next_channel_in_group;
+	/**
+	 * Mark for channel
+	 */
+	void * mark;
+};
+
+struct lwt_cgrp{
+	/**
+	 * Head of the list of channels
+	 */
+	lwt_chan_t channel_head;
+	/**
+	 * Tail of the list of channels
+	 */
+	lwt_chan_t channel_tail;
+	/**
+	 * Head of the event queue
+	 */
+	struct event * event_head;
+	/**
+	 * Tail of the event queue
+	 */
+	struct event * event_tail;
 };
 
 
@@ -235,5 +283,12 @@ int lwt_snd_chan(lwt_chan_t, lwt_chan_t);
 lwt_chan_t lwt_rcv_chan(lwt_chan_t);
 lwt_t lwt_create_chan(lwt_chan_fn_t, lwt_chan_t);
 
+lwt_cgrp_t lwt_cgrp();
+int lwt_cgrp_free(lwt_cgrp_t);
+int lwt_cgrp_add(lwt_cgrp_t, lwt_chan_t);
+int lwt_cgrp_rem(lwt_cgrp_t, lwt_chan_t);
+lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t);
+void lwt_chan_mark_set(lwt_chan_t, void *);
+void * lwt_chan_mark_get(lwt_chan_t);
 
 #endif /* LWT_H_ */
