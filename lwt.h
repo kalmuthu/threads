@@ -191,7 +191,23 @@ struct lwt_channel{
 	/**
 	 * Buffer to be passed to channel
 	 */
-	void * buffer;
+	void ** buffer;
+	/**
+	 * Start index of the buffer
+	 */
+	int start_index;
+	/**
+	 * End index of the buffer
+	 */
+	int end_index;
+	/**
+	 * Size of the buffer
+	 */
+	int buffer_size;
+	/**
+	 * Current number of entries in buffer
+	 */
+	int num_entries;
 	/**
 	 * Previous sibling channel
 	 */

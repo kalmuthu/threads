@@ -457,6 +457,58 @@ static void channel_remove_from_blocked_sender(lwt_chan_t c, lwt_t thread){
 }
 
 /**
+ * @brief Pushes the data into the buffer
+ * @param c The channel to add the data to
+ * @param data The data to add
+ * If the buffer is full, it will block until it has capacity
+ */
+static void push_data_into_buffer(lwt_chan_t c, void * data){
+	//check that the buffer isn't at capacity
+	while(c->num_entries >= c->buffer_size){
+		lwt_yield(LWT_NULL);
+	}
+	//insert data into buffer
+	c->buffer[c->end_index] = data;
+	//update end index
+	if(c->end_index < (c->buffer_size - 1)){
+		c->end_index++;
+	}
+	else{
+		c->end_index = 0;
+	}
+	//increment the num of entries
+	c->num_entries++;
+}
+
+/**
+ * @brief Pops the data into the buffer
+ * @param c The channel to remove the data from
+ * @param data The data to remove
+ * If the buffer is empty, it will block until there is something to read
+ */
+static void * pop_data_from_buffer(lwt_chan_t c){
+	lwt_t sender = c->blocked_senders_head;
+	while(c->num_entries <= 0){
+		sender->info = LWT_INFO_NTHD_RUNNABLE;
+		lwt_yield(sender);
+	}
+	channel_remove_from_blocked_sender(c, sender);
+	//update status
+	c->blocked_receiver = NULL;
+	void * data = c->buffer[c->start_index];
+	//update start index
+	if(c->start_index < (c->start_index - 1)){
+		c->start_index++;
+	}
+	else{
+		c->start_index = 0;
+	}
+	//decrement the number of entries
+	c->num_entries--;
+	return data;
+}
+
+/**
  * @brief Gets the thread id
  * @return The id of the thread
  */
@@ -778,6 +830,7 @@ __attribute__((destructor)) void __destroy__(){
 		rcv_channels = current_thread->receiving_channels;
 		while(rcv_channels){
 			next_channel = rcv_channels->next_sibling;
+			free(rcv_channels->buffer);
 			free(rcv_channels);
 			rcv_channels = next_channel;
 		}
@@ -828,7 +881,10 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data){
  * @return A pointer to the initialized channel
  */
 lwt_chan_t lwt_chan(int sz){
-	assert(sz == 0);
+	assert(sz >= 0);
+	if(sz == 0){
+		sz = 1;
+	}
 	lwt_chan_t channel = (lwt_chan_t)malloc(sizeof(struct lwt_channel));
 	assert(channel);
 	channel->receiver = current_thread;
@@ -839,6 +895,13 @@ lwt_chan_t lwt_chan(int sz){
 	channel->senders = NULL;
 	channel->blocked_senders_head = NULL;
 	channel->blocked_senders_tail = NULL;
+	//prepare buffer
+	channel->buffer = (void **)malloc(sizeof(void *) * sz);
+	assert(channel->buffer);
+	channel->start_index = 0;
+	channel->end_index = 0;
+	channel->buffer_size = sz;
+	channel->num_entries = 0;
 	return channel;
 }
 
@@ -867,6 +930,7 @@ void lwt_chan_deref(lwt_chan_t c){
 	}
 	if(!c->receiver && !c->senders){
 		printf("FREEING CHANNEL: %d!!\n", (int)c);
+		free(c->buffer);
 		free(c);
 	}
 }
@@ -896,12 +960,12 @@ int lwt_snd(lwt_chan_t c, void * data){
 	while(c->blocked_senders_head && c->blocked_senders_head != current_thread){
 		lwt_yield(LWT_NULL);
 	}
-	while(c->buffer){
-		lwt_yield(LWT_NULL);
-	}
+
+	push_data_into_buffer(c, data);
+	int current_size = c->num_entries;
+
 	//send data
-	c->buffer = data;
-	while(c->buffer){
+	while(current_size == c->num_entries){
 		//yield to receiver
 		c->receiver->info = LWT_INFO_NTHD_RUNNABLE;
 		lwt_yield(c->receiver);
@@ -923,26 +987,11 @@ void * lwt_rcv(lwt_chan_t c){
 	}
 	current_thread->info = LWT_INFO_NRECEVING;
 	c->blocked_receiver = current_thread;
-	//ensure buffer is empty
-	while(c->buffer){
-		lwt_yield(LWT_NULL);
-	}
 	//block until there's a sender
 	while(!c->blocked_senders_head){
 		lwt_yield(LWT_NULL);
 	}
-	//detach the head
-	lwt_t sender = c->blocked_senders_head;
-	while(!c->buffer){
-		sender->info = LWT_INFO_NTHD_RUNNABLE;
-		lwt_yield(sender);
-	}
-	channel_remove_from_blocked_sender(c, sender);
-	//update status
-	c->blocked_receiver = NULL;
-	void * data = c->buffer;
-	c->buffer = NULL;
-	return data;
+	return pop_data_from_buffer(c);
 }
 
 /**
