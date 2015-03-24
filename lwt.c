@@ -596,8 +596,8 @@ static void push_data_into_async_buffer(lwt_chan_t c, void * data){
 		lwt_yield(LWT_NULL);
 	}
 	//insert data into buffer
-	c->async_buffer[c->end_index] = (struct event *)malloc(sizeof(struct event));
-	init_event(c->async_buffer[c->end_index], c, data);
+	c->async_buffer[c->end_index] = data;
+	init_event(c, data);
 	//update end index
 	if(c->end_index < (c->buffer_size - 1)){
 		c->end_index++;
@@ -622,15 +622,13 @@ static void push_data_into_async_buffer(lwt_chan_t c, void * data){
  * If the buffer is empty, it will block until there is something to read
  */
 static void * pop_data_from_async_buffer(lwt_chan_t c){
-	struct event * event = c->async_buffer[c->start_index];
-	while(!event){
+	void * data = c->async_buffer[c->start_index];
+	while(!data){
 		current_thread->info = LWT_INFO_NRECEIVING;
 		lwt_yield(LWT_NULL);
-		event = c->async_buffer[c->start_index];
+		data = c->async_buffer[c->start_index];
 	}
 	//update buffer value
-	void * data = event->data;
-	free_event(event);
 	c->async_buffer[c->start_index] = NULL;
 	//update start index
 	if(c->start_index < (c->buffer_size - 1)){
@@ -649,7 +647,9 @@ static void * pop_data_from_async_buffer(lwt_chan_t c){
 /**
  * Initializes the event
  */
-void init_event(struct event * event_t, lwt_chan_t channel, void * data){
+void init_event(lwt_chan_t channel, void * data){
+	struct event * event_t = (struct event *)malloc(sizeof(struct event));
+	assert(event_t);
 	event_t->data = data;
 	event_t->channel = channel;
 	event_t->data = data;
@@ -806,6 +806,9 @@ void __reinit_lwt(lwt_t thread){
 	thread->previous_ready_pool_thread = NULL;
 	thread->next_ready_pool_thread = NULL;
 
+	//reset flags to 0
+	thread->flags = LWT_JOIN;
+
 	//add to ready pool
 	thread->info = LWT_INFO_NTHD_READY_POOL;
 	insert_ready_pool_thread_tail(thread);
@@ -900,8 +903,14 @@ void lwt_die(void * value){
 		}
 	}
 
-	//change status to zombie
-	current_thread->info = LWT_INFO_NTHD_ZOMBIES;
+	//reset thread as ready in the thread pool
+	if(current_thread->flags == LWT_NOJOIN){
+		__reinit_lwt(current_thread);
+	}
+	else{
+		//change status to zombie
+		current_thread->info = LWT_INFO_NTHD_ZOMBIES;
+	}
 
 	//switch to another thread
 	__lwt_schedule();
@@ -1065,7 +1074,7 @@ lwt_chan_t lwt_chan(int sz){
 	channel->blocked_senders_tail = NULL;
 	//prepare buffer
 	if(sz > 0){
-		channel->async_buffer = (struct event **)malloc(sizeof(struct event *) * sz);
+		channel->async_buffer = (void **)malloc(sizeof(void *) * sz);
 		assert(channel->async_buffer);
 		int index;
 		for(index = 0; index < sz; ++index){
@@ -1153,9 +1162,10 @@ int lwt_snd(lwt_chan_t c, void * data){
 		while(c->sync_buffer){
 			lwt_yield(LWT_NULL);
 		}
+		c->sync_buffer = data;
 		//send data
-		c->sync_buffer = (struct event *)malloc(sizeof(struct event));
-		init_event(c->sync_buffer, c, data);
+		init_event(c, data);
+
 
 		//wait until receiver picks up buffer
 		while(c->sync_buffer){
@@ -1202,8 +1212,7 @@ void * lwt_rcv(lwt_chan_t c){
 		channel_remove_from_blocked_sender(c, sender);
 
 		c->blocked_receiver = NULL;
-		void * data = c->sync_buffer->data;
-		free_event(c->sync_buffer);
+		void * data = c->sync_buffer;
 		c->sync_buffer = NULL;
 		return data;
 	}
@@ -1291,7 +1300,7 @@ int lwt_cgrp_add(lwt_cgrp_t group, lwt_chan_t channel){
 		return -1;
 	}
 	channel->channel_group = group;
-	channel_insert_group_tail(channel, group);
+	channel_insert_group_tail(group, channel);
 	return 0;
 }
 
@@ -1322,7 +1331,10 @@ lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t group){
 	while(!group->event_head){
 		lwt_yield(LWT_NULL);
 	}
-	return group->event_head->channel;
+	struct event * event = group->event_head;
+	lwt_chan_t channel = event->channel;
+	free_event(event);
+	return channel;
 }
 
 /**
@@ -1347,9 +1359,7 @@ void * lwt_chan_mark_get(lwt_chan_t channel){
 	while(!channel->mark){
 		lwt_yield(LWT_NULL);
 	}
-	void * mark = channel->mark;
-	channel->mark = NULL;
-	return mark;
+	return channel->mark;
 }
 
 

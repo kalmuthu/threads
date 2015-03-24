@@ -217,11 +217,11 @@ struct lwt_channel{
 	/**
 	 * Sync buffer to be passed to the channel
 	 */
-	struct event * sync_buffer;
+	void * sync_buffer;
 	/**
 	 * Async Buffer to be passed to the channel
 	 */
-	struct event ** async_buffer;
+	void ** async_buffer;
 	/**
 	 * Start index of the buffer
 	 */
