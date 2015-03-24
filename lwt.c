@@ -1020,9 +1020,10 @@ __attribute__((destructor)) void __destroy__(){
  * @brief Creates a LWT using the provided function pointer and the data as input for it
  * @param fn The function pointer to use
  * @param data The data to the function
+ * @param flags The flags to be associated with the thread
  * @return A pointer to the initialized LWT
  */
-lwt_t lwt_create(lwt_fnt_t fn, void * data){
+lwt_t lwt_create(lwt_fnt_t fn, void * data, lwt_flags_t flags){
 	//wait until there's a free thread
 	while(!ready_pool_threads_head){
 		lwt_yield(LWT_NULL);
@@ -1038,6 +1039,7 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data){
 
 	thread->start_routine = fn;
 	thread->args = data;
+	thread->flags = flags;
 
 	//insert into runnable list
 	insert_runnable_tail(thread);
@@ -1237,9 +1239,11 @@ lwt_chan_t lwt_rcv_chan(lwt_chan_t c){
  * @brief Creates a lwt with the channel as an arg
  * @param fn The function to use to create the thread
  * @param c The channel to send
+ * @param flags The flags for the thread
+ * @return The thread to return
  */
-lwt_t lwt_create_chan(lwt_chan_fn_t fn, lwt_chan_t c){
-	lwt_t new_thread = lwt_create((lwt_fnt_t)fn, (void*)c);
+lwt_t lwt_create_chan(lwt_chan_fn_t fn, lwt_chan_t c, lwt_flags_t flags){
+	lwt_t new_thread = lwt_create((lwt_fnt_t)fn, (void*)c, flags);
 	if(c->senders){
 		insert_after_sender(c->senders, new_thread);
 	}

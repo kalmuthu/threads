@@ -62,8 +62,8 @@ void * msort(lwt_chan_t main_channel){
 	r_args->begin_index = middle_index;
 	r_args->end_index = args->end_index;
 	//create threads
-	lwt_t l_lwt = lwt_create_chan(msort, my_channel);
-	lwt_t r_lwt = lwt_create_chan(msort, my_channel);
+	lwt_t l_lwt = lwt_create_chan(msort, my_channel, 0);
+	lwt_t r_lwt = lwt_create_chan(msort, my_channel, 0);
 	//receive child channels
 	lwt_chan_t l_chan = lwt_rcv_chan(my_channel);
 	lwt_chan_t r_chan = lwt_rcv_chan(my_channel);
@@ -134,7 +134,7 @@ void merge_sort_test(){
 	//create channel
 	lwt_chan_t main_channel = lwt_chan(0);
 	//create child worker
-	lwt_t child = lwt_create_chan(msort, main_channel);
+	lwt_t child = lwt_create_chan(msort, main_channel, 0);
 	//receive child channel
 	lwt_chan_t child_channel = lwt_rcv_chan(main_channel);
 	//send args
@@ -253,11 +253,11 @@ void ping_pong_test(){
 		//create channel
 		lwt_chan_t main_channel = lwt_chan(0);
 		//create child threads
-		lwt_t ping_lwt = lwt_create_chan(child_ping, main_channel);
+		lwt_t ping_lwt = lwt_create_chan(child_ping, main_channel, 0);
 		lwt_t * pong_lwts = (lwt_t *)malloc(sizeof(lwt_t) * ITER);
 		int index;
 		for(index = 0; index < ITER; ++index){
-			pong_lwts[index] = lwt_create_chan(child_pong, main_channel);
+			pong_lwts[index] = lwt_create_chan(child_pong, main_channel, 0);
 		}
 		//receive channels
 		lwt_chan_t ping_channel = lwt_rcv_chan(main_channel);
@@ -300,7 +300,7 @@ void test_multiple_channels(){
 	lwt_t * threads = (lwt_t *)malloc(sizeof(lwt_t) * ITER);
 	int index;
 	for(index = 0; index < ITER; ++index){
-		threads[index] = lwt_create_chan(child_multiple_channels, main_channel);
+		threads[index] = lwt_create_chan(child_multiple_channels, main_channel, 0);
 	}
 	int count = 0;
 	for(index = 0; index < ITER; ++index){

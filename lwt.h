@@ -59,6 +59,20 @@ typedef struct lwt_cgrp *lwt_cgrp_t;
 
 typedef void *(*lwt_chan_fn_t)(lwt_chan_t);
 
+/**
+ * flags for determining if the lwt is joinable
+ */
+typedef enum{
+	/**
+	 * lwt is joinable
+	 */
+	LWT_JOIN = 0,
+	/**
+	 * lwt is not joinable
+	 */
+	LWT_NOJOIN = 1
+}lwt_flags_t;
+
 
 
 /**
@@ -78,6 +92,10 @@ struct lwt
 	 * The current thread stack pointer for the thread
 	 */
 	long * thread_sp;
+	/**
+	 * The flags associated with the lwt
+	 */
+	lwt_flags_t flags;
 
 	/**
 	 * Parent thread
@@ -267,7 +285,7 @@ struct lwt_cgrp{
 };
 
 
-lwt_t lwt_create(lwt_fnt_t fn, void * data);
+lwt_t lwt_create(lwt_fnt_t fn, void * data, lwt_flags_t flags);
 void *lwt_join(lwt_t);
 void lwt_die(void *);
 int lwt_yield(lwt_t);
@@ -281,7 +299,7 @@ int lwt_snd(lwt_chan_t, void *);
 void * lwt_rcv(lwt_chan_t);
 int lwt_snd_chan(lwt_chan_t, lwt_chan_t);
 lwt_chan_t lwt_rcv_chan(lwt_chan_t);
-lwt_t lwt_create_chan(lwt_chan_fn_t, lwt_chan_t);
+lwt_t lwt_create_chan(lwt_chan_fn_t, lwt_chan_t, lwt_flags_t);
 
 lwt_cgrp_t lwt_cgrp();
 int lwt_cgrp_free(lwt_cgrp_t);
