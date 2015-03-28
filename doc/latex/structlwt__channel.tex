@@ -1,0 +1,58 @@
+\hypertarget{structlwt__channel}{\section{lwt\+\_\+chan\+\_\+t Struct Reference}
+\label{structlwt__channel}\index{lwt\+\_\+chan\+\_\+t@{lwt\+\_\+chan\+\_\+t}}
+}
+
+
+{\ttfamily \#include $<$lwt.\+h$>$}
+
+\subsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+lwt\+\_\+t \hyperlink{structlwt__channel_a20bba68264c7fd15c6efb8446821d16e}{senders}
+\item 
+lwt\+\_\+t \hyperlink{structlwt__channel_a34b43c8980f830472deb0cc60a632257}{blocked\+\_\+senders\+\_\+head}
+\item 
+lwt\+\_\+t \hyperlink{structlwt__channel_ad2912304612b27ba7a7b5dd2ec3e2415}{blocked\+\_\+senders\+\_\+tail}
+\item 
+lwt\+\_\+t \hyperlink{structlwt__channel_a740680d836200bfc87150333e4d62785}{receiver}
+\item 
+lwt\+\_\+t \hyperlink{structlwt__channel_ac296e81a0c3bfdccbc1a8c1f89651008}{blocked\+\_\+receiver}
+\item 
+void $\ast$ \hyperlink{structlwt__channel_a3ab113fcf44dd32e83447f80a9111aa1}{buffer}
+\item 
+lwt\+\_\+chan\+\_\+t \hyperlink{structlwt__channel_a62840bc52e01e67e063776f8205dd43e}{previous\+\_\+sibling}
+\item 
+lwt\+\_\+chan\+\_\+t \hyperlink{structlwt__channel_a4b5e95b483446613dabd96de3dec4007}{next\+\_\+sibling}
+\end{DoxyCompactItemize}
+
+
+\subsection{Field Documentation}
+\hypertarget{structlwt__channel_ac296e81a0c3bfdccbc1a8c1f89651008}{\index{lwt\+\_\+channel@{lwt\+\_\+channel}!blocked\+\_\+receiver@{blocked\+\_\+receiver}}
+\index{blocked\+\_\+receiver@{blocked\+\_\+receiver}!lwt\+\_\+channel@{lwt\+\_\+channel}}
+\subsubsection[{blocked\+\_\+receiver}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+chan\+\_\+t\+::blocked\+\_\+receiver}}\label{structlwt__channel_ac296e81a0c3bfdccbc1a8c1f89651008}
+The blocked receiver \hypertarget{structlwt__channel_a34b43c8980f830472deb0cc60a632257}{\index{lwt\+\_\+channel@{lwt\+\_\+channel}!blocked\+\_\+senders\+\_\+head@{blocked\+\_\+senders\+\_\+head}}
+\index{blocked\+\_\+senders\+\_\+head@{blocked\+\_\+senders\+\_\+head}!lwt\+\_\+channel@{lwt\+\_\+channel}}
+\subsubsection[{blocked\+\_\+senders\+\_\+head}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+chan\+\_\+t\+::blocked\+\_\+senders\+\_\+head}}\label{structlwt__channel_a34b43c8980f830472deb0cc60a632257}
+The head of the blocked senders \hypertarget{structlwt__channel_ad2912304612b27ba7a7b5dd2ec3e2415}{\index{lwt\+\_\+channel@{lwt\+\_\+channel}!blocked\+\_\+senders\+\_\+tail@{blocked\+\_\+senders\+\_\+tail}}
+\index{blocked\+\_\+senders\+\_\+tail@{blocked\+\_\+senders\+\_\+tail}!lwt\+\_\+channel@{lwt\+\_\+channel}}
+\subsubsection[{blocked\+\_\+senders\+\_\+tail}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+chan\+\_\+t\+::blocked\+\_\+senders\+\_\+tail}}\label{structlwt__channel_ad2912304612b27ba7a7b5dd2ec3e2415}
+The tail of the blocked senders \hypertarget{structlwt__channel_a3ab113fcf44dd32e83447f80a9111aa1}{\index{lwt\+\_\+channel@{lwt\+\_\+channel}!buffer@{buffer}}
+\index{buffer@{buffer}!lwt\+\_\+channel@{lwt\+\_\+channel}}
+\subsubsection[{buffer}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ lwt\+\_\+chan\+\_\+t\+::buffer}}\label{structlwt__channel_a3ab113fcf44dd32e83447f80a9111aa1}
+Buffer to be passed to channel \hypertarget{structlwt__channel_a4b5e95b483446613dabd96de3dec4007}{\index{lwt\+\_\+channel@{lwt\+\_\+channel}!next\+\_\+sibling@{next\+\_\+sibling}}
+\index{next\+\_\+sibling@{next\+\_\+sibling}!lwt\+\_\+channel@{lwt\+\_\+channel}}
+\subsubsection[{next\+\_\+sibling}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+chan\+\_\+t lwt\+\_\+chan\+\_\+t\+::next\+\_\+sibling}}\label{structlwt__channel_a4b5e95b483446613dabd96de3dec4007}
+Next sibling channel \hypertarget{structlwt__channel_a62840bc52e01e67e063776f8205dd43e}{\index{lwt\+\_\+channel@{lwt\+\_\+channel}!previous\+\_\+sibling@{previous\+\_\+sibling}}
+\index{previous\+\_\+sibling@{previous\+\_\+sibling}!lwt\+\_\+channel@{lwt\+\_\+channel}}
+\subsubsection[{previous\+\_\+sibling}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+chan\+\_\+t lwt\+\_\+chan\+\_\+t\+::previous\+\_\+sibling}}\label{structlwt__channel_a62840bc52e01e67e063776f8205dd43e}
+Previous sibling channel \hypertarget{structlwt__channel_a740680d836200bfc87150333e4d62785}{\index{lwt\+\_\+channel@{lwt\+\_\+channel}!receiver@{receiver}}
+\index{receiver@{receiver}!lwt\+\_\+channel@{lwt\+\_\+channel}}
+\subsubsection[{receiver}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+chan\+\_\+t\+::receiver}}\label{structlwt__channel_a740680d836200bfc87150333e4d62785}
+The receiving thread \hypertarget{structlwt__channel_a20bba68264c7fd15c6efb8446821d16e}{\index{lwt\+\_\+channel@{lwt\+\_\+channel}!senders@{senders}}
+\index{senders@{senders}!lwt\+\_\+channel@{lwt\+\_\+channel}}
+\subsubsection[{senders}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+chan\+\_\+t\+::senders}}\label{structlwt__channel_a20bba68264c7fd15c6efb8446821d16e}
+The list of senders 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{lwt_8h}{lwt.\+h}\end{DoxyCompactItemize}

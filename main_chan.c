@@ -1,4 +1,6 @@
 #include "lwt.h"
+#include "lwt_chan.h"
+#include "lwt_cgrp.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -292,6 +294,7 @@ void ping_pong_test(){
 
 void * child_multiple_channels(lwt_chan_t main_channel){
 	lwt_snd(main_channel, (void *)(lwt_current()->id % ITER + 1));
+	lwt_chan_deref(main_channel);
 	return 0;
 }
 
@@ -310,6 +313,7 @@ void multiple_channels_test(){
 	for(index = 0; index < ITER; ++index){
 		lwt_join(threads[index]);
 	}
+	lwt_chan_deref(main_channel);
 	free(threads);
 	assert(count == 3240);
 	printf("COUNT: %d\n", count);
@@ -330,6 +334,25 @@ void multiple_channels_test_v2(){
 		printf("CURRENT INDEX: %d\n", index);
 		count += (int)lwt_rcv(main_channel);
 	}
+	lwt_chan_deref(main_channel);
+	free(threads);
+	assert(count == 3240);
+	printf("COUNT: %d\n", count);
+}
+
+void multiple_channels_test_v3(){
+	lwt_chan_t main_channel = lwt_chan(ITER);
+	lwt_t * threads = (lwt_t *)malloc(sizeof(lwt_t) * ITER);
+	int index;
+	for(index = 0; index < ITER; ++index){
+		threads[index] = lwt_create_chan(child_multiple_channels, main_channel, LWT_NOJOIN);
+	}
+	int count = 0;
+	for(index = 0; index < ITER; ++index){
+		printf("CURRENT INDEX: %d\n", index);
+		count += (int)lwt_rcv(main_channel);
+	}
+	lwt_chan_deref(main_channel);
 	free(threads);
 	assert(count == 3240);
 	printf("COUNT: %d\n", count);
@@ -343,5 +366,6 @@ int main(){
 	merge_sort_test();
 	multiple_channels_test();
 	multiple_channels_test_v2();
+	multiple_channels_test_v3();
 	return 0;
 }

@@ -7,7 +7,7 @@
 #ifndef LWT_H_
 #define LWT_H_
 
-#include <stdlib.h>
+#include "stdlib.h"
 
 #define PAGE_SIZE 4096
 #define NUM_PAGES 5
@@ -15,6 +15,13 @@
 
 #define LWT_NULL NULL
 #define LWT_YIELD_NO_LWT_TO_YIELD 1
+
+//forward declaration
+typedef struct lwt_channel *lwt_chan_t;
+
+typedef void *(*lwt_fnt_t)(void *); //function pointer definition
+
+typedef struct lwt* lwt_t;
 
 /**
  * @brief The various statuses for a LWT
@@ -51,13 +58,7 @@ typedef enum
 	LWT_INFO_NRECEIVING
 } lwt_info_t;
 
-typedef void *(*lwt_fnt_t)(void *); //function pointer definition
 
-typedef struct lwt* lwt_t;
-typedef struct lwt_channel *lwt_chan_t;
-typedef struct lwt_cgrp *lwt_cgrp_t;
-
-typedef void *(*lwt_chan_fn_t)(lwt_chan_t);
 
 /**
  * flags for determining if the lwt is joinable
@@ -186,127 +187,13 @@ struct lwt
 	int id;
 };
 
-struct event{
-	struct event * previous_event;
-	struct event * next_event;
-	lwt_chan_t channel;
-	void * data;
-};
-
-struct lwt_channel{
-	/**
-	 * The list of senders
-	 */
-	lwt_t senders;
-	/**
-	 * The head of the blocked senders
-	 */
-	lwt_t blocked_senders_head;
-	/**
-	 * The tail of the blocked senders
-	 */
-	lwt_t blocked_senders_tail;
-	/**
-	 * The receiving thread
-	 */
-	lwt_t receiver;
-	/**
-	 * The blocked receiver
-	 */
-	lwt_t blocked_receiver;
-	/**
-	 * Sync buffer to be passed to the channel
-	 */
-	void * sync_buffer;
-	/**
-	 * Async Buffer to be passed to the channel
-	 */
-	void ** async_buffer;
-	/**
-	 * Start index of the buffer
-	 */
-	int start_index;
-	/**
-	 * End index of the buffer
-	 */
-	int end_index;
-	/**
-	 * Size of the buffer
-	 */
-	int buffer_size;
-	/**
-	 * Current number of entries in buffer
-	 */
-	int num_entries;
-	/**
-	 * Previous sibling channel
-	 */
-	lwt_chan_t previous_sibling;
-	/**
-	 * Next sibling channel
-	 */
-	lwt_chan_t next_sibling;
-
-	/**
-	 * Channel group
-	 */
-	lwt_cgrp_t channel_group;
-	/**
-	 * Previous channel in group
-	 */
-	lwt_chan_t previous_channel_in_group;
-	/**
-	 * Next channel in group
-	 */
-	lwt_chan_t next_channel_in_group;
-	/**
-	 * Mark for channel
-	 */
-	void * mark;
-};
-
-struct lwt_cgrp{
-	/**
-	 * Head of the list of channels
-	 */
-	lwt_chan_t channel_head;
-	/**
-	 * Tail of the list of channels
-	 */
-	lwt_chan_t channel_tail;
-	/**
-	 * Head of the event queue
-	 */
-	struct event * event_head;
-	/**
-	 * Tail of the event queue
-	 */
-	struct event * event_tail;
-};
-
-
-lwt_t lwt_create(lwt_fnt_t fn, void * data, lwt_flags_t flags);
+lwt_t lwt_create(lwt_fnt_t, void *, lwt_flags_t);
 void *lwt_join(lwt_t);
 void lwt_die(void *);
 int lwt_yield(lwt_t);
 lwt_t lwt_current();
 int lwt_id(lwt_t);
-int lwt_info(lwt_info_t t);
+int lwt_info(lwt_info_t);
 
-lwt_chan_t lwt_chan(int);
-void lwt_chan_deref(lwt_chan_t);
-int lwt_snd(lwt_chan_t, void *);
-void * lwt_rcv(lwt_chan_t);
-int lwt_snd_chan(lwt_chan_t, lwt_chan_t);
-lwt_chan_t lwt_rcv_chan(lwt_chan_t);
-lwt_t lwt_create_chan(lwt_chan_fn_t, lwt_chan_t, lwt_flags_t);
-
-lwt_cgrp_t lwt_cgrp();
-int lwt_cgrp_free(lwt_cgrp_t);
-int lwt_cgrp_add(lwt_cgrp_t, lwt_chan_t);
-int lwt_cgrp_rem(lwt_cgrp_t, lwt_chan_t);
-lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t);
-void lwt_chan_mark_set(lwt_chan_t, void *);
-void * lwt_chan_mark_get(lwt_chan_t);
 
 #endif /* LWT_H_ */

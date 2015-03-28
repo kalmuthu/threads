@@ -1,4 +1,7 @@
 #include "lwt.h"
+#include "lwt_chan.h"
+#include "lwt_cgrp.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -56,6 +59,7 @@ static lwt_t runnable_threads_head = NULL;
  */
 static lwt_t runnable_threads_tail = NULL;
 
+
 /**
  * @brief Head of ready pool threads
  */
@@ -108,39 +112,6 @@ static void insert_before_sibling(lwt_t old, lwt_t new){
 }
 
 /**
- * @brief Inserts the new thread before the old thread in the sending thread list
- * @param old The old thread
- * @param new The new thread
- */
-static void insert_before_sender(lwt_t old, lwt_t new){
-	//adjust new
-	new->next_sender = old;
-	new->previous_sender = old->previous_sender;
-	//adjust old
-	if(old->previous_sender){
-		old->previous_sender->next_sender = new;
-	}
-	old->previous_sender = new;
-}
-
-/**
- * @brief Inserts the new channel before the old channel in the channel list
- * @param old The old channel
- * @param new The new channel
- */
-static void insert_before_chan(lwt_chan_t old, lwt_chan_t new){
-	//adjust new
-	new->next_sibling = old;
-	new->previous_sibling = old->previous_sibling;
-	//adjust old
-	if(old->previous_sibling){
-		old->previous_sibling->next_sibling = new;
-	}
-	old->previous_sibling = new;
-}
-
-
-/**
  * @brief Insert the new thread after the old thread in the current thread list
  * @param old The old thread
  * @param new The new thread
@@ -162,38 +133,6 @@ static void insert_after_current(lwt_t old, lwt_t new){
  * @param new The new thread
  */
 static void insert_after_sibling(lwt_t old, lwt_t new){
-	//adjust new
-	new->next_sibling = old->next_sibling;
-	new->previous_sibling = old;
-	//adjust old
-	if(old->next_sibling){
-		old->next_sibling->previous_sibling = new;
-	}
-	old->next_sibling = new;
-}
-
-/**
- * @brief Inserts the new thread after the old thread in the sender thread list
- * @param old The old thread
- * @param new The new thread
- */
-static void insert_after_sender(lwt_t old, lwt_t new){
-	//adjust new
-	new->next_sender = old->next_sender;
-	new->previous_sender = old;
-	//adjust old
-	if(old->next_sender){
-		old->next_sender->previous_sender = new;
-	}
-	old->next_sender = new;
-}
-
-/**
- * @brief Inserts the new channel after the old channel in the channel list
- * @param old The old thread
- * @param new The new thread
- */
-static void insert_after_channel(lwt_chan_t old, lwt_chan_t new){
 	//adjust new
 	new->next_sibling = old->next_sibling;
 	new->previous_sibling = old;
@@ -232,35 +171,7 @@ static void remove_sibling(lwt_t thread){
 	}
 }
 
-/**
- * @brief Remove the given thread from the sender list
- * @param thread The thread to be removed
- */
-static void remove_sender(lwt_t thread){
-	//detach -> update next + previous
-	if(thread->next_sender){
-		thread->next_sender->previous_sender = thread->previous_sender;
-	}
-	if(thread->previous_sender){
-		thread->previous_sender->next_sender = thread->next_sender;
-	}
-	thread->next_sender = NULL;
-	thread->previous_sender = NULL;
-}
 
-/**
- * @brief Remove the channel from the list of channels
- * @param channel The channel to be removed
- */
-static void remove_channel(lwt_chan_t channel){
-	//detach -> update next + previous
-	if(channel->next_sibling){
-		channel->next_sibling->previous_sibling = channel->previous_sibling;
-	}
-	if(channel->previous_sibling){
-		channel->previous_sibling->next_sibling = channel->next_sibling;
-	}
-}
 
 /**
  * @brief Inserts the given thread to the head of the runnable thread list
@@ -304,71 +215,6 @@ static void insert_ready_pool_thread_head(lwt_t thread){
 	}
 }
 
-/**
- * @brief Inserts the given thread to the head of the blocked sender list
- * @param channel The channel blocking the sender
- * @param thread The thread being blocked
- */
-static void channel_insert_blocked_sender_head(lwt_chan_t channel, lwt_t thread){
-	if(channel->blocked_senders_head){
-		//thread will be new head
-		thread->next_blocked_sender = channel->blocked_senders_head;
-		thread->previous_blocked_sender = NULL;
-		channel->blocked_senders_head->previous_blocked_sender = thread;
-		channel->blocked_senders_head = thread;
-	}
-	else{
-		//thread will be head and tail
-		thread->previous_blocked_sender = NULL;
-		thread->next_blocked_sender = NULL;
-		channel->blocked_senders_head = thread;
-		channel->blocked_senders_tail = thread;
-	}
-}
-
-/**
- * @brief Inserts the channel into the head of the group
- * @param group The channel group to insert into
- * @param channel The channel to add
- */
-static void channel_insert_into_group_head(lwt_cgrp_t group, lwt_chan_t channel){
-	if(group->channel_head){
-		//channel will be new head
-		channel->next_channel_in_group = group->channel_head->next_channel_in_group;
-		channel->previous_channel_in_group = NULL;
-		group->channel_head->previous_channel_in_group = channel;
-		group->channel_head = channel;
-	}
-	else{
-		//channel will be head and tail
-		channel->previous_channel_in_group = NULL;
-		channel->next_channel_in_group = NULL;
-		group->channel_head = channel;
-		group->channel_tail = channel;
-	}
-}
-
-/**
- * @brief  Adds the channel to the event queue
- * @param group The group to add the event to
- * @param event The event to add
- */
-static void insert_into_event_head(lwt_cgrp_t group, struct event * event){
-	if(group->event_head){
-		//event will be new head
-		event->next_event = group->event_head;
-		event->previous_event = NULL;
-		group->event_head->next_event = event;
-		group->event_head = event;
-	}
-	else{
-		//channel will be new head and tail
-		event->next_event = NULL;
-		event->previous_event = NULL;
-		group->event_head = event;
-		group->event_tail = event;
-	}
-}
 
 /**
  * @brief Inserts the given thread to the tail of the runnable thread list
@@ -413,70 +259,6 @@ static void insert_ready_pool_thread_tail(lwt_t thread){
 }
 
 /**
- * @brief Inserts the given thread to the tail of the blocked sender thread list
- * @param channel The channel blocking
- * @param thread The new thread to be insert in the blocked sender thread list
- */
-static void channel_insert_blocked_sender_tail(lwt_chan_t channel, lwt_t thread){
-	if(channel->blocked_senders_tail){
-		//thread will be new tail
-		thread->previous_blocked_sender = channel->blocked_senders_tail;
-		thread->next_blocked_sender = NULL;
-		channel->blocked_senders_tail->next_blocked_sender = thread;
-		channel->blocked_senders_tail = thread;
-	}
-	else{
-		//thread will be head and tail
-		thread->previous_blocked_sender = NULL;
-		thread->next_blocked_sender = NULL;
-		channel->blocked_senders_head = thread;
-		channel->blocked_senders_tail = thread;
-	}
-}
-
-/**
- * @brief Adds the channel to the tail of the list
- * @param group The group to append to
- * @param channel The channel to add
- */
-static void channel_insert_group_tail(lwt_cgrp_t group, lwt_chan_t channel){
-	if(group->channel_tail){
-		//channel becomes new tail
-		channel->previous_channel_in_group = group->channel_tail;
-		channel->next_channel_in_group = NULL;
-		group->channel_tail->next_channel_in_group = channel;
-		group->channel_tail = channel;
-	}
-	else{
-		//channel becomes head and tail
-		channel->previous_channel_in_group = NULL;
-		channel->next_channel_in_group = NULL;
-		group->channel_head = channel;
-		group->channel_tail = channel;
-	}
-}
-
-/**
- * @brief Inserts the channel to the end of the event queue
- * @param group The channel group to append to
- * @param event The event to add
- */
-static void insert_event_tail(lwt_cgrp_t group, struct event * event){
-	if(group->event_tail){
-		event->previous_event = group->event_tail;
-		event->next_event = NULL;
-		group->event_tail->next_event = event;
-		group->event_tail = event;
-	}
-	else{
-		event->previous_event = NULL;
-		event->next_event = NULL;
-		group->event_head = event;
-		group->event_tail = event;
-	}
-}
-
-/**
  * @brief Removes the thread from the list of runnable threads
  * @param thread The thread to be removed
  */
@@ -517,154 +299,6 @@ static void remove_ready_pool_thread(lwt_t thread){
 	if(thread == ready_pool_threads_tail){
 		ready_pool_threads_tail = ready_pool_threads_tail->previous_ready_pool_thread;
 	}
-}
-
-/**
- * @brief Removes the thread from the list of blocked sender threads
- * @param channel The channel from which the sender will be removed
- * @param thread The thread to be removed
- */
-static void channel_remove_from_blocked_sender(lwt_chan_t c, lwt_t thread){
-	//detach
-	if(thread->next_blocked_sender){
-		thread->next_blocked_sender->previous_blocked_sender = thread->previous_blocked_sender;
-	}
-	if(thread->previous_blocked_sender){
-		thread->previous_blocked_sender->next_blocked_sender = thread->next_blocked_sender;
-	}
-	//update head
-	if(thread == c->blocked_senders_head){
-		c->blocked_senders_head = c->blocked_senders_head->next_blocked_sender;
-	}
-	//update tail
-	if(thread == c->blocked_senders_tail){
-		c->blocked_senders_tail = c->blocked_senders_tail->previous_blocked_sender;
-	}
-}
-
-/**
- * @brief Removes the channel from the group
- * @param channel The channel to remove
- * @param group The group to remove the channel from
- */
-static void channel_remove_channel_from_group(lwt_chan_t channel, lwt_cgrp_t group){
-	//detach
-	if(channel->previous_channel_in_group){
-		channel->previous_channel_in_group->next_channel_in_group = channel->next_channel_in_group;
-	}
-	if(channel->next_channel_in_group){
-		channel->next_channel_in_group->previous_channel_in_group = channel->previous_channel_in_group;
-	}
-	if(channel == group->channel_head){
-		group->channel_head = group->channel_head->next_channel_in_group;
-	}
-	if(channel == group->channel_tail){
-		group->channel_tail = group->channel_tail->previous_channel_in_group;
-	}
-}
-
-/**
- * @brief Removes the channel from the event queue
- * @param event The event to remove
- * @param group The group to alter
- */
-static void remove_event_from_group(struct event * event, lwt_cgrp_t group){
-	if(event->previous_event){
-		event->previous_event->next_event = event->next_event;
-	}
-	if(event->next_event){
-		event->next_event->previous_event = event->previous_event;
-	}
-	if(event == group->event_head){
-		group->event_head = group->event_head->next_event;
-	}
-	if(event == group->event_tail){
-		group->event_tail = group->event_tail->previous_event;
-	}
-}
-
-/**
- * @brief Pushes the data into the buffer
- * @param c The channel to add the data to
- * @param data The data to add
- * If the buffer is full, it will block until it has capacity
- */
-static void push_data_into_async_buffer(lwt_chan_t c, void * data){
-	//check that the buffer isn't at capacity
-	while(c->num_entries >= c->buffer_size){
-		current_thread->info = LWT_INFO_NSENDING;
-		lwt_yield(LWT_NULL);
-	}
-	//insert data into buffer
-	c->async_buffer[c->end_index] = data;
-	init_event(c, data);
-	//update end index
-	if(c->end_index < (c->buffer_size - 1)){
-		c->end_index++;
-	}
-	else{
-		c->end_index = 0;
-	}
-	//increment the num of entries
-	c->num_entries++;
-	//update status
-	current_thread->info = LWT_INFO_NTHD_RUNNABLE;
-	//check if receiver is trying to receive
-	if(c->receiver && c->receiver->info == LWT_INFO_NRECEIVING){
-		lwt_yield(c->receiver);
-	}
-}
-
-/**
- * @brief Pops the data into the buffer
- * @param c The channel to remove the data from
- * @param data The data to remove
- * If the buffer is empty, it will block until there is something to read
- */
-static void * pop_data_from_async_buffer(lwt_chan_t c){
-	void * data = c->async_buffer[c->start_index];
-	while(!data){
-		current_thread->info = LWT_INFO_NRECEIVING;
-		lwt_yield(LWT_NULL);
-		data = c->async_buffer[c->start_index];
-	}
-	//update buffer value
-	c->async_buffer[c->start_index] = NULL;
-	//update start index
-	if(c->start_index < (c->buffer_size - 1)){
-		c->start_index++;
-	}
-	else{
-		c->start_index = 0;
-	}
-	//decrement the number of entries
-	c->num_entries--;
-	//update status
-	current_thread->info = LWT_INFO_NTHD_RUNNABLE;
-	return data;
-}
-
-/**
- * Initializes the event
- */
-void init_event(lwt_chan_t channel, void * data){
-	struct event * event_t = (struct event *)malloc(sizeof(struct event));
-	assert(event_t);
-	event_t->data = data;
-	event_t->channel = channel;
-	event_t->data = data;
-	event_t->previous_event = NULL;
-	event_t->next_event = NULL;
-	if(channel->channel_group){
-		insert_event_tail(channel->channel_group, event_t);
-	}
-}
-
-void free_event(struct event * event_t){
-	if(event_t->channel->channel_group){
-		remove_event_from_group(event_t, event_t->channel->channel_group);
-	}
-	free(event_t);
 }
 
 /**
@@ -866,7 +500,7 @@ void * lwt_join(lwt_t thread){
 	while(thread->info != LWT_INFO_NTHD_ZOMBIES){
 		current_thread->info = LWT_INFO_NTHD_BLOCKED;
 		//switch to another thread
-		__lwt_schedule();
+		lwt_yield(LWT_NULL);
 	}
 	void * value = thread->return_value;
 	//free the thread's stack
@@ -883,7 +517,7 @@ void lwt_die(void * value){
 	//check to see if we can return
 	while(current_thread->children){
 		current_thread->info = LWT_INFO_NTHD_BLOCKED;
-		__lwt_schedule();
+		lwt_yield(LWT_NULL);
 	}
 	//remove from parent thread
 	if(current_thread->parent){
@@ -913,7 +547,7 @@ void lwt_die(void * value){
 	}
 
 	//switch to another thread
-	__lwt_schedule();
+	lwt_yield(LWT_NULL);
 }
 
 /**
@@ -944,8 +578,8 @@ int lwt_yield(lwt_t lwt){
  * @brief Schedules the next_current thread to switch to and dispatches
  */
 void __lwt_schedule(){
-	assert(runnable_threads_head);
-	assert(runnable_threads_head != current_thread);
+	//assert(runnable_threads_head);
+	//assert(runnable_threads_head != current_thread);
 	if(runnable_threads_head &&
 			runnable_threads_head != current_thread){
 		lwt_t curr_thread = current_thread;
@@ -1054,312 +688,6 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data, lwt_flags_t flags){
 	insert_runnable_tail(thread);
 
 	return thread;
-}
-
-/**
- * @brief Creates the channel on the receiving thread
- * @param sz The size of the buffer
- * @return A pointer to the initialized channel
- */
-lwt_chan_t lwt_chan(int sz){
-	assert(sz >= 0);
-	lwt_chan_t channel = (lwt_chan_t)malloc(sizeof(struct lwt_channel));
-	assert(channel);
-	channel->receiver = current_thread;
-	channel->blocked_receiver = NULL;
-	channel->next_sibling = NULL;
-	channel->previous_sibling = NULL;
-	channel->senders = NULL;
-	channel->blocked_senders_head = NULL;
-	channel->blocked_senders_tail = NULL;
-	//prepare buffer
-	if(sz > 0){
-		channel->async_buffer = (void **)malloc(sizeof(void *) * sz);
-		assert(channel->async_buffer);
-		int index;
-		for(index = 0; index < sz; ++index){
-			channel->async_buffer[index] = NULL;
-		}
-	}
-	else{
-		channel->async_buffer = NULL;
-	}
-	channel->sync_buffer = NULL;
-	channel->start_index = 0;
-	channel->end_index = 0;
-	channel->buffer_size = sz;
-	channel->num_entries = 0;
-	//prepare group
-	channel->channel_group = NULL;
-	channel->previous_channel_in_group = NULL;
-	channel->next_channel_in_group = NULL;
-	//mark
-	channel->mark = NULL;
-	return channel;
-}
-
-/**
- * @brief Deallocates the channel only if no threads still have references to the channel
- * @param c The channel to deallocate
- */
-void lwt_chan_deref(lwt_chan_t c){
-	if(c->receiver == current_thread){
-		printf("Removing receiver\n");
-		if(c->next_sibling || c->previous_sibling){
-			remove_channel(c);
-		}
-		else{
-			c->receiver->receiving_channels = NULL;
-		}
-		c->receiver = NULL;
-	}
-	else if(c->senders){
-		if(c->senders->next_sender || c->senders->previous_sender){
-			remove_sender(current_thread);
-		}
-		else if(c->senders->id == current_thread->id){
-			c->senders = NULL;
-		}
-	}
-	if(!c->receiver && !c->senders){
-		printf("FREEING CHANNEL: %d!!\n", (int)c);
-		if(c->async_buffer){
-			free(c->async_buffer);
-		}
-		free(c);
-	}
-}
-
-/**
- * @brief Sends the data over the channel to the receiver
- * @param c The channel to use for sending
- * @param data The data for sending
- * @return -1 if there is no receiver; 0 if successful
- */
-int lwt_snd(lwt_chan_t c, void * data){
-	//data must not be NULL
-	assert(data);
-	if(c->buffer_size > 0){
-		push_data_into_async_buffer(c, data);
-	}
-	else{
-		//check if there is a receiver
-		if(!c || !c->receiver){
-			perror("No receiver for sending channel\n");
-			return -1;
-		}
-		//block
-		current_thread->info = LWT_INFO_NSENDING;
-		channel_insert_blocked_sender_tail(c, current_thread);
-		//check receiver is waiting
-		while(!c->blocked_receiver){
-			lwt_yield(LWT_NULL);
-		}
-		//check if we can go ahead and send
-		while(c->blocked_senders_head && c->blocked_senders_head != current_thread){
-			lwt_yield(LWT_NULL);
-		}
-		while(c->sync_buffer){
-			lwt_yield(LWT_NULL);
-		}
-		c->sync_buffer = data;
-		//send data
-		init_event(c, data);
-
-
-		//wait until receiver picks up buffer
-		while(c->sync_buffer){
-			//yield to receiver
-			c->receiver->info = LWT_INFO_NTHD_RUNNABLE;
-			lwt_yield(c->receiver);
-		}
-	}
-	return 0;
-}
-
-/**
- * @brief Receives the data from the channel and returns it
- * @param c The channel to receive from
- * @return The data from the channel
- */
-void * lwt_rcv(lwt_chan_t c){
-	//ensure only the thread creating the channel is receiving on it
-	assert(c->receiver == current_thread);
-	if(c->buffer_size > 0){
-		return pop_data_from_async_buffer(c);
-	}
-	else{
-		if(!c || !c->senders){
-			perror("NO Senders for receiving channel\n");
-			return NULL;
-		}
-		current_thread->info = LWT_INFO_NRECEIVING;
-		c->blocked_receiver = current_thread;
-		//ensure buffer is empty
-		while(c->sync_buffer){
-			lwt_yield(LWT_NULL);
-		}
-		//block until there's a sender
-		while(!c->blocked_senders_head){
-			lwt_yield(LWT_NULL);
-		}
-		//detach the head
-		lwt_t sender = c->blocked_senders_head;
-		while(!c->sync_buffer){
-			sender->info = LWT_INFO_NTHD_RUNNABLE;
-			lwt_yield(sender);
-		}
-		channel_remove_from_blocked_sender(c, sender);
-
-		c->blocked_receiver = NULL;
-		void * data = c->sync_buffer;
-		c->sync_buffer = NULL;
-		return data;
-	}
-}
-
-/**
- * @brief Sends sending over the channel c
- * @param c The channel to send sending across
- * @param sending The channel to send
- */
-int lwt_snd_chan(lwt_chan_t c, lwt_chan_t sending){
-	return lwt_snd(c, sending);
-}
-
-/**
- * @brief Receives the data over the channel
- * @param c The channel to use for receiving
- * @return The channel being sent over c
- */
-lwt_chan_t lwt_rcv_chan(lwt_chan_t c){
-	//add current channel to senders
-	lwt_chan_t new_channel = (lwt_chan_t)lwt_rcv(c);
-	if(new_channel->senders){
-		insert_after_sender(new_channel->senders, current_thread);
-	}
-	else{
-		new_channel->senders = current_thread;
-	}
-	return new_channel;
-}
-
-/**
- * @brief Creates a lwt with the channel as an arg
- * @param fn The function to use to create the thread
- * @param c The channel to send
- * @param flags The flags for the thread
- * @return The thread to return
- */
-lwt_t lwt_create_chan(lwt_chan_fn_t fn, lwt_chan_t c, lwt_flags_t flags){
-	lwt_t new_thread = lwt_create((lwt_fnt_t)fn, (void*)c, flags);
-	if(c->senders){
-		insert_after_sender(c->senders, new_thread);
-	}
-	else{
-		c->senders = new_thread;
-	}
-	return new_thread;
-}
-
-/**
- * @brief Creates a group of channels
- * @return The group of channels
- * @note By default, the group is empty
- */
-lwt_cgrp_t lwt_cgrp(){
-	lwt_cgrp_t group = (lwt_cgrp_t)malloc(sizeof(struct lwt_cgrp));
-	group->channel_head = NULL;
-	group->channel_tail = NULL;
-	group->event_head = NULL;
-	group->event_tail = NULL;
-	return group;
-}
-
-/**
- * @brief Frees the group if there are no pending events
- * @param group The channel group to free
- * @return 0 if successful; -1 if there are pending events
- */
-int lwt_cgrp_free(lwt_cgrp_t group){
-	if(group->event_head){
-		return -1;
-	}
-	free(group);
-	return 0;
-}
-
-/**
- * @brief Adds the channel to the group if the channel hasn't already been added to a group
- * @param group The group to add the channel to
- * @param channel The channel to add
- * @return 0 if successful; -1 if the channel is already part of a group
- */
-int lwt_cgrp_add(lwt_cgrp_t group, lwt_chan_t channel){
-	if(channel->channel_group){
-		return -1;
-	}
-	channel->channel_group = group;
-	channel_insert_group_tail(group, channel);
-	return 0;
-}
-
-/**
- * @brief Removes the channel from the group
- * @param group The group to remove the channel from
- * @param channel The channel to remove
- * @return 0 if successful; -1 if the channel isn't part of the group; 1 if the group has a pending event
- */
-int lwt_cgrp_rem(lwt_cgrp_t group, lwt_chan_t channel){
-	if(channel->channel_group != group){
-		return -1;
-	}
-	if(group->event_head){
-		return 1;
-	}
-	channel_remove_channel_from_group(channel, group);
-	return 0;
-}
-
-/**
- * @brief Waits until there is a pending event in the queue
- * @param group The group to wait for
- * @return The event in the queue
- */
-lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t group){
-	//wait until there is an event in the queue
-	while(!group->event_head){
-		lwt_yield(LWT_NULL);
-	}
-	struct event * event = group->event_head;
-	lwt_chan_t channel = event->channel;
-	free_event(event);
-	return channel;
-}
-
-/**
- * @brief Marks the channel
- * @param channel The channel to mark
- * @param mark The marker to set
- */
-void lwt_chan_mark_set(lwt_chan_t channel, void * mark){
-	//wait until a mark is empty
-	while(channel->mark){
-		lwt_yield(LWT_NULL);
-	}
-	channel->mark = mark;
-}
-
-/**
- * @brief Grabs the mark from the channel
- * @param
- */
-void * lwt_chan_mark_get(lwt_chan_t channel){
-	//wait until a mark is available
-	while(!channel->mark){
-		lwt_yield(LWT_NULL);
-	}
-	return channel->mark;
 }
 
 
