@@ -597,6 +597,7 @@ void __lwt_schedule(){
 	}
 }
 
+
 /**
  * @brief Initializes the LWT by wrapping the current thread as a LWT
  */
@@ -622,39 +623,50 @@ __attribute__((constructor)) void __init__(){
  */
 __attribute__((destructor)) void __destroy__(){
 	//free threads
-	lwt_t current_thread = current_threads;
+	lwt_t current = current_threads;
 	lwt_t next = NULL;
 	lwt_chan_t rcv_channels = NULL;
 	lwt_chan_t next_channel = NULL;
-	while(current_thread){
-		next = current_thread->next_current;
+
+	//check for no-joined threads and switch to them to let them die
+	while(current){
+		next = current->next_current;
+		if(current->flags == LWT_NOJOIN){
+			lwt_yield(current);
+		}
+
+		current = next;
+	}
+
+	current = current_threads;
+	next = NULL;
+
+	while(current){
+		next = current->next_current;
+
 		//remove any channels
-		rcv_channels = current_thread->receiving_channels;
+		rcv_channels = current->receiving_channels;
 		while(rcv_channels){
 			next_channel = rcv_channels->next_sibling;
+			//free buffer
 			if(rcv_channels->async_buffer){
-				int index;
-				for(index = 0; index < rcv_channels->buffer_size; ++index){
-					if(rcv_channels->async_buffer[index]){
-						free(rcv_channels->async_buffer[index]);
-					}
-				}
 				free(rcv_channels->async_buffer);
 			}
-			if(rcv_channels->sync_buffer){
-				free(rcv_channels->sync_buffer);
-			}
+			//TODO free group
 			free(rcv_channels);
 			rcv_channels = next_channel;
 		}
-		if(current_thread != original_thread){
+
+		if(current != original_thread){
 			printf("FREEING STACK!!\n");
 			//remove stack
-			__lwt_stack_return(current_thread->min_addr_thread_stack);
-			free(current_thread);
+			__lwt_stack_return(current->min_addr_thread_stack);
+			free(current);
 		}
-		current_thread = next;
+
+		current = next;
 	}
+
 	//free original thread
 	free(original_thread);
 }
