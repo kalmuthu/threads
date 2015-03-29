@@ -6,6 +6,7 @@
  */
 #include "lwt_chan.h"
 #include "lwt.h"
+#include "lwt_cgrp.h"
 
 #include "stdio.h"
 #include "stdlib.h"
@@ -101,6 +102,7 @@ static void insert_sender_head(lwt_chan_t channel, lwt_t thread){
 		channel->senders_head = thread;
 		channel->senders_tail = thread;
 	}
+	channel->snd_cnt++;
 }
 
 
@@ -146,6 +148,7 @@ static void insert_sender_tail(lwt_chan_t channel, lwt_t thread){
 		channel->senders_head = thread;
 		channel->senders_tail = thread;
 	}
+	channel->snd_cnt++;
 }
 
 /**
@@ -190,6 +193,7 @@ static void remove_from_senders(lwt_chan_t c, lwt_t thread){
 	if(thread == c->senders_tail){
 		c->senders_tail = c->senders_tail->previous_sender;
 	}
+	c->snd_cnt--;
 }
 
 /**
@@ -202,7 +206,13 @@ static void push_data_into_async_buffer(lwt_chan_t c, void * data){
 	//check that the buffer isn't at capacity
 	while(c->num_entries >= c->buffer_size){
 		lwt_current()->info = LWT_INFO_NSENDING;
-		lwt_yield(LWT_NULL);
+		//lwt_yield(LWT_NULL);
+		if(c->receiver && c->receiver->info == LWT_INFO_NRECEIVING){
+			lwt_yield(c->receiver);
+		}
+		else{
+			lwt_yield(LWT_NULL);
+		}
 	}
 	//insert data into buffer
 	c->async_buffer[c->end_index] = data;
@@ -218,10 +228,11 @@ static void push_data_into_async_buffer(lwt_chan_t c, void * data){
 	c->num_entries++;
 	//update status
 	lwt_current()->info = LWT_INFO_NTHD_RUNNABLE;
+
 	//check if receiver is trying to receive
-	if(c->receiver && c->receiver->info == LWT_INFO_NRECEIVING){
+	/*if(c->receiver && c->receiver->info == LWT_INFO_NRECEIVING){
 		lwt_yield(c->receiver);
-	}
+	}*/
 }
 
 
@@ -235,7 +246,16 @@ void * __pop_data_from_async_buffer(lwt_chan_t c){
 	void * data = c->async_buffer[c->start_index];
 	while(!data){
 		lwt_current()->info = LWT_INFO_NRECEIVING;
-		lwt_yield(LWT_NULL);
+		lwt_t next_thread = c->senders_head;
+		while(next_thread && next_thread->info != LWT_INFO_NSENDING){
+			next_thread = next_thread->next_sender;
+		}
+		if(next_thread){
+			lwt_yield(next_thread);
+		}
+		else{
+			lwt_yield(LWT_NULL);
+		}
 		data = c->async_buffer[c->start_index];
 	}
 	//update buffer value
@@ -270,6 +290,7 @@ lwt_chan_t lwt_chan(int sz){
 	channel->previous_sibling = NULL;
 	channel->senders_head = NULL;
 	channel->senders_tail = NULL;
+	channel->snd_cnt = 0;
 	channel->blocked_senders_head = NULL;
 	channel->blocked_senders_tail = NULL;
 	//prepare buffer

@@ -26,6 +26,10 @@ struct lwt_channel{
 	 */
 	lwt_t senders_tail;
 	/**
+	 * The number of senders
+	 */
+	int snd_cnt;
+	/**
 	 * The head of the blocked senders
 	 */
 	lwt_t blocked_senders_head;
