@@ -42,10 +42,6 @@ struct lwt_channel{
 	 */
 	lwt_t receiver;
 	/**
-	 * The blocked receiver
-	 */
-	lwt_t blocked_receiver;
-	/**
 	 * Sync buffer to be passed to the channel
 	 */
 	void * sync_buffer;
@@ -94,6 +90,10 @@ struct lwt_channel{
 	 * Mark for channel
 	 */
 	void * mark;
+	/**
+	 * Currently has event
+	 */
+	int has_event;
 };
 
 lwt_chan_t lwt_chan(int);

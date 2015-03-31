@@ -106,7 +106,7 @@ static void insert_into_event_head(lwt_cgrp_t group, struct event * event){
  * @param channel The channel to remove
  * @param group The group to remove the channel from
  */
-static void channel_remove_channel_from_group(lwt_chan_t channel, lwt_cgrp_t group){
+static void remove_channel_from_group(lwt_chan_t channel, lwt_cgrp_t group){
 	//detach
 	if(channel->previous_channel_in_group){
 		channel->previous_channel_in_group->next_channel_in_group = channel->next_channel_in_group;
@@ -120,6 +120,8 @@ static void channel_remove_channel_from_group(lwt_chan_t channel, lwt_cgrp_t gro
 	if(channel == group->channel_tail){
 		group->channel_tail = group->channel_tail->previous_channel_in_group;
 	}
+	channel->channel_group = NULL;
+	channel->has_event = 0;
 }
 
 
@@ -149,14 +151,15 @@ static void remove_event_from_group(struct event * event, lwt_cgrp_t group){
  * Initializes the event
  */
 void __init_event(lwt_chan_t channel, void * data){
-	struct event * event_t = (struct event *)malloc(sizeof(struct event));
-	assert(event_t);
-	event_t->data = data;
-	event_t->channel = channel;
-	event_t->previous_event = NULL;
-	event_t->next_event = NULL;
-	if(channel->channel_group){
+	if(channel->channel_group  && !channel->has_event){
+		struct event * event_t = (struct event *)malloc(sizeof(struct event));
+		assert(event_t);
+		event_t->data = data;
+		event_t->channel = channel;
+		event_t->previous_event = NULL;
+		event_t->next_event = NULL;
 		insert_into_event_tail(channel->channel_group, event_t);
+		channel->has_event = 1;
 	}
 }
 
@@ -167,6 +170,12 @@ void free_event(struct event * event_t){
 	free(event_t);
 }
 
+void __pop_event(lwt_cgrp_t group){
+	if(group->event_head){
+		free_event(group->event_head);
+	}
+}
+
 
 /**
  * @brief Creates a group of channels
@@ -175,6 +184,9 @@ void free_event(struct event * event_t){
  */
 lwt_cgrp_t lwt_cgrp(){
 	lwt_cgrp_t group = (lwt_cgrp_t)malloc(sizeof(struct lwt_cgrp));
+	if(!group){
+		return LWT_NULL;
+	}
 	group->channel_head = NULL;
 	group->channel_tail = NULL;
 	group->event_head = NULL;
@@ -193,6 +205,10 @@ int lwt_cgrp_free(lwt_cgrp_t group){
 	if(group->event_head){
 		return -1;
 	}
+	//remove the group from the channels
+	while(group->channel_head){
+		remove_channel_from_group(group->channel_head, group);
+	}
 	free(group);
 	return 0;
 }
@@ -209,6 +225,17 @@ int lwt_cgrp_add(lwt_cgrp_t group, lwt_chan_t channel){
 	}
 	channel->channel_group = group;
 	channel_insert_group_tail(group, channel);
+	//add events to group
+	if(channel->async_buffer && channel->async_buffer[channel->start_index]){
+		__init_event(channel, channel->async_buffer[channel->start_index]);
+	}
+	else if(channel->sync_buffer){
+		__init_event(channel, channel->sync_buffer);
+	}
+	//add event if marked
+	else if(channel->mark){
+		__init_event(channel, channel->mark);
+	}
 	return 0;
 }
 
@@ -225,7 +252,7 @@ int lwt_cgrp_rem(lwt_cgrp_t group, lwt_chan_t channel){
 	if(group->event_head){
 		return 1;
 	}
-	channel_remove_channel_from_group(channel, group);
+	remove_channel_from_group(channel, group);
 	return 0;
 }
 
@@ -235,13 +262,15 @@ int lwt_cgrp_rem(lwt_cgrp_t group, lwt_chan_t channel){
  * @return The event in the queue
  */
 lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t group){
+	lwt_current()->info = LWT_INFO_NRECEIVING;
 	//wait until there is an event in the queue
 	while(!group->event_head){
 		lwt_yield(LWT_NULL);
 	}
-	struct event * event = group->event_head;
-	lwt_chan_t channel = event->channel;
-	free_event(event);
+	lwt_current()->info = LWT_INFO_NTHD_RUNNABLE;
+	lwt_chan_t channel = group->event_head->channel;
+	__pop_event(group);
+	channel->has_event = 0;
 	return channel;
 }
 
@@ -252,10 +281,15 @@ lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t group){
  */
 void lwt_chan_mark_set(lwt_chan_t channel, void * mark){
 	//wait until a mark is empty
-	while(channel->mark){
+	/*while(channel->mark){
 		lwt_yield(LWT_NULL);
-	}
+	}*/
+	void * prev_mark = channel->mark;
 	channel->mark = mark;
+	//create an event if there's a group
+	if(channel->channel_group && prev_mark){
+		__init_event(channel, mark);
+	}
 }
 
 /**
@@ -264,8 +298,8 @@ void lwt_chan_mark_set(lwt_chan_t channel, void * mark){
  */
 void * lwt_chan_mark_get(lwt_chan_t channel){
 	//wait until a mark is available
-	while(!channel->mark){
+	/*while(!channel->mark){
 		lwt_yield(LWT_NULL);
-	}
+	}*/
 	return channel->mark;
 }
