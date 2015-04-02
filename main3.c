@@ -363,7 +363,8 @@ test_grpwait(int chsz, int grpsz)
 	 * a channel.  Either of these would allows us to iterate on a
 	 * channel while there is more data pending.
 	 */
-	for (i = 0 ; i < ((ITER * grpsz)-(grpsz*chsz)); i++) {
+	//for (i = 0 ; i < ((ITER * grpsz)-(grpsz*chsz)); i++) {
+	for(i = 0; i < ITER * grpsz; i++){
 		lwt_chan_t c;
 		int r;
 		printf("Begin group wait\n");

@@ -161,6 +161,10 @@ void __init_event(lwt_chan_t channel, void * data){
 		event_t->next_event = NULL;
 		insert_into_event_tail(channel->channel_group, event_t);
 		channel->has_event = 1;
+		if(channel->async_buffer && channel->channel_group->waiting_thread && channel->channel_group->waiting_thread->info != LWT_INFO_NTHD_RUNNABLE){
+			channel->channel_group->waiting_thread->info = LWT_INFO_NTHD_RUNNABLE;
+			__insert_runnable_tail(channel->channel_group->waiting_thread);
+		}
 	}
 }
 
@@ -192,6 +196,7 @@ lwt_cgrp_t lwt_cgrp(){
 	group->channel_tail = NULL;
 	group->event_head = NULL;
 	group->event_tail = NULL;
+	group->waiting_thread = NULL;
 	return group;
 }
 
@@ -265,12 +270,14 @@ int lwt_cgrp_rem(lwt_cgrp_t group, lwt_chan_t channel){
  * @return The event in the queue
  */
 lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t group){
-	lwt_current()->info = LWT_INFO_NRECEIVING;
+	group->waiting_thread = lwt_current();
+	group->waiting_thread->info = LWT_INFO_NRECEIVING;
 	//wait until there is an event in the queue
 	while(!group->event_head){
 		lwt_yield(LWT_NULL);
 	}
 	lwt_current()->info = LWT_INFO_NTHD_RUNNABLE;
+	group->waiting_thread = NULL;
 	lwt_chan_t channel = group->event_head->channel;
 	__pop_event(group);
 	channel->has_event = 0;

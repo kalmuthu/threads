@@ -220,7 +220,7 @@ static void insert_ready_pool_thread_head(lwt_t thread){
  * @brief Inserts the given thread to the tail of the runnable thread list
  * @param thread The new thread to be inserted in the list of runnable threads
  */
-static void insert_runnable_tail(lwt_t thread){
+void __insert_runnable_tail(lwt_t thread){
 	if(runnable_threads_tail){
 		//thread will be new tail
 		thread->previous_runnable = runnable_threads_tail;
@@ -533,7 +533,7 @@ void lwt_die(void * value){
 		//check if parent can be unblocked
 		if(!current_thread->parent->children && current_thread->parent->info == LWT_INFO_NTHD_BLOCKED){
 			current_thread->parent->info = LWT_INFO_NTHD_RUNNABLE;
-			insert_runnable_tail(current_thread->parent);
+			__insert_runnable_tail(current_thread->parent);
 		}
 	}
 
@@ -586,7 +586,7 @@ void __lwt_schedule(){
 		//move current thread to the end of the queue
 		if(current_thread->info == LWT_INFO_NTHD_RUNNABLE){
 			//push current thread to end of runnable
-			insert_runnable_tail(current_thread);
+			__insert_runnable_tail(current_thread);
 		}
 		//pop the queue
 		lwt_t next_thread = runnable_threads_head;
@@ -697,7 +697,7 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data, lwt_flags_t flags){
 	thread->flags = flags;
 
 	//insert into runnable list
-	insert_runnable_tail(thread);
+	__insert_runnable_tail(thread);
 
 	return thread;
 }

@@ -195,5 +195,6 @@ lwt_t lwt_current();
 int lwt_id(lwt_t);
 int lwt_info(lwt_info_t);
 
+void __insert_runnable_tail(lwt_t);
 
 #endif /* LWT_H_ */

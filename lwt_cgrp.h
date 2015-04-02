@@ -36,6 +36,10 @@ struct lwt_cgrp{
 	 * Tail of the event queue
 	 */
 	struct event * event_tail;
+	/**
+	 * Waiting thread
+	 */
+	lwt_t waiting_thread;
 };
 
 lwt_cgrp_t lwt_cgrp();
