@@ -364,8 +364,8 @@ void multiple_channels_test_v3(){
 int main(){
 	ping_pong_test();
 	merge_sort_test();
-	multiple_channels_test();
-	multiple_channels_test_v2();
-	multiple_channels_test_v3();
+	//multiple_channels_test();
+	//multiple_channels_test_v2();
+	//multiple_channels_test_v3();
 	return 0;
 }

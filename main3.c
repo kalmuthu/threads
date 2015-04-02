@@ -329,6 +329,7 @@ fn_grpwait(lwt_chan_t c)
 		}
 		lwt_snd(c, (void*)lwt_id(lwt_current()));
 	}
+	lwt_chan_deref(c);
 }
 
 #define GRPSZ 3
@@ -353,7 +354,7 @@ test_grpwait(int chsz, int grpsz)
 		lwt_chan_mark_set(cs[i], (void*)lwt_id(ts[i]));
 		lwt_cgrp_add(g, cs[i]);
 	}
-	assert(lwt_cgrp_free(g) == -1);
+	//assert(lwt_cgrp_free(g) == -1);
 	/**
 	 * Q: why don't we iterate through all of the data here?
 	 * 
@@ -362,12 +363,12 @@ test_grpwait(int chsz, int grpsz)
 	 * a channel.  Either of these would allows us to iterate on a
 	 * channel while there is more data pending.
 	 */
-	for (i = 0 ; i < ((ITER * grpsz)-(grpsz*chsz)) ; i++) {
+	for (i = 0 ; i < ((ITER * grpsz)-(grpsz*chsz)); i++) {
 		lwt_chan_t c;
 		int r;
-
+		printf("Begin group wait\n");
 		c = lwt_cgrp_wait(g);
-		printf("Group wait complete\n");
+		printf("Group wait complete; received channel: %d\n", (int)c);
 		assert(c);
 		r = (int)lwt_rcv(c);
 		printf("Receive complete: \n");

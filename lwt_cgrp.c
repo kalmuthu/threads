@@ -11,6 +11,7 @@
 
 #include "stdlib.h"
 #include "assert.h"
+#include "stdio.h"
 
 
 /**
@@ -151,7 +152,7 @@ static void remove_event_from_group(struct event * event, lwt_cgrp_t group){
  * Initializes the event
  */
 void __init_event(lwt_chan_t channel, void * data){
-	if(channel->channel_group  && !channel->has_event){
+	if(channel->channel_group){//  && !channel->has_event){
 		struct event * event_t = (struct event *)malloc(sizeof(struct event));
 		assert(event_t);
 		event_t->data = data;
@@ -226,7 +227,7 @@ int lwt_cgrp_add(lwt_cgrp_t group, lwt_chan_t channel){
 	channel->channel_group = group;
 	channel_insert_group_tail(group, channel);
 	//add events to group
-	if(channel->async_buffer && channel->async_buffer[channel->start_index]){
+	/*if(channel->async_buffer && channel->async_buffer[channel->start_index]){
 		__init_event(channel, channel->async_buffer[channel->start_index]);
 	}
 	else if(channel->sync_buffer){
@@ -235,7 +236,7 @@ int lwt_cgrp_add(lwt_cgrp_t group, lwt_chan_t channel){
 	//add event if marked
 	else if(channel->mark){
 		__init_event(channel, channel->mark);
-	}
+	}*/
 	return 0;
 }
 
@@ -247,9 +248,11 @@ int lwt_cgrp_add(lwt_cgrp_t group, lwt_chan_t channel){
  */
 int lwt_cgrp_rem(lwt_cgrp_t group, lwt_chan_t channel){
 	if(channel->channel_group != group){
+		printf("Assigned group is not provided channel\n");
 		return -1;
 	}
 	if(group->event_head){
+		printf("Event queue is not empty\n");
 		return 1;
 	}
 	remove_channel_from_group(channel, group);
@@ -284,12 +287,12 @@ void lwt_chan_mark_set(lwt_chan_t channel, void * mark){
 	/*while(channel->mark){
 		lwt_yield(LWT_NULL);
 	}*/
-	void * prev_mark = channel->mark;
+	//void * prev_mark = channel->mark;
 	channel->mark = mark;
 	//create an event if there's a group
-	if(channel->channel_group && prev_mark){
+	/*if(channel->channel_group && prev_mark){
 		__init_event(channel, mark);
-	}
+	}*/
 }
 
 /**

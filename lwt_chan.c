@@ -341,17 +341,15 @@ int lwt_snd(lwt_chan_t c, void * data){
 		//block
 		lwt_current()->info = LWT_INFO_NSENDING;
 		insert_blocked_sender_tail(c, lwt_current());
-		//check receiver is waiting or the group is waiting
+		//check receiver is waiting
 		while(c->receiver->info != LWT_INFO_NRECEIVING){
+			printf("Waiting on receiver in channel: %d\n", (int)c);
 			lwt_yield(LWT_NULL);
 		}
 		//check if we can go ahead and send
 		while(c->blocked_senders_head && c->blocked_senders_head != lwt_current()){
-			lwt_yield(LWT_NULL);
-		}
-		//ensure buffer is clear
-		while(c->sync_buffer){
-			lwt_yield(LWT_NULL);
+			printf("Waiting on blocked senders head in channel: %d\n", (int)c);
+			lwt_yield(c->blocked_senders_head);
 		}
 
 		c->sync_buffer = data;
@@ -436,37 +434,28 @@ void * lwt_rcv(lwt_chan_t c){
 			perror("NO Senders for receiving channel\n");
 			return NULL;
 		}
-		if(!c->channel_group || !c->sync_buffer){
-			lwt_current()->info = LWT_INFO_NRECEIVING;
-			//ensure buffer is empty if not using groups
-			while(c->sync_buffer){
-				//lwt_current()->info = LWT_INFO_NRECEIVING;
-				lwt_yield(LWT_NULL);
-			}
-			//block until there's a sender
-			while(!c->blocked_senders_head){
-				//lwt_current()->info = LWT_INFO_NRECEIVING;
-				lwt_yield(LWT_NULL);
-			}
-			//detach the head
-			lwt_t sender = c->blocked_senders_head;
-
-			while(!c->sync_buffer){
-				lwt_current()->info = LWT_INFO_NRECEIVING;
-				lwt_yield(sender);
-			}
-
-			__remove_from_blocked_sender(c, sender);
-			sender->info = LWT_INFO_NTHD_RUNNABLE;
+		lwt_current()->info = LWT_INFO_NRECEIVING;
+		//block until there's a sender
+		while(!c->blocked_senders_head){
+			//lwt_current()->info = LWT_INFO_NRECEIVING;
+			//printf("Receiver waiting for sender in %d\n", (int)c);
+			lwt_yield(LWT_NULL);
 		}
-		else{
-			printf("Reading event buffer\n");
+		//detach the head
+		lwt_t sender = c->blocked_senders_head;
+
+		while(!c->sync_buffer){
+			//lwt_current()->info = LWT_INFO_NRECEIVING;
+			//printf("Receiver waiting for buffer to be read in: %d\n", (int)c);
+			lwt_yield(sender);
 		}
+
+		__remove_from_blocked_sender(c, sender);
+		sender->info = LWT_INFO_NTHD_RUNNABLE;
 
 		void * data = c->sync_buffer;
 		c->sync_buffer = NULL;
 		lwt_current()->info = LWT_INFO_NTHD_RUNNABLE;
-
 
 		return data;
 	}
