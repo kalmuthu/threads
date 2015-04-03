@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['page_5fsize',['PAGE_SIZE',['../lwt_8h.html#a7d467c1d283fdfa1f2081ba1e0d01b6e',1,'lwt.h']]]
+  ['num_5fpages',['NUM_PAGES',['../lwt_8h.html#ae12c40b3b2496ea64cbd1f626d4a5817',1,'lwt.h']]]
 ];

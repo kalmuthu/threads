@@ -90,6 +90,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="lwt_8h_source.html">lwt.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="lwt__chan_8h_source.html">lwt_chan.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="lwt__cgrp_8h_source.html">lwt_cgrp.h</a>&quot;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;assert.h&gt;</code><br />
@@ -103,9 +105,9 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:ab5b92945430bd0cb7a04673282cf70c3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main__chan_8c.html#ab5b92945430bd0cb7a04673282cf70c3">ITER</a>&#160;&#160;&#160;10000</td></tr>
+<tr class="memitem:ab5b92945430bd0cb7a04673282cf70c3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main__chan_8c.html#ab5b92945430bd0cb7a04673282cf70c3">ITER</a>&#160;&#160;&#160;80</td></tr>
 <tr class="separator:ab5b92945430bd0cb7a04673282cf70c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57456f598f8293414f9818372d8b617f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main__chan_8c.html#a57456f598f8293414f9818372d8b617f">MERGE_SZ</a>&#160;&#160;&#160;1000</td></tr>
+<tr class="memitem:a57456f598f8293414f9818372d8b617f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main__chan_8c.html#a57456f598f8293414f9818372d8b617f">MERGE_SZ</a>&#160;&#160;&#160;80</td></tr>
 <tr class="separator:a57456f598f8293414f9818372d8b617f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -125,6 +127,14 @@ Functions</h2></td></tr>
 <tr class="memitem:a918a89f110cdae481001a711d4d8cbf4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main__chan_8c.html#a918a89f110cdae481001a711d4d8cbf4">ping_pong_test</a> ()</td></tr>
 <tr class="memdesc:a918a89f110cdae481001a711d4d8cbf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs the ping/pong test.  <a href="#a918a89f110cdae481001a711d4d8cbf4">More...</a><br /></td></tr>
 <tr class="separator:a918a89f110cdae481001a711d4d8cbf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92e53f86fcb0df88538d6d0aa833d510"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main__chan_8c.html#a92e53f86fcb0df88538d6d0aa833d510">child_multiple_channels</a> (lwt_chan_t main_channel)</td></tr>
+<tr class="separator:a92e53f86fcb0df88538d6d0aa833d510"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ed45b588d4398b62c284478bc239806"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main__chan_8c.html#a4ed45b588d4398b62c284478bc239806">multiple_channels_test</a> ()</td></tr>
+<tr class="separator:a4ed45b588d4398b62c284478bc239806"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f7042662186de47e9a0b50ac61eaa6e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main__chan_8c.html#a8f7042662186de47e9a0b50ac61eaa6e">multiple_channels_test_v2</a> ()</td></tr>
+<tr class="separator:a8f7042662186de47e9a0b50ac61eaa6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee5fdcb51567ce8ae727247945d90fec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main__chan_8c.html#aee5fdcb51567ce8ae727247945d90fec">multiple_channels_test_v3</a> ()</td></tr>
+<tr class="separator:aee5fdcb51567ce8ae727247945d90fec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main__chan_8c.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a> ()</td></tr>
 <tr class="separator:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -134,7 +144,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define ITER&#160;&#160;&#160;10000</td>
+          <td class="memname">#define ITER&#160;&#160;&#160;80</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -146,7 +156,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define MERGE_SZ&#160;&#160;&#160;1000</td>
+          <td class="memname">#define MERGE_SZ&#160;&#160;&#160;80</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -154,6 +164,22 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="a92e53f86fcb0df88538d6d0aa833d510"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* child_multiple_channels </td>
+          <td>(</td>
+          <td class="paramtype">lwt_chan_t&#160;</td>
+          <td class="paramname"><em>main_channel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a7b39c0cf0f6a745b2604d9bfe03375ad"></a>
 <div class="memitem">
 <div class="memproto">
@@ -264,6 +290,51 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a4ed45b588d4398b62c284478bc239806"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void multiple_channels_test </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a8f7042662186de47e9a0b50ac61eaa6e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void multiple_channels_test_v2 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aee5fdcb51567ce8ae727247945d90fec"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void multiple_channels_test_v3 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a918a89f110cdae481001a711d4d8cbf4"></a>
 <div class="memitem">
 <div class="memproto">
@@ -284,7 +355,7 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 10 2015 01:53:40 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 3 2015 21:25:39 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>

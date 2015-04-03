@@ -7,15 +7,15 @@
 
 var indexSectionsWithContent =
 {
-  0: "_abcdefilmnprst",
-  1: "lm",
+  0: "_abcdefghilmnprstw",
+  1: "elm",
   2: "lm",
   3: "_cflmpt",
-  4: "abcdeimnprst",
+  4: "abcdefhimnprstw",
   5: "l",
   6: "l",
   7: "l",
-  8: "dilmnprs"
+  8: "dgilmnprs"
 };
 
 var indexSectionNames =

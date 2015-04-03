@@ -2,6 +2,8 @@
 \label{lwt_8c}\index{lwt.\+c@{lwt.\+c}}
 }
 {\ttfamily \#include \char`\"{}lwt.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}lwt\+\_\+chan.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}lwt\+\_\+cgrp.\+h\char`\"{}}\\*
 {\ttfamily \#include $<$stdio.\+h$>$}\\*
 {\ttfamily \#include $<$stdlib.\+h$>$}\\*
 {\ttfamily \#include $<$assert.\+h$>$}\\*
@@ -11,7 +13,9 @@
 \#define \hyperlink{lwt_8c_a60c4f73d78cb83926e82d8775906b121}{I\+N\+I\+T\+\_\+\+I\+D}~1
 \begin{DoxyCompactList}\small\item\em The initial thread id. \end{DoxyCompactList}\item 
 \#define \hyperlink{lwt_8c_a50f28d60b2b6da9c769708953aaa34d0}{D\+E\+F\+A\+U\+L\+T\+\_\+\+I\+D}~-\/1
-\begin{DoxyCompactList}\small\item\em The default id provided to threads before actually generating them. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em The default id provided to threads before actually generating them. \end{DoxyCompactList}\item 
+\#define \hyperlink{lwt_8c_aa2ac54564b3514084afd2c5dafe9d232}{P\+O\+O\+L\+\_\+\+S\+I\+Z\+E}~100
+\begin{DoxyCompactList}\small\item\em The size of the pool. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -25,6 +29,8 @@ void $\ast$ \hyperlink{lwt_8c_a5bc2cce82409ee709a9c41a1f6093df9}{\+\_\+\+\_\+lwt
 \begin{DoxyCompactList}\small\item\em Allocates the stack for a L\+W\+T and returns it. \end{DoxyCompactList}\item 
 void \hyperlink{lwt_8c_a8ce2504eb84582927a550e4dc09caf9c}{\+\_\+\+\_\+lwt\+\_\+stack\+\_\+return} (void $\ast$stack)
 \begin{DoxyCompactList}\small\item\em Frees the provided stack. \end{DoxyCompactList}\item 
+void \hyperlink{lwt_8c_a4d5ab7ad28b0bffe2021c34bb1414d04}{\+\_\+\+\_\+insert\+\_\+runnable\+\_\+tail} (lwt\+\_\+t thread)
+\begin{DoxyCompactList}\small\item\em Inserts the given thread to the tail of the runnable thread list. \end{DoxyCompactList}\item 
 int \hyperlink{lwt_8c_a2de70c77a4e8500e84cd8beecae8a757}{lwt\+\_\+id} (lwt\+\_\+t thread)
 \begin{DoxyCompactList}\small\item\em Gets the thread id. \end{DoxyCompactList}\item 
 lwt\+\_\+t \hyperlink{lwt_8c_ac597df0a118cd4679310eaaaa031b40b}{lwt\+\_\+current} ()
@@ -33,8 +39,10 @@ int \hyperlink{lwt_8c_a64fd4d406b656db93283cc4d1f7b7fc8}{lwt\+\_\+info} (\hyperl
 \begin{DoxyCompactList}\small\item\em Gets the counts of the info. \end{DoxyCompactList}\item 
 void \hyperlink{lwt_8c_a6c8b578fbce095178a0407dfdcbcc076}{\+\_\+\+\_\+init\+\_\+lwt\+\_\+main} (lwt\+\_\+t thread)
 \begin{DoxyCompactList}\small\item\em Initializes the main thread. \end{DoxyCompactList}\item 
-void \hyperlink{lwt_8c_a4fb2b1f6ebf8a122bff74c7ecb577d62}{\+\_\+\+\_\+init\+\_\+lwt} (lwt\+\_\+t thread)
+void \hyperlink{lwt_8c_a6c8986450da03f8e984ab4442e8b1f7c}{\+\_\+\+\_\+init\+\_\+new\+\_\+lwt} (lwt\+\_\+t thread)
 \begin{DoxyCompactList}\small\item\em Initializes the provided thread. \end{DoxyCompactList}\item 
+void \hyperlink{lwt_8c_ad9662f8f6749dd5ce1ebaf9659239996}{\+\_\+\+\_\+reinit\+\_\+lwt} (lwt\+\_\+t thread)
+\begin{DoxyCompactList}\small\item\em Reinitializes the given thread. \end{DoxyCompactList}\item 
 void \hyperlink{lwt_8c_a8a6b00dda74d5aa4fdbe6ff53c139f13}{\+\_\+\+\_\+cleanup\+\_\+joined\+\_\+thread} (lwt\+\_\+t \hyperlink{structlwt}{lwt})
 \begin{DoxyCompactList}\small\item\em Cleans up the thread on join. \end{DoxyCompactList}\item 
 void $\ast$ \hyperlink{lwt_8c_a2f44ff0598abeb9aff82f796a4a41857}{lwt\+\_\+join} (lwt\+\_\+t thread)
@@ -47,22 +55,8 @@ int \hyperlink{lwt_8c_a91b99467a060f31cdb6d7319044ca2d4}{lwt\+\_\+yield} (lwt\+\
 \begin{DoxyCompactList}\small\item\em Initializes the L\+W\+T by wrapping the current thread as a L\+W\+T. \end{DoxyCompactList}\item 
 \hyperlink{lwt_8c_a521aaa29708382a7af39b3f0e60e4a1f}{\+\_\+\+\_\+attribute\+\_\+\+\_\+} ((destructor))
 \begin{DoxyCompactList}\small\item\em Cleans up all remaining threads on exit. \end{DoxyCompactList}\item 
-lwt\+\_\+t \hyperlink{lwt_8c_ac423039bd3f9eae371e4e203abaaa971}{lwt\+\_\+create} (\hyperlink{lwt_8h_a58d5112b6c76cbcd033e124f6131a51a}{lwt\+\_\+fnt\+\_\+t} fn, void $\ast$data)
-\begin{DoxyCompactList}\small\item\em Creates a L\+W\+T using the provided function pointer and the data as input for it. \end{DoxyCompactList}\item 
-lwt\+\_\+chan\+\_\+t \hyperlink{lwt_8c_accefa163ae797369e139b46be72f3d6c}{lwt\+\_\+chan} (int sz)
-\begin{DoxyCompactList}\small\item\em Creates the channel on the receiving thread. \end{DoxyCompactList}\item 
-void \hyperlink{lwt_8c_a39cae21665613361656a303ba52dd539}{lwt\+\_\+chan\+\_\+deref} (lwt\+\_\+chan\+\_\+t c)
-\begin{DoxyCompactList}\small\item\em Deallocates the channel only if no threads still have references to the channel. \end{DoxyCompactList}\item 
-int \hyperlink{lwt_8c_ac22405d674622a470c679d38711e59b5}{lwt\+\_\+snd} (lwt\+\_\+chan\+\_\+t c, void $\ast$data)
-\begin{DoxyCompactList}\small\item\em Sends the data over the channel to the receiver. \end{DoxyCompactList}\item 
-void $\ast$ \hyperlink{lwt_8c_a6480ceb4e2108f3cee290b265e044830}{lwt\+\_\+rcv} (lwt\+\_\+chan\+\_\+t c)
-\begin{DoxyCompactList}\small\item\em Receives the data from the channel and returns it. \end{DoxyCompactList}\item 
-int \hyperlink{lwt_8c_aed8b4b6376d52e0356ee47c0de47ec8e}{lwt\+\_\+snd\+\_\+chan} (lwt\+\_\+chan\+\_\+t c, lwt\+\_\+chan\+\_\+t sending)
-\begin{DoxyCompactList}\small\item\em Sends sending over the channel c. \end{DoxyCompactList}\item 
-lwt\+\_\+chan\+\_\+t \hyperlink{lwt_8c_ac8059163b49905cef2705fb0455133b8}{lwt\+\_\+rcv\+\_\+chan} (lwt\+\_\+chan\+\_\+t c)
-\begin{DoxyCompactList}\small\item\em Receives the data over the channel. \end{DoxyCompactList}\item 
-lwt\+\_\+t \hyperlink{lwt_8c_a96e39d148740bce16787190774de4993}{lwt\+\_\+create\+\_\+chan} (\hyperlink{lwt_8h_a093f62106d888d547207e375daf75678}{lwt\+\_\+chan\+\_\+fn\+\_\+t} fn, lwt\+\_\+chan\+\_\+t c)
-\begin{DoxyCompactList}\small\item\em Creates a lwt with the channel as an arg. \end{DoxyCompactList}\end{DoxyCompactItemize}
+lwt\+\_\+t \hyperlink{lwt_8c_a29d5c37edaf9be9fd0efa5a6e5f523f0}{lwt\+\_\+create} (\hyperlink{lwt_8h_a58d5112b6c76cbcd033e124f6131a51a}{lwt\+\_\+fnt\+\_\+t} fn, void $\ast$data, \hyperlink{lwt_8h_a3e65a66932a8da34b1092c3a23d54c6f}{lwt\+\_\+flags\+\_\+t} flags)
+\begin{DoxyCompactList}\small\item\em Creates a L\+W\+T using the provided function pointer and the data as input for it. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Macro Definition Documentation}
@@ -79,6 +73,13 @@ The default id provided to threads before actually generating them.
 
 
 The initial thread id. 
+
+\hypertarget{lwt_8c_aa2ac54564b3514084afd2c5dafe9d232}{\index{lwt.\+c@{lwt.\+c}!P\+O\+O\+L\+\_\+\+S\+I\+Z\+E@{P\+O\+O\+L\+\_\+\+S\+I\+Z\+E}}
+\index{P\+O\+O\+L\+\_\+\+S\+I\+Z\+E@{P\+O\+O\+L\+\_\+\+S\+I\+Z\+E}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{P\+O\+O\+L\+\_\+\+S\+I\+Z\+E}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+O\+O\+L\+\_\+\+S\+I\+Z\+E~100}}\label{lwt_8c_aa2ac54564b3514084afd2c5dafe9d232}
+
+
+The size of the pool. 
 
 
 
@@ -121,22 +122,6 @@ Cleans up the thread on join.
 {\em lwt} & The thread to join on \\
 \hline
 \end{DoxyParams}
-\hypertarget{lwt_8c_a4fb2b1f6ebf8a122bff74c7ecb577d62}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+init\+\_\+lwt@{\+\_\+\+\_\+init\+\_\+lwt}}
-\index{\+\_\+\+\_\+init\+\_\+lwt@{\+\_\+\+\_\+init\+\_\+lwt}!lwt.\+c@{lwt.\+c}}
-\subsubsection[{\+\_\+\+\_\+init\+\_\+lwt}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+init\+\_\+lwt (
-\begin{DoxyParamCaption}
-\item[{lwt\+\_\+t}]{thread}
-\end{DoxyParamCaption}
-)}}\label{lwt_8c_a4fb2b1f6ebf8a122bff74c7ecb577d62}
-
-
-Initializes the provided thread. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em thread} & The thread to init \\
-\hline
-\end{DoxyParams}
 \hypertarget{lwt_8c_a6c8b578fbce095178a0407dfdcbcc076}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+init\+\_\+lwt\+\_\+main@{\+\_\+\+\_\+init\+\_\+lwt\+\_\+main}}
 \index{\+\_\+\+\_\+init\+\_\+lwt\+\_\+main@{\+\_\+\+\_\+init\+\_\+lwt\+\_\+main}!lwt.\+c@{lwt.\+c}}
 \subsubsection[{\+\_\+\+\_\+init\+\_\+lwt\+\_\+main}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+init\+\_\+lwt\+\_\+main (
@@ -151,6 +136,38 @@ Initializes the main thread.
 
 \begin{DoxyParams}{Parameters}
 {\em thread} & The main thread \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt_8c_a6c8986450da03f8e984ab4442e8b1f7c}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+init\+\_\+new\+\_\+lwt@{\+\_\+\+\_\+init\+\_\+new\+\_\+lwt}}
+\index{\+\_\+\+\_\+init\+\_\+new\+\_\+lwt@{\+\_\+\+\_\+init\+\_\+new\+\_\+lwt}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+init\+\_\+new\+\_\+lwt}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+init\+\_\+new\+\_\+lwt (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+t}]{thread}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a6c8986450da03f8e984ab4442e8b1f7c}
+
+
+Initializes the provided thread. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em thread} & The thread to init \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt_8c_a4d5ab7ad28b0bffe2021c34bb1414d04}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+insert\+\_\+runnable\+\_\+tail@{\+\_\+\+\_\+insert\+\_\+runnable\+\_\+tail}}
+\index{\+\_\+\+\_\+insert\+\_\+runnable\+\_\+tail@{\+\_\+\+\_\+insert\+\_\+runnable\+\_\+tail}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+insert\+\_\+runnable\+\_\+tail}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+insert\+\_\+runnable\+\_\+tail (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+t}]{thread}
+\end{DoxyParamCaption}
+)}}\label{lwt_8c_a4d5ab7ad28b0bffe2021c34bb1414d04}
+
+
+Inserts the given thread to the tail of the runnable thread list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em thread} & The new thread to be inserted in the list of runnable threads \\
 \hline
 \end{DoxyParams}
 \hypertarget{lwt_8c_a1ca1b663b3b7bac0145b966bd885eca2}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+lwt\+\_\+dispatch@{\+\_\+\+\_\+lwt\+\_\+dispatch}}
@@ -221,49 +238,31 @@ Frees the provided stack.
 
 Drops in from being scheduled after the initialized thread is switched to and leaps to the function pointer provided. 
 
-\hypertarget{lwt_8c_accefa163ae797369e139b46be72f3d6c}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+chan@{lwt\+\_\+chan}}
-\index{lwt\+\_\+chan@{lwt\+\_\+chan}!lwt.\+c@{lwt.\+c}}
-\subsubsection[{lwt\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+chan\+\_\+t lwt\+\_\+chan (
+\hypertarget{lwt_8c_ad9662f8f6749dd5ce1ebaf9659239996}{\index{lwt.\+c@{lwt.\+c}!\+\_\+\+\_\+reinit\+\_\+lwt@{\+\_\+\+\_\+reinit\+\_\+lwt}}
+\index{\+\_\+\+\_\+reinit\+\_\+lwt@{\+\_\+\+\_\+reinit\+\_\+lwt}!lwt.\+c@{lwt.\+c}}
+\subsubsection[{\+\_\+\+\_\+reinit\+\_\+lwt}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+reinit\+\_\+lwt (
 \begin{DoxyParamCaption}
-\item[{int}]{sz}
+\item[{lwt\+\_\+t}]{thread}
 \end{DoxyParamCaption}
-)}}\label{lwt_8c_accefa163ae797369e139b46be72f3d6c}
+)}}\label{lwt_8c_ad9662f8f6749dd5ce1ebaf9659239996}
 
 
-Creates the channel on the receiving thread. 
+Reinitializes the given thread. 
 
 
 \begin{DoxyParams}{Parameters}
-{\em sz} & The size of the buffer \\
+{\em thread} & The thread to reinitialize \\
 \hline
 \end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-A pointer to the initialized channel 
-\end{DoxyReturn}
-\hypertarget{lwt_8c_a39cae21665613361656a303ba52dd539}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+chan\+\_\+deref@{lwt\+\_\+chan\+\_\+deref}}
-\index{lwt\+\_\+chan\+\_\+deref@{lwt\+\_\+chan\+\_\+deref}!lwt.\+c@{lwt.\+c}}
-\subsubsection[{lwt\+\_\+chan\+\_\+deref}]{\setlength{\rightskip}{0pt plus 5cm}void lwt\+\_\+chan\+\_\+deref (
-\begin{DoxyParamCaption}
-\item[{lwt\+\_\+chan\+\_\+t}]{c}
-\end{DoxyParamCaption}
-)}}\label{lwt_8c_a39cae21665613361656a303ba52dd539}
-
-
-Deallocates the channel only if no threads still have references to the channel. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em c} & The channel to deallocate \\
-\hline
-\end{DoxyParams}
-\hypertarget{lwt_8c_ac423039bd3f9eae371e4e203abaaa971}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+create@{lwt\+\_\+create}}
+\hypertarget{lwt_8c_a29d5c37edaf9be9fd0efa5a6e5f523f0}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+create@{lwt\+\_\+create}}
 \index{lwt\+\_\+create@{lwt\+\_\+create}!lwt.\+c@{lwt.\+c}}
 \subsubsection[{lwt\+\_\+create}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+create (
 \begin{DoxyParamCaption}
 \item[{{\bf lwt\+\_\+fnt\+\_\+t}}]{fn, }
-\item[{void $\ast$}]{data}
+\item[{void $\ast$}]{data, }
+\item[{{\bf lwt\+\_\+flags\+\_\+t}}]{flags}
 \end{DoxyParamCaption}
-)}}\label{lwt_8c_ac423039bd3f9eae371e4e203abaaa971}
+)}}\label{lwt_8c_a29d5c37edaf9be9fd0efa5a6e5f523f0}
 
 
 Creates a L\+W\+T using the provided function pointer and the data as input for it. 
@@ -274,29 +273,12 @@ Creates a L\+W\+T using the provided function pointer and the data as input for 
 \hline
 {\em data} & The data to the function \\
 \hline
+{\em flags} & The flags to be associated with the thread \\
+\hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 A pointer to the initialized L\+W\+T 
 \end{DoxyReturn}
-\hypertarget{lwt_8c_a96e39d148740bce16787190774de4993}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+create\+\_\+chan@{lwt\+\_\+create\+\_\+chan}}
-\index{lwt\+\_\+create\+\_\+chan@{lwt\+\_\+create\+\_\+chan}!lwt.\+c@{lwt.\+c}}
-\subsubsection[{lwt\+\_\+create\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+create\+\_\+chan (
-\begin{DoxyParamCaption}
-\item[{{\bf lwt\+\_\+chan\+\_\+fn\+\_\+t}}]{fn, }
-\item[{lwt\+\_\+chan\+\_\+t}]{c}
-\end{DoxyParamCaption}
-)}}\label{lwt_8c_a96e39d148740bce16787190774de4993}
-
-
-Creates a lwt with the channel as an arg. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em fn} & The function to use to create the thread \\
-\hline
-{\em c} & The channel to send \\
-\hline
-\end{DoxyParams}
 \hypertarget{lwt_8c_ac597df0a118cd4679310eaaaa031b40b}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+current@{lwt\+\_\+current}}
 \index{lwt\+\_\+current@{lwt\+\_\+current}!lwt.\+c@{lwt.\+c}}
 \subsubsection[{lwt\+\_\+current}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+current (
@@ -372,85 +354,6 @@ Joins the provided thread.
 
 \begin{DoxyParams}{Parameters}
 {\em thread} & The thread to join on \\
-\hline
-\end{DoxyParams}
-\hypertarget{lwt_8c_a6480ceb4e2108f3cee290b265e044830}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+rcv@{lwt\+\_\+rcv}}
-\index{lwt\+\_\+rcv@{lwt\+\_\+rcv}!lwt.\+c@{lwt.\+c}}
-\subsubsection[{lwt\+\_\+rcv}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ lwt\+\_\+rcv (
-\begin{DoxyParamCaption}
-\item[{lwt\+\_\+chan\+\_\+t}]{c}
-\end{DoxyParamCaption}
-)}}\label{lwt_8c_a6480ceb4e2108f3cee290b265e044830}
-
-
-Receives the data from the channel and returns it. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em c} & The channel to receive from \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-The data from the channel 
-\end{DoxyReturn}
-\hypertarget{lwt_8c_ac8059163b49905cef2705fb0455133b8}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+rcv\+\_\+chan@{lwt\+\_\+rcv\+\_\+chan}}
-\index{lwt\+\_\+rcv\+\_\+chan@{lwt\+\_\+rcv\+\_\+chan}!lwt.\+c@{lwt.\+c}}
-\subsubsection[{lwt\+\_\+rcv\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+chan\+\_\+t lwt\+\_\+rcv\+\_\+chan (
-\begin{DoxyParamCaption}
-\item[{lwt\+\_\+chan\+\_\+t}]{c}
-\end{DoxyParamCaption}
-)}}\label{lwt_8c_ac8059163b49905cef2705fb0455133b8}
-
-
-Receives the data over the channel. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em c} & The channel to use for receiving \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-The channel being sent over c 
-\end{DoxyReturn}
-\hypertarget{lwt_8c_ac22405d674622a470c679d38711e59b5}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+snd@{lwt\+\_\+snd}}
-\index{lwt\+\_\+snd@{lwt\+\_\+snd}!lwt.\+c@{lwt.\+c}}
-\subsubsection[{lwt\+\_\+snd}]{\setlength{\rightskip}{0pt plus 5cm}int lwt\+\_\+snd (
-\begin{DoxyParamCaption}
-\item[{lwt\+\_\+chan\+\_\+t}]{c, }
-\item[{void $\ast$}]{data}
-\end{DoxyParamCaption}
-)}}\label{lwt_8c_ac22405d674622a470c679d38711e59b5}
-
-
-Sends the data over the channel to the receiver. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em c} & The channel to use for sending \\
-\hline
-{\em data} & The data for sending \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
--\/1 if there is no receiver; 0 if successful 
-\end{DoxyReturn}
-\hypertarget{lwt_8c_aed8b4b6376d52e0356ee47c0de47ec8e}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+snd\+\_\+chan@{lwt\+\_\+snd\+\_\+chan}}
-\index{lwt\+\_\+snd\+\_\+chan@{lwt\+\_\+snd\+\_\+chan}!lwt.\+c@{lwt.\+c}}
-\subsubsection[{lwt\+\_\+snd\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}int lwt\+\_\+snd\+\_\+chan (
-\begin{DoxyParamCaption}
-\item[{lwt\+\_\+chan\+\_\+t}]{c, }
-\item[{lwt\+\_\+chan\+\_\+t}]{sending}
-\end{DoxyParamCaption}
-)}}\label{lwt_8c_aed8b4b6376d52e0356ee47c0de47ec8e}
-
-
-Sends sending over the channel c. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em c} & The channel to send sending across \\
-\hline
-{\em sending} & The channel to send \\
 \hline
 \end{DoxyParams}
 \hypertarget{lwt_8c_a91b99467a060f31cdb6d7319044ca2d4}{\index{lwt.\+c@{lwt.\+c}!lwt\+\_\+yield@{lwt\+\_\+yield}}

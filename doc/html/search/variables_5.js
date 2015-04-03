@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['id',['id',['../structlwt.html#aa3df3d76d606756e38bb9bd3d2c2d241',1,'lwt']]],
-  ['info',['info',['../structlwt.html#a40641e751624b983f5e1ae5302210e5d',1,'lwt']]]
+  ['flags',['flags',['../structlwt.html#a21694dc7499aff78ea8f90140b0ec60c',1,'lwt']]]
 ];

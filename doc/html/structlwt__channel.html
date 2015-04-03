@@ -89,38 +89,65 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="lwt_8h_source.html">lwt.h</a>&gt;</code></p>
+<p>The channel for synchronous and asynchronous communication.  
+ <a href="structlwt__channel.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="lwt__chan_8h_source.html">lwt_chan.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:a20bba68264c7fd15c6efb8446821d16e"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a20bba68264c7fd15c6efb8446821d16e">senders</a></td></tr>
-<tr class="separator:a20bba68264c7fd15c6efb8446821d16e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad839ac9ea47e3a6ee79dc14d2773d3a3"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#ad839ac9ea47e3a6ee79dc14d2773d3a3">senders_head</a></td></tr>
+<tr class="separator:ad839ac9ea47e3a6ee79dc14d2773d3a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24de7786f0a6b38d6c3fe6bc18947f2e"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a24de7786f0a6b38d6c3fe6bc18947f2e">senders_tail</a></td></tr>
+<tr class="separator:a24de7786f0a6b38d6c3fe6bc18947f2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7687f6e58c0d4cb4c2de7db501fb046"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#ab7687f6e58c0d4cb4c2de7db501fb046">snd_cnt</a></td></tr>
+<tr class="separator:ab7687f6e58c0d4cb4c2de7db501fb046"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34b43c8980f830472deb0cc60a632257"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a34b43c8980f830472deb0cc60a632257">blocked_senders_head</a></td></tr>
 <tr class="separator:a34b43c8980f830472deb0cc60a632257"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2912304612b27ba7a7b5dd2ec3e2415"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#ad2912304612b27ba7a7b5dd2ec3e2415">blocked_senders_tail</a></td></tr>
 <tr class="separator:ad2912304612b27ba7a7b5dd2ec3e2415"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a740680d836200bfc87150333e4d62785"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a740680d836200bfc87150333e4d62785">receiver</a></td></tr>
 <tr class="separator:a740680d836200bfc87150333e4d62785"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac296e81a0c3bfdccbc1a8c1f89651008"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#ac296e81a0c3bfdccbc1a8c1f89651008">blocked_receiver</a></td></tr>
-<tr class="separator:ac296e81a0c3bfdccbc1a8c1f89651008"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ab113fcf44dd32e83447f80a9111aa1"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a3ab113fcf44dd32e83447f80a9111aa1">buffer</a></td></tr>
-<tr class="separator:a3ab113fcf44dd32e83447f80a9111aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19260280268d501a8e6d341c21eba961"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a19260280268d501a8e6d341c21eba961">sync_buffer</a></td></tr>
+<tr class="separator:a19260280268d501a8e6d341c21eba961"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52a4a997c097ddda52e23b0bf61216e2"><td class="memItemLeft" align="right" valign="top">void **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a52a4a997c097ddda52e23b0bf61216e2">async_buffer</a></td></tr>
+<tr class="separator:a52a4a997c097ddda52e23b0bf61216e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a722d06e3fd594282b001e14d61ba4d33"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a722d06e3fd594282b001e14d61ba4d33">start_index</a></td></tr>
+<tr class="separator:a722d06e3fd594282b001e14d61ba4d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb64ed65a8a46420c6dddf1758de401e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#abb64ed65a8a46420c6dddf1758de401e">end_index</a></td></tr>
+<tr class="separator:abb64ed65a8a46420c6dddf1758de401e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a756f9eb27e6321fa7fa5611c2c6bb9eb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a756f9eb27e6321fa7fa5611c2c6bb9eb">buffer_size</a></td></tr>
+<tr class="separator:a756f9eb27e6321fa7fa5611c2c6bb9eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d697010ea3cb8783ca62b526a9db6d1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a6d697010ea3cb8783ca62b526a9db6d1">num_entries</a></td></tr>
+<tr class="separator:a6d697010ea3cb8783ca62b526a9db6d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62840bc52e01e67e063776f8205dd43e"><td class="memItemLeft" align="right" valign="top">lwt_chan_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a62840bc52e01e67e063776f8205dd43e">previous_sibling</a></td></tr>
 <tr class="separator:a62840bc52e01e67e063776f8205dd43e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4b5e95b483446613dabd96de3dec4007"><td class="memItemLeft" align="right" valign="top">lwt_chan_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a4b5e95b483446613dabd96de3dec4007">next_sibling</a></td></tr>
 <tr class="separator:a4b5e95b483446613dabd96de3dec4007"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e34c7480bc23f6ea1db12c69adec0d9"><td class="memItemLeft" align="right" valign="top">lwt_cgrp_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a6e34c7480bc23f6ea1db12c69adec0d9">channel_group</a></td></tr>
+<tr class="separator:a6e34c7480bc23f6ea1db12c69adec0d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b6ab62f05dfbb392a2c518f6d3b3e85"><td class="memItemLeft" align="right" valign="top">lwt_chan_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a7b6ab62f05dfbb392a2c518f6d3b3e85">previous_channel_in_group</a></td></tr>
+<tr class="separator:a7b6ab62f05dfbb392a2c518f6d3b3e85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb44a3a49de36cb6e5bf0c64651b7654"><td class="memItemLeft" align="right" valign="top">lwt_chan_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#afb44a3a49de36cb6e5bf0c64651b7654">next_channel_in_group</a></td></tr>
+<tr class="separator:afb44a3a49de36cb6e5bf0c64651b7654"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83384d85ee5b6089fdec51fd65bf33d0"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a83384d85ee5b6089fdec51fd65bf33d0">mark</a></td></tr>
+<tr class="separator:a83384d85ee5b6089fdec51fd65bf33d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a188eb6696d72cbe1d1295fb2736ec20c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html#a188eb6696d72cbe1d1295fb2736ec20c">has_event</a></td></tr>
+<tr class="separator:a188eb6696d72cbe1d1295fb2736ec20c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Field Documentation</h2>
-<a class="anchor" id="ac296e81a0c3bfdccbc1a8c1f89651008"></a>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The channel for synchronous and asynchronous communication. </p>
+</div><h2 class="groupheader">Field Documentation</h2>
+<a class="anchor" id="a52a4a997c097ddda52e23b0bf61216e2"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">lwt_t lwt_chan_t::blocked_receiver</td>
+          <td class="memname">void** lwt_chan_t::async_buffer</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The blocked receiver </p>
+<p>Async Buffer to be passed to the channel </p>
 
 </div>
 </div>
@@ -150,16 +177,81 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a3ab113fcf44dd32e83447f80a9111aa1"></a>
+<a class="anchor" id="a756f9eb27e6321fa7fa5611c2c6bb9eb"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void* lwt_chan_t::buffer</td>
+          <td class="memname">int lwt_chan_t::buffer_size</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Buffer to be passed to channel </p>
+<p>Size of the buffer </p>
+
+</div>
+</div>
+<a class="anchor" id="a6e34c7480bc23f6ea1db12c69adec0d9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lwt_cgrp_t lwt_chan_t::channel_group</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Channel group </p>
+
+</div>
+</div>
+<a class="anchor" id="abb64ed65a8a46420c6dddf1758de401e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lwt_chan_t::end_index</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>End index of the buffer </p>
+
+</div>
+</div>
+<a class="anchor" id="a188eb6696d72cbe1d1295fb2736ec20c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lwt_chan_t::has_event</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Currently has event </p>
+
+</div>
+</div>
+<a class="anchor" id="a83384d85ee5b6089fdec51fd65bf33d0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* lwt_chan_t::mark</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Mark for channel </p>
+
+</div>
+</div>
+<a class="anchor" id="afb44a3a49de36cb6e5bf0c64651b7654"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lwt_chan_t lwt_chan_t::next_channel_in_group</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Next channel in group </p>
 
 </div>
 </div>
@@ -173,6 +265,32 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Next sibling channel </p>
+
+</div>
+</div>
+<a class="anchor" id="a6d697010ea3cb8783ca62b526a9db6d1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lwt_chan_t::num_entries</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Current number of entries in buffer </p>
+
+</div>
+</div>
+<a class="anchor" id="a7b6ab62f05dfbb392a2c518f6d3b3e85"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lwt_chan_t lwt_chan_t::previous_channel_in_group</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Previous channel in group </p>
 
 </div>
 </div>
@@ -202,26 +320,78 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a20bba68264c7fd15c6efb8446821d16e"></a>
+<a class="anchor" id="ad839ac9ea47e3a6ee79dc14d2773d3a3"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">lwt_t lwt_chan_t::senders</td>
+          <td class="memname">lwt_t lwt_chan_t::senders_head</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The list of senders </p>
+<p>The list of senders head </p>
+
+</div>
+</div>
+<a class="anchor" id="a24de7786f0a6b38d6c3fe6bc18947f2e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lwt_t lwt_chan_t::senders_tail</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The list of senders tail </p>
+
+</div>
+</div>
+<a class="anchor" id="ab7687f6e58c0d4cb4c2de7db501fb046"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lwt_chan_t::snd_cnt</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The number of senders </p>
+
+</div>
+</div>
+<a class="anchor" id="a722d06e3fd594282b001e14d61ba4d33"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lwt_chan_t::start_index</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Start index of the buffer </p>
+
+</div>
+</div>
+<a class="anchor" id="a19260280268d501a8e6d341c21eba961"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* lwt_chan_t::sync_buffer</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sync buffer to be passed to the channel </p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li><a class="el" href="lwt_8h_source.html">lwt.h</a></li>
+<li><a class="el" href="lwt__chan_8h_source.html">lwt_chan.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 10 2015 01:53:40 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 3 2015 21:25:39 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>

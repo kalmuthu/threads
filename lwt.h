@@ -9,12 +9,23 @@
 
 #include "stdlib.h"
 
+/**
+ * Size of the a page in the OS -> 4K
+ */
 #define PAGE_SIZE 4096
+/**
+ * Number of pages to allocate to the stack
+ */
 #define NUM_PAGES 5
+/**
+ * Size of the stack
+ */
 #define STACK_SIZE PAGE_SIZE*NUM_PAGES
 
+/**
+ * Null id for yields
+ */
 #define LWT_NULL NULL
-#define LWT_YIELD_NO_LWT_TO_YIELD 1
 
 //forward declaration
 typedef struct lwt_channel *lwt_chan_t;

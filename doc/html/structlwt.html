@@ -102,6 +102,8 @@ Data Fields</h2></td></tr>
 <tr class="separator:a62ea9a882e0a197b9b076e1e018048d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba48cdf2f962d7ededf74923ddd33ea1"><td class="memItemLeft" align="right" valign="top">long *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt.html#aba48cdf2f962d7ededf74923ddd33ea1">thread_sp</a></td></tr>
 <tr class="separator:aba48cdf2f962d7ededf74923ddd33ea1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21694dc7499aff78ea8f90140b0ec60c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lwt_8h.html#a3e65a66932a8da34b1092c3a23d54c6f">lwt_flags_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt.html#a21694dc7499aff78ea8f90140b0ec60c">flags</a></td></tr>
+<tr class="separator:a21694dc7499aff78ea8f90140b0ec60c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1849cde569fc8f254db05365de570b0e"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt.html#a1849cde569fc8f254db05365de570b0e">parent</a></td></tr>
 <tr class="separator:a1849cde569fc8f254db05365de570b0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33d2fa8a95fe7c0deb7c7723bd4af344"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt.html#a33d2fa8a95fe7c0deb7c7723bd4af344">children</a></td></tr>
@@ -118,6 +120,10 @@ Data Fields</h2></td></tr>
 <tr class="separator:acb89e009a8cb87cbd5d71ab5ca08911b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1636aae4155df6a60c90c7ab737687e4"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt.html#a1636aae4155df6a60c90c7ab737687e4">next_runnable</a></td></tr>
 <tr class="separator:a1636aae4155df6a60c90c7ab737687e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86cf2d2c1b778c2649f12626dbe8ea49"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt.html#a86cf2d2c1b778c2649f12626dbe8ea49">previous_ready_pool_thread</a></td></tr>
+<tr class="separator:a86cf2d2c1b778c2649f12626dbe8ea49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79a02c75963b9354392360d99cc6a468"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt.html#a79a02c75963b9354392360d99cc6a468">next_ready_pool_thread</a></td></tr>
+<tr class="separator:a79a02c75963b9354392360d99cc6a468"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9ef76c08e20117f01976c5c7cfb28b9"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt.html#ae9ef76c08e20117f01976c5c7cfb28b9">previous_sender</a></td></tr>
 <tr class="separator:ae9ef76c08e20117f01976c5c7cfb28b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77161e9127f308ba8540546c705cc3d9"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt.html#a77161e9127f308ba8540546c705cc3d9">next_sender</a></td></tr>
@@ -165,6 +171,19 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>List of children threads </p>
+
+</div>
+</div>
+<a class="anchor" id="a21694dc7499aff78ea8f90140b0ec60c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="lwt_8h.html#a3e65a66932a8da34b1092c3a23d54c6f">lwt_flags_t</a> lwt_t::flags</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The flags associated with the lwt </p>
 
 </div>
 </div>
@@ -246,6 +265,19 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a79a02c75963b9354392360d99cc6a468"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lwt_t lwt_t::next_ready_pool_thread</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Next ready pool thread </p>
+
+</div>
+</div>
 <a class="anchor" id="a1636aae4155df6a60c90c7ab737687e4"></a>
 <div class="memitem">
 <div class="memproto">
@@ -321,6 +353,19 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Previous current thread </p>
+
+</div>
+</div>
+<a class="anchor" id="a86cf2d2c1b778c2649f12626dbe8ea49"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">lwt_t lwt_t::previous_ready_pool_thread</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Previous ready pool thread </p>
 
 </div>
 </div>
@@ -421,7 +466,7 @@ Data Fields</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 10 2015 01:53:40 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 3 2015 21:25:39 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>
