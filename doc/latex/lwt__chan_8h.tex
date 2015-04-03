@@ -1,0 +1,227 @@
+\hypertarget{lwt__chan_8h}{\section{lwt\+\_\+chan.\+h File Reference}
+\label{lwt__chan_8h}\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+}
+{\ttfamily \#include \char`\"{}lwt.\+h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structlwt__channel}{lwt\+\_\+chan\+\_\+t}
+\begin{DoxyCompactList}\small\item\em The channel for synchronous and asynchronous communication. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef void $\ast$($\ast$ \hyperlink{lwt__chan_8h_a093f62106d888d547207e375daf75678}{lwt\+\_\+chan\+\_\+fn\+\_\+t} )(lwt\+\_\+chan\+\_\+t)
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+lwt\+\_\+chan\+\_\+t \hyperlink{lwt__chan_8h_adaeb1141d83bc6d3daa7043386b282f9}{lwt\+\_\+chan} (int)
+\begin{DoxyCompactList}\small\item\em Creates the channel on the receiving thread. \end{DoxyCompactList}\item 
+void \hyperlink{lwt__chan_8h_a4e353b789a0bff2574ccd510a775e6ea}{lwt\+\_\+chan\+\_\+deref} (lwt\+\_\+chan\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Deallocates the channel only if no threads still have references to the channel. \end{DoxyCompactList}\item 
+int \hyperlink{lwt__chan_8h_a799c178599fad96e2fb4ae42b62cb605}{lwt\+\_\+snd} (lwt\+\_\+chan\+\_\+t, void $\ast$)
+\begin{DoxyCompactList}\small\item\em Sends the data over the channel to the receiver. \end{DoxyCompactList}\item 
+void $\ast$ \hyperlink{lwt__chan_8h_a766cb30576ec1859c5e313ddae89d985}{lwt\+\_\+rcv} (lwt\+\_\+chan\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Receives the data from the channel and returns it. \end{DoxyCompactList}\item 
+int \hyperlink{lwt__chan_8h_a58e316e064ab15eb385a81754164058a}{lwt\+\_\+snd\+\_\+chan} (lwt\+\_\+chan\+\_\+t, lwt\+\_\+chan\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Sends sending over the channel c. \end{DoxyCompactList}\item 
+lwt\+\_\+chan\+\_\+t \hyperlink{lwt__chan_8h_adcab922fc81de1128ec94e55e8ee3c31}{lwt\+\_\+rcv\+\_\+chan} (lwt\+\_\+chan\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Receives the data over the channel. \end{DoxyCompactList}\item 
+lwt\+\_\+t \hyperlink{lwt__chan_8h_a16b02cbd657006d7c63e8677160540a1}{lwt\+\_\+create\+\_\+chan} (\hyperlink{lwt__chan_8h_a093f62106d888d547207e375daf75678}{lwt\+\_\+chan\+\_\+fn\+\_\+t}, lwt\+\_\+chan\+\_\+t, \hyperlink{lwt_8h_a3e65a66932a8da34b1092c3a23d54c6f}{lwt\+\_\+flags\+\_\+t})
+\begin{DoxyCompactList}\small\item\em Creates a lwt with the channel as an arg. \end{DoxyCompactList}\item 
+void \hyperlink{lwt__chan_8h_a1125220c7de58cd60ebfe2722a762716}{\+\_\+\+\_\+remove\+\_\+channel} (lwt\+\_\+chan\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Remove the channel from the list of channels. \end{DoxyCompactList}\item 
+void $\ast$ \hyperlink{lwt__chan_8h_a91c4d1ab15a6893cb02364612b2c78a6}{\+\_\+\+\_\+pop\+\_\+data\+\_\+from\+\_\+async\+\_\+buffer} (lwt\+\_\+chan\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Pops the data into the buffer. \end{DoxyCompactList}\item 
+void \hyperlink{lwt__chan_8h_a7073b7a84377ea1126dc7d39966481d6}{\+\_\+\+\_\+remove\+\_\+from\+\_\+blocked\+\_\+sendera} (lwt\+\_\+chan\+\_\+t, lwt\+\_\+t)
+\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{lwt__chan_8h_a093f62106d888d547207e375daf75678}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!lwt\+\_\+chan\+\_\+fn\+\_\+t@{lwt\+\_\+chan\+\_\+fn\+\_\+t}}
+\index{lwt\+\_\+chan\+\_\+fn\+\_\+t@{lwt\+\_\+chan\+\_\+fn\+\_\+t}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{lwt\+\_\+chan\+\_\+fn\+\_\+t}]{\setlength{\rightskip}{0pt plus 5cm}typedef void$\ast$($\ast$ lwt\+\_\+chan\+\_\+fn\+\_\+t)(lwt\+\_\+chan\+\_\+t)}}\label{lwt__chan_8h_a093f62106d888d547207e375daf75678}
+
+
+\subsection{Function Documentation}
+\hypertarget{lwt__chan_8h_a91c4d1ab15a6893cb02364612b2c78a6}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!\+\_\+\+\_\+pop\+\_\+data\+\_\+from\+\_\+async\+\_\+buffer@{\+\_\+\+\_\+pop\+\_\+data\+\_\+from\+\_\+async\+\_\+buffer}}
+\index{\+\_\+\+\_\+pop\+\_\+data\+\_\+from\+\_\+async\+\_\+buffer@{\+\_\+\+\_\+pop\+\_\+data\+\_\+from\+\_\+async\+\_\+buffer}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{\+\_\+\+\_\+pop\+\_\+data\+\_\+from\+\_\+async\+\_\+buffer}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ \+\_\+\+\_\+pop\+\_\+data\+\_\+from\+\_\+async\+\_\+buffer (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{c}
+\end{DoxyParamCaption}
+)}}\label{lwt__chan_8h_a91c4d1ab15a6893cb02364612b2c78a6}
+
+
+Pops the data into the buffer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The channel to remove the data from \\
+\hline
+{\em data} & The data to remove If the buffer is empty, it will block until there is something to read \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt__chan_8h_a1125220c7de58cd60ebfe2722a762716}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!\+\_\+\+\_\+remove\+\_\+channel@{\+\_\+\+\_\+remove\+\_\+channel}}
+\index{\+\_\+\+\_\+remove\+\_\+channel@{\+\_\+\+\_\+remove\+\_\+channel}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{\+\_\+\+\_\+remove\+\_\+channel}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+remove\+\_\+channel (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{channel}
+\end{DoxyParamCaption}
+)}}\label{lwt__chan_8h_a1125220c7de58cd60ebfe2722a762716}
+
+
+Remove the channel from the list of channels. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em channel} & The channel to be removed \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt__chan_8h_a7073b7a84377ea1126dc7d39966481d6}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!\+\_\+\+\_\+remove\+\_\+from\+\_\+blocked\+\_\+sendera@{\+\_\+\+\_\+remove\+\_\+from\+\_\+blocked\+\_\+sendera}}
+\index{\+\_\+\+\_\+remove\+\_\+from\+\_\+blocked\+\_\+sendera@{\+\_\+\+\_\+remove\+\_\+from\+\_\+blocked\+\_\+sendera}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{\+\_\+\+\_\+remove\+\_\+from\+\_\+blocked\+\_\+sendera}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+remove\+\_\+from\+\_\+blocked\+\_\+sendera (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{, }
+\item[{lwt\+\_\+t}]{}
+\end{DoxyParamCaption}
+)}}\label{lwt__chan_8h_a7073b7a84377ea1126dc7d39966481d6}
+\hypertarget{lwt__chan_8h_adaeb1141d83bc6d3daa7043386b282f9}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!lwt\+\_\+chan@{lwt\+\_\+chan}}
+\index{lwt\+\_\+chan@{lwt\+\_\+chan}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{lwt\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+chan\+\_\+t lwt\+\_\+chan (
+\begin{DoxyParamCaption}
+\item[{int}]{sz}
+\end{DoxyParamCaption}
+)}}\label{lwt__chan_8h_adaeb1141d83bc6d3daa7043386b282f9}
+
+
+Creates the channel on the receiving thread. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sz} & The size of the buffer \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A pointer to the initialized channel 
+\end{DoxyReturn}
+\hypertarget{lwt__chan_8h_a4e353b789a0bff2574ccd510a775e6ea}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!lwt\+\_\+chan\+\_\+deref@{lwt\+\_\+chan\+\_\+deref}}
+\index{lwt\+\_\+chan\+\_\+deref@{lwt\+\_\+chan\+\_\+deref}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{lwt\+\_\+chan\+\_\+deref}]{\setlength{\rightskip}{0pt plus 5cm}void lwt\+\_\+chan\+\_\+deref (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{c}
+\end{DoxyParamCaption}
+)}}\label{lwt__chan_8h_a4e353b789a0bff2574ccd510a775e6ea}
+
+
+Deallocates the channel only if no threads still have references to the channel. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The channel to deallocate \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt__chan_8h_a16b02cbd657006d7c63e8677160540a1}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!lwt\+\_\+create\+\_\+chan@{lwt\+\_\+create\+\_\+chan}}
+\index{lwt\+\_\+create\+\_\+chan@{lwt\+\_\+create\+\_\+chan}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{lwt\+\_\+create\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+create\+\_\+chan (
+\begin{DoxyParamCaption}
+\item[{{\bf lwt\+\_\+chan\+\_\+fn\+\_\+t}}]{fn, }
+\item[{lwt\+\_\+chan\+\_\+t}]{c, }
+\item[{{\bf lwt\+\_\+flags\+\_\+t}}]{flags}
+\end{DoxyParamCaption}
+)}}\label{lwt__chan_8h_a16b02cbd657006d7c63e8677160540a1}
+
+
+Creates a lwt with the channel as an arg. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fn} & The function to use to create the thread \\
+\hline
+{\em c} & The channel to send \\
+\hline
+{\em flags} & The flags for the thread \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The thread to return 
+\end{DoxyReturn}
+\hypertarget{lwt__chan_8h_a766cb30576ec1859c5e313ddae89d985}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!lwt\+\_\+rcv@{lwt\+\_\+rcv}}
+\index{lwt\+\_\+rcv@{lwt\+\_\+rcv}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{lwt\+\_\+rcv}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ lwt\+\_\+rcv (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{c}
+\end{DoxyParamCaption}
+)}}\label{lwt__chan_8h_a766cb30576ec1859c5e313ddae89d985}
+
+
+Receives the data from the channel and returns it. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The channel to receive from \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The data from the channel 
+\end{DoxyReturn}
+\hypertarget{lwt__chan_8h_adcab922fc81de1128ec94e55e8ee3c31}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!lwt\+\_\+rcv\+\_\+chan@{lwt\+\_\+rcv\+\_\+chan}}
+\index{lwt\+\_\+rcv\+\_\+chan@{lwt\+\_\+rcv\+\_\+chan}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{lwt\+\_\+rcv\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+chan\+\_\+t lwt\+\_\+rcv\+\_\+chan (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{c}
+\end{DoxyParamCaption}
+)}}\label{lwt__chan_8h_adcab922fc81de1128ec94e55e8ee3c31}
+
+
+Receives the data over the channel. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The channel to use for receiving \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The channel being sent over c 
+\end{DoxyReturn}
+\hypertarget{lwt__chan_8h_a799c178599fad96e2fb4ae42b62cb605}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!lwt\+\_\+snd@{lwt\+\_\+snd}}
+\index{lwt\+\_\+snd@{lwt\+\_\+snd}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{lwt\+\_\+snd}]{\setlength{\rightskip}{0pt plus 5cm}int lwt\+\_\+snd (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{c, }
+\item[{void $\ast$}]{data}
+\end{DoxyParamCaption}
+)}}\label{lwt__chan_8h_a799c178599fad96e2fb4ae42b62cb605}
+
+
+Sends the data over the channel to the receiver. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The channel to use for sending \\
+\hline
+{\em data} & The data for sending \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/1 if there is no receiver; 0 if successful 
+\end{DoxyReturn}
+\hypertarget{lwt__chan_8h_a58e316e064ab15eb385a81754164058a}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!lwt\+\_\+snd\+\_\+chan@{lwt\+\_\+snd\+\_\+chan}}
+\index{lwt\+\_\+snd\+\_\+chan@{lwt\+\_\+snd\+\_\+chan}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{lwt\+\_\+snd\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}int lwt\+\_\+snd\+\_\+chan (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{c, }
+\item[{lwt\+\_\+chan\+\_\+t}]{sending}
+\end{DoxyParamCaption}
+)}}\label{lwt__chan_8h_a58e316e064ab15eb385a81754164058a}
+
+
+Sends sending over the channel c. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The channel to send sending across \\
+\hline
+{\em sending} & The channel to send \\
+\hline
+\end{DoxyParams}

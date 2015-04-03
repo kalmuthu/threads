@@ -1,0 +1,204 @@
+\hypertarget{lwt__cgrp_8h}{\section{lwt\+\_\+cgrp.\+h File Reference}
+\label{lwt__cgrp_8h}\index{lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}}
+}
+{\ttfamily \#include \char`\"{}lwt\+\_\+chan.\+h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structevent}{event}
+\begin{DoxyCompactList}\small\item\em Event data. \end{DoxyCompactList}\item 
+struct \hyperlink{structlwt__cgrp}{lwt\+\_\+cgrp\+\_\+t}
+\begin{DoxyCompactList}\small\item\em Channel group for handling events within a group. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+lwt\+\_\+cgrp\+\_\+t \hyperlink{lwt__cgrp_8h_ac91e4f3676e705e0be6bbc900cea2e84}{lwt\+\_\+cgrp} ()
+\begin{DoxyCompactList}\small\item\em Creates a group of channels. \end{DoxyCompactList}\item 
+int \hyperlink{lwt__cgrp_8h_ab3559b0239737040b63fe2f0719f5d4d}{lwt\+\_\+cgrp\+\_\+free} (lwt\+\_\+cgrp\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Frees the group if there are no pending events. \end{DoxyCompactList}\item 
+int \hyperlink{lwt__cgrp_8h_a4b9fd44e8a5a23ad0aa9fb6740a7206d}{lwt\+\_\+cgrp\+\_\+add} (lwt\+\_\+cgrp\+\_\+t, lwt\+\_\+chan\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Adds the channel to the group if the channel hasn't already been added to a group. \end{DoxyCompactList}\item 
+int \hyperlink{lwt__cgrp_8h_a292d1ba18e93ed4fe66bf3a2b0ae5ec4}{lwt\+\_\+cgrp\+\_\+rem} (lwt\+\_\+cgrp\+\_\+t, lwt\+\_\+chan\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Removes the channel from the group. \end{DoxyCompactList}\item 
+lwt\+\_\+chan\+\_\+t \hyperlink{lwt__cgrp_8h_ab1e352c27ec0316bf25e33c0dbe4d8ec}{lwt\+\_\+cgrp\+\_\+wait} (lwt\+\_\+cgrp\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Waits until there is a pending event in the queue. \end{DoxyCompactList}\item 
+void \hyperlink{lwt__cgrp_8h_a0caf51fbe7646c9bb673acf99680bd45}{lwt\+\_\+chan\+\_\+mark\+\_\+set} (lwt\+\_\+chan\+\_\+t, void $\ast$)
+\begin{DoxyCompactList}\small\item\em Marks the channel. \end{DoxyCompactList}\item 
+void $\ast$ \hyperlink{lwt__cgrp_8h_a265199d8ef0b51f14a8d16e8831b325e}{lwt\+\_\+chan\+\_\+mark\+\_\+get} (lwt\+\_\+chan\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Grabs the mark from the channel. \end{DoxyCompactList}\item 
+void \hyperlink{lwt__cgrp_8h_a1a0ef2a6e408ca7aa5f0bc2bc66cbbc1}{\+\_\+\+\_\+init\+\_\+event} (lwt\+\_\+chan\+\_\+t, void $\ast$)
+\begin{DoxyCompactList}\small\item\em Initializes the event for when data is added to the channel. \end{DoxyCompactList}\item 
+void \hyperlink{lwt__cgrp_8h_a82ff114683d7004a06ca0516226d62e5}{\+\_\+\+\_\+pop\+\_\+event} (lwt\+\_\+cgrp\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Pops the event from the group. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{lwt__cgrp_8h_a1a0ef2a6e408ca7aa5f0bc2bc66cbbc1}{\index{lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}!\+\_\+\+\_\+init\+\_\+event@{\+\_\+\+\_\+init\+\_\+event}}
+\index{\+\_\+\+\_\+init\+\_\+event@{\+\_\+\+\_\+init\+\_\+event}!lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}}
+\subsubsection[{\+\_\+\+\_\+init\+\_\+event}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+init\+\_\+event (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{channel, }
+\item[{void $\ast$}]{data}
+\end{DoxyParamCaption}
+)}}\label{lwt__cgrp_8h_a1a0ef2a6e408ca7aa5f0bc2bc66cbbc1}
+
+
+Initializes the event for when data is added to the channel. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em channel} & The channel with the new data \\
+\hline
+{\em data} & The data being inserted \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt__cgrp_8h_a82ff114683d7004a06ca0516226d62e5}{\index{lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}!\+\_\+\+\_\+pop\+\_\+event@{\+\_\+\+\_\+pop\+\_\+event}}
+\index{\+\_\+\+\_\+pop\+\_\+event@{\+\_\+\+\_\+pop\+\_\+event}!lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}}
+\subsubsection[{\+\_\+\+\_\+pop\+\_\+event}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+pop\+\_\+event (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+cgrp\+\_\+t}]{group}
+\end{DoxyParamCaption}
+)}}\label{lwt__cgrp_8h_a82ff114683d7004a06ca0516226d62e5}
+
+
+Pops the event from the group. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em group} & The channel group to alter \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt__cgrp_8h_ac91e4f3676e705e0be6bbc900cea2e84}{\index{lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}!lwt\+\_\+cgrp@{lwt\+\_\+cgrp}}
+\index{lwt\+\_\+cgrp@{lwt\+\_\+cgrp}!lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}}
+\subsubsection[{lwt\+\_\+cgrp}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+cgrp\+\_\+t {\bf lwt\+\_\+cgrp} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{lwt__cgrp_8h_ac91e4f3676e705e0be6bbc900cea2e84}
+
+
+Creates a group of channels. 
+
+\begin{DoxyReturn}{Returns}
+The group of channels 
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+By default, the group is empty 
+\end{DoxyNote}
+\hypertarget{lwt__cgrp_8h_a4b9fd44e8a5a23ad0aa9fb6740a7206d}{\index{lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}!lwt\+\_\+cgrp\+\_\+add@{lwt\+\_\+cgrp\+\_\+add}}
+\index{lwt\+\_\+cgrp\+\_\+add@{lwt\+\_\+cgrp\+\_\+add}!lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}}
+\subsubsection[{lwt\+\_\+cgrp\+\_\+add}]{\setlength{\rightskip}{0pt plus 5cm}int lwt\+\_\+cgrp\+\_\+add (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+cgrp\+\_\+t}]{group, }
+\item[{lwt\+\_\+chan\+\_\+t}]{channel}
+\end{DoxyParamCaption}
+)}}\label{lwt__cgrp_8h_a4b9fd44e8a5a23ad0aa9fb6740a7206d}
+
+
+Adds the channel to the group if the channel hasn't already been added to a group. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em group} & The group to add the channel to \\
+\hline
+{\em channel} & The channel to add \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 if successful; -\/1 if the channel is already part of a group 
+\end{DoxyReturn}
+\hypertarget{lwt__cgrp_8h_ab3559b0239737040b63fe2f0719f5d4d}{\index{lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}!lwt\+\_\+cgrp\+\_\+free@{lwt\+\_\+cgrp\+\_\+free}}
+\index{lwt\+\_\+cgrp\+\_\+free@{lwt\+\_\+cgrp\+\_\+free}!lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}}
+\subsubsection[{lwt\+\_\+cgrp\+\_\+free}]{\setlength{\rightskip}{0pt plus 5cm}int lwt\+\_\+cgrp\+\_\+free (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+cgrp\+\_\+t}]{group}
+\end{DoxyParamCaption}
+)}}\label{lwt__cgrp_8h_ab3559b0239737040b63fe2f0719f5d4d}
+
+
+Frees the group if there are no pending events. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em group} & The channel group to free \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 if successful; -\/1 if there are pending events 
+\end{DoxyReturn}
+\hypertarget{lwt__cgrp_8h_a292d1ba18e93ed4fe66bf3a2b0ae5ec4}{\index{lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}!lwt\+\_\+cgrp\+\_\+rem@{lwt\+\_\+cgrp\+\_\+rem}}
+\index{lwt\+\_\+cgrp\+\_\+rem@{lwt\+\_\+cgrp\+\_\+rem}!lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}}
+\subsubsection[{lwt\+\_\+cgrp\+\_\+rem}]{\setlength{\rightskip}{0pt plus 5cm}int lwt\+\_\+cgrp\+\_\+rem (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+cgrp\+\_\+t}]{group, }
+\item[{lwt\+\_\+chan\+\_\+t}]{channel}
+\end{DoxyParamCaption}
+)}}\label{lwt__cgrp_8h_a292d1ba18e93ed4fe66bf3a2b0ae5ec4}
+
+
+Removes the channel from the group. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em group} & The group to remove the channel from \\
+\hline
+{\em channel} & The channel to remove \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 if successful; -\/1 if the channel isn't part of the group; 1 if the group has a pending event 
+\end{DoxyReturn}
+\hypertarget{lwt__cgrp_8h_ab1e352c27ec0316bf25e33c0dbe4d8ec}{\index{lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}!lwt\+\_\+cgrp\+\_\+wait@{lwt\+\_\+cgrp\+\_\+wait}}
+\index{lwt\+\_\+cgrp\+\_\+wait@{lwt\+\_\+cgrp\+\_\+wait}!lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}}
+\subsubsection[{lwt\+\_\+cgrp\+\_\+wait}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+chan\+\_\+t lwt\+\_\+cgrp\+\_\+wait (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+cgrp\+\_\+t}]{group}
+\end{DoxyParamCaption}
+)}}\label{lwt__cgrp_8h_ab1e352c27ec0316bf25e33c0dbe4d8ec}
+
+
+Waits until there is a pending event in the queue. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em group} & The group to wait for \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The event in the queue 
+\end{DoxyReturn}
+\hypertarget{lwt__cgrp_8h_a265199d8ef0b51f14a8d16e8831b325e}{\index{lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}!lwt\+\_\+chan\+\_\+mark\+\_\+get@{lwt\+\_\+chan\+\_\+mark\+\_\+get}}
+\index{lwt\+\_\+chan\+\_\+mark\+\_\+get@{lwt\+\_\+chan\+\_\+mark\+\_\+get}!lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}}
+\subsubsection[{lwt\+\_\+chan\+\_\+mark\+\_\+get}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ lwt\+\_\+chan\+\_\+mark\+\_\+get (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{channel}
+\end{DoxyParamCaption}
+)}}\label{lwt__cgrp_8h_a265199d8ef0b51f14a8d16e8831b325e}
+
+
+Grabs the mark from the channel. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em channel} & The channel to read \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt__cgrp_8h_a0caf51fbe7646c9bb673acf99680bd45}{\index{lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}!lwt\+\_\+chan\+\_\+mark\+\_\+set@{lwt\+\_\+chan\+\_\+mark\+\_\+set}}
+\index{lwt\+\_\+chan\+\_\+mark\+\_\+set@{lwt\+\_\+chan\+\_\+mark\+\_\+set}!lwt\+\_\+cgrp.\+h@{lwt\+\_\+cgrp.\+h}}
+\subsubsection[{lwt\+\_\+chan\+\_\+mark\+\_\+set}]{\setlength{\rightskip}{0pt plus 5cm}void lwt\+\_\+chan\+\_\+mark\+\_\+set (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{channel, }
+\item[{void $\ast$}]{mark}
+\end{DoxyParamCaption}
+)}}\label{lwt__cgrp_8h_a0caf51fbe7646c9bb673acf99680bd45}
+
+
+Marks the channel. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em channel} & The channel to mark \\
+\hline
+{\em mark} & The marker to set \\
+\hline
+\end{DoxyParams}

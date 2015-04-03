@@ -205,14 +205,7 @@ static void remove_from_senders(lwt_chan_t c, lwt_t thread){
 static void push_data_into_async_buffer(lwt_chan_t c, void * data){
 	//check that the buffer isn't at capacity
 	while(c->num_entries >= c->buffer_size){
-		//lwt_current()->info = LWT_INFO_NSENDING;
-		//lwt_yield(LWT_NULL);
-		/*if(c->receiver && c->receiver->info == LWT_INFO_NRECEIVING){
-			lwt_yield(c->receiver);
-		}
-		else{
-			lwt_yield(LWT_NULL);
-		}*/
+		lwt_current()->info = LWT_INFO_NSENDING;
 		insert_blocked_sender_tail(c, lwt_current());
 		lwt_yield(c->receiver);
 	}
@@ -241,7 +234,7 @@ static void push_data_into_async_buffer(lwt_chan_t c, void * data){
  */
 void * __pop_data_from_async_buffer(lwt_chan_t c){
 	while(c->num_entries <= 0){
-		//lwt_current()->info = LWT_INFO_NRECEIVING;
+		lwt_current()->info = LWT_INFO_NRECEIVING;
 		if(c->blocked_senders_head){
 			lwt_t sender = c->blocked_senders_head;
 			__remove_from_blocked_sender(c, sender);
