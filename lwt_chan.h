@@ -16,6 +16,9 @@ typedef struct lwt_cgrp *lwt_cgrp_t;
 typedef struct lwt_channel *lwt_chan_t;
 typedef void *(*lwt_chan_fn_t)(lwt_chan_t);
 
+/**
+ * @brief The channel for synchronous and asynchronous communication
+ */
 struct lwt_channel{
 	/**
 	 * The list of senders head

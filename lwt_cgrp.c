@@ -149,7 +149,9 @@ static void remove_event_from_group(struct event * event, lwt_cgrp_t group){
 
 
 /**
- * Initializes the event
+ * @brief Initializes the event for when data is added to the channel
+ * @param channel The channel with the new data
+ * @param data The data being inserted
  */
 void __init_event(lwt_chan_t channel, void * data){
 	if(channel->channel_group){//  && !channel->has_event){
@@ -168,13 +170,21 @@ void __init_event(lwt_chan_t channel, void * data){
 	}
 }
 
-void free_event(struct event * event_t){
-	if(event_t->channel->channel_group){
-		remove_event_from_group(event_t, event_t->channel->channel_group);
+/**
+ * @brief Removes the event from the group
+ * @param event The event being removed
+ */
+void free_event(struct event * event){
+	if(event->channel->channel_group){
+		remove_event_from_group(event, event->channel->channel_group);
 	}
-	free(event_t);
+	free(event);
 }
 
+/**
+ * @brief Pops the event from the group
+ * @param group The channel group to alter
+ */
 void __pop_event(lwt_cgrp_t group){
 	if(group->event_head){
 		free_event(group->event_head);
@@ -231,17 +241,7 @@ int lwt_cgrp_add(lwt_cgrp_t group, lwt_chan_t channel){
 	}
 	channel->channel_group = group;
 	channel_insert_group_tail(group, channel);
-	//add events to group
-	/*if(channel->async_buffer && channel->async_buffer[channel->start_index]){
-		__init_event(channel, channel->async_buffer[channel->start_index]);
-	}
-	else if(channel->sync_buffer){
-		__init_event(channel, channel->sync_buffer);
-	}
-	//add event if marked
-	else if(channel->mark){
-		__init_event(channel, channel->mark);
-	}*/
+
 	return 0;
 }
 
@@ -253,11 +253,11 @@ int lwt_cgrp_add(lwt_cgrp_t group, lwt_chan_t channel){
  */
 int lwt_cgrp_rem(lwt_cgrp_t group, lwt_chan_t channel){
 	if(channel->channel_group != group){
-		printf("Assigned group is not provided channel\n");
+		//printf("Assigned group is not provided channel\n");
 		return -1;
 	}
 	if(group->event_head){
-		printf("Event queue is not empty\n");
+		//printf("Event queue is not empty\n");
 		return 1;
 	}
 	remove_channel_from_group(channel, group);
@@ -294,17 +294,12 @@ void lwt_chan_mark_set(lwt_chan_t channel, void * mark){
 	/*while(channel->mark){
 		lwt_yield(LWT_NULL);
 	}*/
-	//void * prev_mark = channel->mark;
 	channel->mark = mark;
-	//create an event if there's a group
-	/*if(channel->channel_group && prev_mark){
-		__init_event(channel, mark);
-	}*/
 }
 
 /**
  * @brief Grabs the mark from the channel
- * @param
+ * @param channel The channel to read
  */
 void * lwt_chan_mark_get(lwt_chan_t channel){
 	//wait until a mark is available

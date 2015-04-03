@@ -367,15 +367,9 @@ test_grpwait(int chsz, int grpsz)
 	for(i = 0; i < ITER * grpsz; i++){
 		lwt_chan_t c;
 		int r;
-		printf("Begin group wait\n");
 		c = lwt_cgrp_wait(g);
-		printf("Group wait complete; received channel: %d\n", (int)c);
 		assert(c);
 		r = (int)lwt_rcv(c);
-		printf("Receive complete: \n");
-		int mark = (int)lwt_chan_mark_get(c);
-		assert(r == mark);
-		printf("Index: %d\n", i);
 		//assert(r == (int)lwt_chan_mark_get(c));
 	}
 	for (i = 0 ; i < grpsz ; i++) {

@@ -11,14 +11,31 @@
 #include "lwt_chan.h"
 
 typedef struct lwt_cgrp *lwt_cgrp_t;
-
+/**
+ * @brief Event data
+ */
 struct event{
+	/**
+	 * The previous event
+	 */
 	struct event * previous_event;
+	/**
+	 * The next event
+	 */
 	struct event * next_event;
+	/**
+	 * The channel with the new event
+	 */
 	lwt_chan_t channel;
+	/**
+	 * The data being added to the channel
+	 */
 	void * data;
 };
 
+/**
+ * @brief Channel group for handling events within a group
+ */
 struct lwt_cgrp{
 	/**
 	 * Head of the list of channels
