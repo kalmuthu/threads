@@ -392,6 +392,9 @@ void __init_lwt_main(lwt_t thread){
 	current_thread = thread;
 	original_thread = thread;
 
+	__init_kthd(thread);
+	__insert_lwt_into_tail(pthread_kthd, thread);
+
 	thread->info = LWT_INFO_NTHD_RUNNABLE;
 }
 
@@ -554,6 +557,9 @@ void lwt_die(void * value){
 		current_thread->info = LWT_INFO_NTHD_ZOMBIES;
 	}
 
+	//remove from kthd
+	__remove_thread_from_kthd(current_thread->kthd, current_thread);
+
 	//switch to another thread
 	lwt_yield(LWT_NULL);
 }
@@ -706,6 +712,7 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data, lwt_flags_t flags){
 
 	//associate with kthd
 	thread->kthd = pthread_kthd;
+	__insert_lwt_into_tail(pthread_kthd, thread);
 
 	//insert into runnable list
 	__insert_runnable_tail(thread);

@@ -31,12 +31,12 @@ static void insert_lwt_into_head(lwt_kthd_t kthd, lwt_t thread){
 	}
 }
 
-static void insert_lwt_into_tail(lwt_kthd_t kthd, lwt_t thread){
+void __insert_lwt_into_tail(lwt_kthd_t kthd, lwt_t thread){
 	if(kthd->lwt_tail){
 		//thread becomes new tail
 		thread->next_kthd_thread = NULL;
 		thread->previous_kthd_thread = kthd->lwt_tail;
-		kthd->lwt_tail->previous_kthd_thread = thread;
+		kthd->lwt_tail->next_kthd_thread = thread;
 		kthd->lwt_tail = thread;
 	}
 	else{
@@ -47,7 +47,7 @@ static void insert_lwt_into_tail(lwt_kthd_t kthd, lwt_t thread){
 	}
 }
 
-static void remove_thread_from_kthd(lwt_kthd_t kthd, lwt_t thread){
+void __remove_thread_from_kthd(lwt_kthd_t kthd, lwt_t thread){
 	if(thread->previous_kthd_thread){
 		thread->previous_kthd_thread->next_kthd_thread = thread->next_kthd_thread;
 	}
@@ -67,15 +67,12 @@ void * pthread_function(void * data){
 	struct lwt_kthd_data * thd_data = (struct lwt_kthd_data *)data;
 	lwt_t lwt = lwt_create_chan(thd_data->channel_fn, thd_data->channel, thd_data->flags);
 	assert(lwt);
-	struct lwt_kthd kthd;
-	pthread_kthd = &kthd;
-	pthread_kthd->pthread = pthread_self();
-	pthread_kthd->is_blocked = 0;
-	insert_lwt_into_tail(pthread_kthd, lwt);
+	__init_kthd(lwt);
 	while(pthread_kthd->lwt_head){
-		//do stuff
+		lwt_yield(pthread_kthd->lwt_head);
 	}
-	pthread_exit(0);
+	free(pthread_kthd);
+	return NULL;
 }
 
 int lwt_kthd_create(lwt_chan_fn_t fn, lwt_chan_t c, lwt_flags_t flags){
@@ -100,4 +97,14 @@ int lwt_kthd_create(lwt_chan_fn_t fn, lwt_chan_t c, lwt_flags_t flags){
 		return -1;
 	}
 	return 0;
+}
+
+
+
+void __init_kthd(lwt_t lwt){
+	pthread_kthd = (lwt_kthd_t)malloc(sizeof(struct lwt_kthd));
+	pthread_kthd->pthread = pthread_self();
+	pthread_kthd->is_blocked = 0;
+	pthread_kthd->lwt_head = NULL;
+	pthread_kthd->lwt_tail = NULL;
 }
