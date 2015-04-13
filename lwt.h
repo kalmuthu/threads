@@ -8,6 +8,8 @@
 #define LWT_H_
 
 #include "stdlib.h"
+#include "enums.h"
+#include "lwt_kthd.h"
 
 /**
  * Size of the a page in the OS -> 4K
@@ -29,62 +31,11 @@
 
 //forward declaration
 typedef struct lwt_channel *lwt_chan_t;
+typedef struct lwt_kthd * lwt_kthd_t;
 
 typedef void *(*lwt_fnt_t)(void *); //function pointer definition
 
 typedef struct lwt* lwt_t;
-
-/**
- * @brief The various statuses for a LWT
- */
-typedef enum
-{
-	/**
-	 * Thread state is runnable; it can be switched to
-	 */
-	LWT_INFO_NTHD_RUNNABLE,
-	/**
-	 * Thread state is blocked; waiting for another thread to complete
-	 */
-	LWT_INFO_NTHD_BLOCKED,
-	/**
-	 * Thread state is zombie; thread is dead and needs to be joined
-	 */
-	LWT_INFO_NTHD_ZOMBIES,
-	/**
-	 * Number of ready pool threads
-	 */
-	LWT_INFO_NTHD_READY_POOL,
-	/**
-	 * Number of channels that are active
-	 */
-	LWT_INFO_NCHAN,
-	/**
-	 * Number of threads blocked sending
-	 */
-	LWT_INFO_NSENDING,
-	/**
-	 * Number of threads blocked receiving
-	 */
-	LWT_INFO_NRECEIVING
-} lwt_info_t;
-
-
-
-/**
- * flags for determining if the lwt is joinable
- */
-typedef enum{
-	/**
-	 * lwt is joinable
-	 */
-	LWT_JOIN = 0,
-	/**
-	 * lwt is not joinable
-	 */
-	LWT_NOJOIN = 1
-}lwt_flags_t;
-
 
 
 /**
@@ -196,6 +147,19 @@ struct lwt
 	 * The id of the thread
 	 */
 	int id;
+
+	/**
+	 * Previous thread in kernel thread list
+	 */
+	lwt_t previous_kthd_thread;
+	/**
+	 * Next thread in kernel thread list
+	 */
+	lwt_t next_kthd_thread;
+	/**
+	 * Pointer to kthd
+	 */
+	lwt_kthd_t kthd;
 };
 
 lwt_t lwt_create(lwt_fnt_t, void *, lwt_flags_t);

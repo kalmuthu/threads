@@ -1,6 +1,9 @@
 #include "lwt.h"
 #include "lwt_chan.h"
 #include "lwt_cgrp.h"
+#include "lwt_kthd.h"
+
+#include "pthread.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +21,8 @@
  * @brief The size of the pool
  */
 #define POOL_SIZE 100
+
+extern __thread lwt_kthd_t pthread_kthd;
 
 /**
  * @brief Dispatch function for switching between threads
@@ -440,6 +445,9 @@ void __reinit_lwt(lwt_t thread){
 	thread->previous_ready_pool_thread = NULL;
 	thread->next_ready_pool_thread = NULL;
 
+	thread->previous_kthd_thread = NULL;
+	thread->next_kthd_thread = NULL;
+
 	//reset flags to 0
 	thread->flags = LWT_JOIN;
 
@@ -695,6 +703,9 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data, lwt_flags_t flags){
 	thread->start_routine = fn;
 	thread->args = data;
 	thread->flags = flags;
+
+	//associate with kthd
+	thread->kthd = pthread_kthd;
 
 	//insert into runnable list
 	__insert_runnable_tail(thread);

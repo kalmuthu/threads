@@ -279,12 +279,9 @@ lwt_chan_t lwt_chan(int sz){
 	channel->blocked_senders_tail = NULL;
 	//prepare buffer
 	if(sz > 0){
-		channel->async_buffer = (void **)malloc(sizeof(void *) * sz);
+		//ensure that the buffer is initialized to NULL
+		channel->async_buffer = (void **)calloc(sz, sizeof(void *));
 		assert(channel->async_buffer);
-		int index;
-		for(index = 0; index < sz; ++index){
-			channel->async_buffer[index] = NULL;
-		}
 	}
 	else{
 		channel->async_buffer = NULL;
