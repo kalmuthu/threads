@@ -93,10 +93,6 @@ struct lwt_channel{
 	 * Mark for channel
 	 */
 	void * mark;
-	/**
-	 * Currently has event
-	 */
-	int has_event;
 };
 
 lwt_chan_t lwt_chan(int);

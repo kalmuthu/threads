@@ -295,7 +295,6 @@ lwt_chan_t lwt_chan(int sz){
 	channel->channel_group = NULL;
 	channel->previous_channel_in_group = NULL;
 	channel->next_channel_in_group = NULL;
-	channel->has_event = 0;
 	//mark
 	channel->mark = NULL;
 	return channel;

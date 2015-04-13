@@ -122,7 +122,6 @@ static void remove_channel_from_group(lwt_chan_t channel, lwt_cgrp_t group){
 		group->channel_tail = group->channel_tail->previous_channel_in_group;
 	}
 	channel->channel_group = NULL;
-	channel->has_event = 0;
 }
 
 
@@ -162,7 +161,6 @@ void __init_event(lwt_chan_t channel, void * data){
 		event_t->previous_event = NULL;
 		event_t->next_event = NULL;
 		insert_into_event_tail(channel->channel_group, event_t);
-		channel->has_event = 1;
 		if(channel->async_buffer && channel->channel_group->waiting_thread && channel->channel_group->waiting_thread->info != LWT_INFO_NTHD_RUNNABLE){
 			channel->channel_group->waiting_thread->info = LWT_INFO_NTHD_RUNNABLE;
 			__insert_runnable_tail(channel->channel_group->waiting_thread);
@@ -280,7 +278,6 @@ lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t group){
 	group->waiting_thread = NULL;
 	lwt_chan_t channel = group->event_head->channel;
 	__pop_event(group);
-	channel->has_event = 0;
 	return channel;
 }
 
