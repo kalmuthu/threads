@@ -205,6 +205,7 @@ lwt_cgrp_t lwt_cgrp(){
 	group->event_head = NULL;
 	group->event_tail = NULL;
 	group->waiting_thread = NULL;
+	group->creator_thread = lwt_current();
 	return group;
 }
 

@@ -57,6 +57,10 @@ struct lwt_cgrp{
 	 * Waiting thread
 	 */
 	lwt_t waiting_thread;
+	/**
+	 * Creator thread
+	 */
+	lwt_t creator_thread;
 };
 
 lwt_cgrp_t lwt_cgrp();
