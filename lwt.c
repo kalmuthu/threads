@@ -39,41 +39,41 @@ void __lwt_stack_return(void * stack);
 /**
  * @brief Global counter for the thread id
  */
-static int next_id = INIT_ID;
+__thread int next_id = INIT_ID;
 
 /**
  * @brief Pointer to the current thread
  */
-static lwt_t current_thread = NULL;
+__thread lwt_t current_thread = NULL;
 /**
  * @brief Pointer to the original/main thread
  */
-static lwt_t original_thread = NULL;
+__thread lwt_t original_thread = NULL;
 
 /**
  * @brief List of all active threads created
  */
-static lwt_t current_threads = NULL;
+__thread lwt_t current_threads = NULL;
 /**
  * @brief Head of the list of all runnable threads
  */
-static lwt_t runnable_threads_head = NULL;
+__thread lwt_t runnable_threads_head = NULL;
 
 /**
  * @brief Tail of the list of all runnable threads
  */
-static lwt_t runnable_threads_tail = NULL;
+__thread lwt_t runnable_threads_tail = NULL;
 
 
 /**
  * @brief Head of ready pool threads
  */
-static lwt_t ready_pool_threads_head = NULL;
+__thread lwt_t ready_pool_threads_head = NULL;
 
 /**
  * @brief Tail of ready pool threads
  */
-static lwt_t ready_pool_threads_tail = NULL;
+__thread lwt_t ready_pool_threads_tail = NULL;
 
 /**
  * @brief Counter for the id

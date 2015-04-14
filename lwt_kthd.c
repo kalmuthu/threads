@@ -64,6 +64,7 @@ void __remove_thread_from_kthd(lwt_kthd_t kthd, lwt_t thread){
 	}
 }
 void * pthread_function(void * data){
+	__init__();
 	struct lwt_kthd_data * thd_data = (struct lwt_kthd_data *)data;
 	lwt_t lwt = lwt_create_chan(thd_data->channel_fn, thd_data->channel, thd_data->flags);
 	assert(lwt);
@@ -71,6 +72,7 @@ void * pthread_function(void * data){
 	while(pthread_kthd->lwt_head){
 		lwt_yield(pthread_kthd->lwt_head);
 	}
+	__destroy__();
 	free(pthread_kthd);
 	return NULL;
 }

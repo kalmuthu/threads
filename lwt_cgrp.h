@@ -8,60 +8,7 @@
 #ifndef LWT_CGRP_H_
 #define LWT_CGRP_H_
 
-#include "lwt_chan.h"
-
-typedef struct lwt_cgrp *lwt_cgrp_t;
-/**
- * @brief Event data
- */
-struct event{
-	/**
-	 * The previous event
-	 */
-	struct event * previous_event;
-	/**
-	 * The next event
-	 */
-	struct event * next_event;
-	/**
-	 * The channel with the new event
-	 */
-	lwt_chan_t channel;
-	/**
-	 * The data being added to the channel
-	 */
-	void * data;
-};
-
-/**
- * @brief Channel group for handling events within a group
- */
-struct lwt_cgrp{
-	/**
-	 * Head of the list of channels
-	 */
-	lwt_chan_t channel_head;
-	/**
-	 * Tail of the list of channels
-	 */
-	lwt_chan_t channel_tail;
-	/**
-	 * Head of the event queue
-	 */
-	struct event * event_head;
-	/**
-	 * Tail of the event queue
-	 */
-	struct event * event_tail;
-	/**
-	 * Waiting thread
-	 */
-	lwt_t waiting_thread;
-	/**
-	 * Creator thread
-	 */
-	lwt_t creator_thread;
-};
+#include "objects.h"
 
 lwt_cgrp_t lwt_cgrp();
 int lwt_cgrp_free(lwt_cgrp_t);
