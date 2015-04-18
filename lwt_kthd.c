@@ -5,9 +5,11 @@
  *      Author: vagrant
  */
 #include "lwt_kthd.h"
+#include "lwt.h"
 #include "lwt_chan.h"
 #include "assert.h"
 #include "pthread.h"
+#include "faa.h"
 
 /**
  * Pointer to the kthd for the pthread
@@ -63,6 +65,7 @@ void __remove_thread_from_kthd(lwt_kthd_t kthd, lwt_t thread){
 		kthd->lwt_tail = kthd->lwt_tail->previous_kthd_thread;
 	}
 }
+
 void * pthread_function(void * data){
 	__init__();
 	struct lwt_kthd_data * thd_data = (struct lwt_kthd_data *)data;
@@ -70,10 +73,9 @@ void * pthread_function(void * data){
 	assert(lwt);
 	__init_kthd(lwt);
 	while(pthread_kthd->lwt_head){
-		lwt_yield(pthread_kthd->lwt_head);
+		lwt_yield(LWT_NULL);
 	}
 	__destroy__();
-	free(pthread_kthd);
 	return NULL;
 }
 
@@ -101,12 +103,37 @@ int lwt_kthd_create(lwt_chan_fn_t fn, lwt_chan_t c, lwt_flags_t flags){
 	return 0;
 }
 
+struct kthd_event * __pop_from_buffer(lwt_kthd_t kthd){
+	//check if empty
+	if(!kthd->event_buffer[kthd->buffer_head % EVENT_BUFFER_SIZE] &&
+			kthd->buffer_head == kthd->buffer_tail){
+		return NULL;
+	}
+	int head = fetch_and_add(&kthd->buffer_head, 1) % EVENT_BUFFER_SIZE;
+	struct kthd_event * data = kthd->event_buffer[head];
+	kthd->event_buffer[head] = NULL;
+	return data;
+}
 
+int __push_to_buffer(lwt_kthd_t kthd, struct kthd_event * data){
+	//check if full
+	if(kthd->event_buffer[kthd->buffer_tail % EVENT_BUFFER_SIZE] &&
+			kthd->buffer_head == kthd->buffer_tail){
+		return -1;
+	}
+	int tail = __sync_fetch_and_add(&kthd->buffer_tail, 1) % EVENT_BUFFER_SIZE;
+	kthd->event_buffer[tail] = data;
+	//wake up buffer thread
+	pthread_mutex_lock(&kthd->blocked_mutex);
+	if(kthd->is_blocked){
+		pthread_cond_signal(&kthd->blocked_cv);
+	}
+	pthread_mutex_unlock(&kthd->blocked_mutex);
+	return 0;
+}
 
 void __init_kthd(lwt_t lwt){
-	pthread_kthd = (lwt_kthd_t)malloc(sizeof(struct lwt_kthd));
+	//ensure block is set to 0's
+	pthread_kthd = (lwt_kthd_t)calloc(1, sizeof(struct lwt_kthd));
 	pthread_kthd->pthread = pthread_self();
-	pthread_kthd->is_blocked = 0;
-	pthread_kthd->lwt_head = NULL;
-	pthread_kthd->lwt_tail = NULL;
 }

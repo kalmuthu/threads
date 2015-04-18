@@ -7,7 +7,6 @@
 #ifndef LWT_H_
 #define LWT_H_
 
-#include "enums.h"
 #include "objects.h"
 
 

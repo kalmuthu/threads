@@ -288,10 +288,6 @@ lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t group){
  * @param mark The marker to set
  */
 void lwt_chan_mark_set(lwt_chan_t channel, void * mark){
-	//wait until a mark is empty
-	/*while(channel->mark){
-		lwt_yield(LWT_NULL);
-	}*/
 	channel->mark = mark;
 }
 
@@ -300,9 +296,5 @@ void lwt_chan_mark_set(lwt_chan_t channel, void * mark){
  * @param channel The channel to read
  */
 void * lwt_chan_mark_get(lwt_chan_t channel){
-	//wait until a mark is available
-	/*while(!channel->mark){
-		lwt_yield(LWT_NULL);
-	}*/
 	return channel->mark;
 }

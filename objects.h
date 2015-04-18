@@ -12,6 +12,9 @@
 #include "stdlib.h"
 #include "enums.h"
 
+/**
+ * Size of the event buffer
+ */
 #define EVENT_BUFFER_SIZE 100
 
 /**
@@ -135,19 +138,19 @@ struct lwt_channel{
 	/**
 	 * Start index of the buffer
 	 */
-	int start_index;
+	unsigned int start_index;
 	/**
 	 * End index of the buffer
 	 */
-	int end_index;
+	unsigned int end_index;
 	/**
 	 * Size of the buffer
 	 */
-	int buffer_size;
+	unsigned int buffer_size;
 	/**
 	 * Current number of entries in buffer
 	 */
-	int num_entries;
+	unsigned int num_entries;
 	/**
 	 * Previous sibling channel
 	 */
@@ -175,20 +178,32 @@ struct lwt_channel{
 	void * mark;
 };
 
+struct kthd_event{
+	void * data;
+	lwt_cgrp_t group;
+	lwt_chan_t channel;
+	lwt_t owner;
+};
+
 struct lwt_kthd{
 	pthread_t pthread;
 	lwt_t lwt_head;
 	lwt_t lwt_tail;
 	int is_blocked;
-	struct event event_buffer[EVENT_BUFFER_SIZE];
+	pthread_mutex_t blocked_mutex;
+	pthread_cond_t blocked_cv;
+	lwt_t buffer_thread;
+	struct kthd_event * event_buffer[EVENT_BUFFER_SIZE];
+	unsigned int buffer_head;
+	unsigned int buffer_tail;
 };
 
 struct lwt_kthd_data{
 	lwt_chan_fn_t channel_fn;
 	lwt_chan_t channel;
 	lwt_flags_t flags;
-
 };
+
 
 
 /**

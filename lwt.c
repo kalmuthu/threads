@@ -39,48 +39,48 @@ void __lwt_stack_return(void * stack);
 /**
  * @brief Global counter for the thread id
  */
-__thread int next_id = INIT_ID;
+static __thread unsigned int next_id = INIT_ID;
 
 /**
  * @brief Pointer to the current thread
  */
-__thread lwt_t current_thread = NULL;
+static __thread lwt_t current_thread = NULL;
 /**
  * @brief Pointer to the original/main thread
  */
-__thread lwt_t original_thread = NULL;
+static __thread lwt_t original_thread = NULL;
 
 /**
  * @brief List of all active threads created
  */
-__thread lwt_t current_threads = NULL;
+static __thread lwt_t current_threads = NULL;
 /**
  * @brief Head of the list of all runnable threads
  */
-__thread lwt_t runnable_threads_head = NULL;
+static __thread lwt_t runnable_threads_head = NULL;
 
 /**
  * @brief Tail of the list of all runnable threads
  */
-__thread lwt_t runnable_threads_tail = NULL;
+static __thread lwt_t runnable_threads_tail = NULL;
 
 
 /**
  * @brief Head of ready pool threads
  */
-__thread lwt_t ready_pool_threads_head = NULL;
+static __thread lwt_t ready_pool_threads_head = NULL;
 
 /**
  * @brief Tail of ready pool threads
  */
-__thread lwt_t ready_pool_threads_tail = NULL;
+static __thread lwt_t ready_pool_threads_tail = NULL;
 
 /**
  * @brief Counter for the id
  * @return The next id to use
  */
 static int get_new_id(){
-	return next_id++; //return and then increment
+	return next_id++;
 }
 
 
@@ -558,7 +558,9 @@ void lwt_die(void * value){
 	}
 
 	//remove from kthd
-	__remove_thread_from_kthd(current_thread->kthd, current_thread);
+	if(current_thread->kthd){
+		__remove_thread_from_kthd(current_thread->kthd, current_thread);
+	}
 
 	//switch to another thread
 	lwt_yield(LWT_NULL);
@@ -611,6 +613,25 @@ void __lwt_schedule(){
 	}
 }
 
+void * lwt_buffer(void * d){
+	struct kthd_event * data;
+	while(lwt_current()->kthd){
+		pthread_mutex_lock(&pthread_kthd->blocked_mutex);
+
+		data = __pop_from_buffer(pthread_kthd);
+		while(!data){
+			pthread_kthd->is_blocked = 1;
+			pthread_cond_wait(&pthread_kthd->blocked_cv, &pthread_kthd->blocked_mutex);
+			pthread_kthd->is_blocked = 0;
+			if(!lwt_current()->kthd){
+				break;
+			}
+			data = __pop_from_buffer(pthread_kthd);
+		}
+		pthread_mutex_unlock(&pthread_kthd->blocked_mutex);
+	}
+	return NULL;
+}
 
 /**
  * @brief Initializes the LWT by wrapping the current thread as a LWT
@@ -630,12 +651,28 @@ __attribute__((constructor)) void __init__(){
 		__init_new_lwt(new_pool_thread);
 		__reinit_lwt(new_pool_thread);
 	}
+	//buffer thread is special
+	pthread_kthd->buffer_thread = lwt_create(lwt_buffer, NULL, LWT_NOJOIN);
+	remove_from_runnable_threads(pthread_kthd->buffer_thread);
+	remove_current(pthread_kthd->buffer_thread);
+	remove_sibling(pthread_kthd->buffer_thread);
+	__remove_thread_from_kthd(pthread_kthd, pthread_kthd->buffer_thread);
+	//pthread_kthd->buffer_thread->info = LWT_INFO_NTHD_BLOCKED;
+	//set up mutex and cv
+	pthread_mutex_init(&pthread_kthd->blocked_mutex, NULL);
+	pthread_cond_init(&pthread_kthd->blocked_cv, NULL);
 }
 
 /**
  * @brief Cleans up all remaining threads on exit
  */
 __attribute__((destructor)) void __destroy__(){
+	//clean up buffer thread
+	if(pthread_kthd->buffer_thread){
+		pthread_kthd->buffer_thread->kthd = NULL;
+		lwt_yield(pthread_kthd->buffer_thread);
+		free(pthread_kthd->buffer_thread);
+	}
 	//free threads
 	lwt_t current = current_threads;
 	lwt_t next = NULL;
@@ -666,10 +703,20 @@ __attribute__((destructor)) void __destroy__(){
 			if(rcv_channels->async_buffer){
 				free(rcv_channels->async_buffer);
 			}
-			//TODO free group
+			//free group
+			lwt_cgrp_t group = rcv_channels->channel_group;
+			if(group && group->creator_thread == current){
+				//free the buffer
+				while(group->event_head){
+					__pop_event(group);
+				}
+				free(group);
+			}
+
 			free(rcv_channels);
 			rcv_channels = next_channel;
 		}
+
 
 		if(current != original_thread){
 			//printf("FREEING STACK!!\n");
@@ -683,6 +730,12 @@ __attribute__((destructor)) void __destroy__(){
 
 	//free original thread
 	free(original_thread);
+	//free kthd
+	pthread_cond_destroy(&pthread_kthd->blocked_cv);
+	pthread_mutex_destroy(&pthread_kthd->blocked_mutex);
+	free(pthread_kthd);
+
+	pthread_exit(0);
 }
 
 /**

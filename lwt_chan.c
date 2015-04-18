@@ -11,6 +11,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "assert.h"
+#include "faa.h"
 
 /**
  * @brief Inserts the new channel before the old channel in the channel list
@@ -210,17 +211,11 @@ static void push_data_into_async_buffer(lwt_chan_t c, void * data){
 		lwt_yield(c->receiver);
 	}
 	//insert data into buffer
-	c->async_buffer[c->end_index] = data;
+	unsigned int index = fetch_and_add(&c->end_index, 1) % c->buffer_size;
+	c->async_buffer[index] = data;
 	__init_event(c, data);
-	//update end index
-	if(c->end_index < (c->buffer_size - 1)){
-		c->end_index++;
-	}
-	else{
-		c->end_index = 0;
-	}
 	//increment the num of entries
-	c->num_entries++;
+	fetch_and_add(&c->num_entries, 1);
 	//update status
 	lwt_current()->info = LWT_INFO_NTHD_RUNNABLE;
 }
@@ -244,18 +239,12 @@ void * __pop_data_from_async_buffer(lwt_chan_t c){
 			lwt_yield(LWT_NULL);
 		}
 	}
-	void * data = c->async_buffer[c->start_index];
+	unsigned int index = fetch_and_add(&c->start_index, 1) % c->buffer_size;
+	void * data = c->async_buffer[index];
 	//update buffer value
-	c->async_buffer[c->start_index] = NULL;
-	//update start index
-	if(c->start_index < (c->buffer_size - 1)){
-		c->start_index++;
-	}
-	else{
-		c->start_index = 0;
-	}
+	c->async_buffer[index] = NULL;
 	//decrement the number of entries
-	c->num_entries--;
+	fetch_and_add(&c->num_entries, -1);
 	return data;
 }
 
