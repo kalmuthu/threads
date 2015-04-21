@@ -12,7 +12,7 @@
  * @param value The value to modify
  * @return The updated variabled
  */
-inline int fetch_and_add(unsigned int * variable, int value ) {
+inline int fetch_and_add(volatile unsigned int * variable, int value ) {
   asm volatile("lock; xaddl %%eax, %2;"
 			   :"=a" (value)                  //Output
 			   :"a" (value), "m" (*variable)  //Input

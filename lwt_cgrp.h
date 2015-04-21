@@ -20,6 +20,7 @@ void * lwt_chan_mark_get(lwt_chan_t);
 
 //private functions
 void __init_event(lwt_chan_t, void *);
+struct event * __create_event(lwt_chan_t, void *);
 void __pop_event(lwt_cgrp_t);
 
 #endif /* LWT_CGRP_H_ */

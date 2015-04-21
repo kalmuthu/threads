@@ -9,6 +9,6 @@
 #define FAA_H_
 
 
-inline int fetch_and_add(unsigned int *, int);
+inline int fetch_and_add(volatile unsigned int *, int);
 
 #endif /* FAA_H_ */

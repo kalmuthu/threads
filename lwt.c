@@ -22,8 +22,6 @@
  */
 #define POOL_SIZE 100
 
-extern __thread lwt_kthd_t pthread_kthd;
-
 /**
  * @brief Dispatch function for switching between threads
  * @param next The next thread to switch to
@@ -393,7 +391,7 @@ void __init_lwt_main(lwt_t thread){
 	original_thread = thread;
 
 	__init_kthd(thread);
-	__insert_lwt_into_tail(pthread_kthd, thread);
+	__insert_lwt_into_tail(__get_kthd(), thread);
 
 	thread->info = LWT_INFO_NTHD_RUNNABLE;
 }
@@ -559,7 +557,7 @@ void lwt_die(void * value){
 
 	//remove from kthd
 	if(current_thread->kthd){
-		__remove_thread_from_kthd(current_thread->kthd, current_thread);
+		__remove_lwt_from_kthd(current_thread->kthd, current_thread);
 	}
 
 	//switch to another thread
@@ -614,20 +612,33 @@ void __lwt_schedule(){
 }
 
 void * lwt_buffer(void * d){
-	struct kthd_event * data;
+	struct kthd_event * event;
+	lwt_kthd_t pthread_kthd = __get_kthd();
 	while(lwt_current()->kthd){
 		pthread_mutex_lock(&pthread_kthd->blocked_mutex);
 
-		data = __pop_from_buffer(pthread_kthd);
-		while(!data){
+		event = __pop_from_buffer(pthread_kthd);
+		while(!event){
 			pthread_kthd->is_blocked = 1;
 			pthread_cond_wait(&pthread_kthd->blocked_cv, &pthread_kthd->blocked_mutex);
 			pthread_kthd->is_blocked = 0;
 			if(!lwt_current()->kthd){
 				break;
 			}
-			data = __pop_from_buffer(pthread_kthd);
+			event = __pop_from_buffer(pthread_kthd);
 		}
+
+		//ignore break condition
+		if(event){
+			//wait until thread is runnable
+			/*while(event->lwt->info == LWT_INFO_NTHD_RUNNABLE){
+				lwt_yield(LWT_NULL);
+			}*/
+			event->lwt->info = event->new_info;
+			lwt_yield(event->lwt);
+			free(event);
+		}
+
 		pthread_mutex_unlock(&pthread_kthd->blocked_mutex);
 	}
 	return NULL;
@@ -652,11 +663,12 @@ __attribute__((constructor)) void __init__(){
 		__reinit_lwt(new_pool_thread);
 	}
 	//buffer thread is special
+	lwt_kthd_t pthread_kthd = __get_kthd();
 	pthread_kthd->buffer_thread = lwt_create(lwt_buffer, NULL, LWT_NOJOIN);
 	remove_from_runnable_threads(pthread_kthd->buffer_thread);
 	remove_current(pthread_kthd->buffer_thread);
 	remove_sibling(pthread_kthd->buffer_thread);
-	__remove_thread_from_kthd(pthread_kthd, pthread_kthd->buffer_thread);
+	__remove_lwt_from_kthd(pthread_kthd, pthread_kthd->buffer_thread);
 	//pthread_kthd->buffer_thread->info = LWT_INFO_NTHD_BLOCKED;
 	//set up mutex and cv
 	pthread_mutex_init(&pthread_kthd->blocked_mutex, NULL);
@@ -667,6 +679,7 @@ __attribute__((constructor)) void __init__(){
  * @brief Cleans up all remaining threads on exit
  */
 __attribute__((destructor)) void __destroy__(){
+	lwt_kthd_t pthread_kthd = __get_kthd();
 	//clean up buffer thread
 	if(pthread_kthd->buffer_thread){
 		pthread_kthd->buffer_thread->kthd = NULL;
@@ -764,6 +777,7 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data, lwt_flags_t flags){
 	thread->flags = flags;
 
 	//associate with kthd
+	lwt_kthd_t pthread_kthd = __get_kthd();
 	thread->kthd = pthread_kthd;
 	__insert_lwt_into_tail(pthread_kthd, thread);
 

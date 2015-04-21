@@ -205,8 +205,8 @@ static void remove_from_senders(lwt_chan_t c, lwt_t thread){
  */
 static void push_data_into_async_buffer(lwt_chan_t c, void * data){
 	//check that the buffer isn't at capacity
+	__update_lwt_info(lwt_current(), LWT_INFO_NSENDING);
 	while(c->num_entries >= c->buffer_size){
-		lwt_current()->info = LWT_INFO_NSENDING;
 		insert_blocked_sender_tail(c, lwt_current());
 		lwt_yield(c->receiver);
 	}
@@ -217,9 +217,50 @@ static void push_data_into_async_buffer(lwt_chan_t c, void * data){
 	//increment the num of entries
 	fetch_and_add(&c->num_entries, 1);
 	//update status
-	lwt_current()->info = LWT_INFO_NTHD_RUNNABLE;
+	__update_lwt_info(lwt_current(), LWT_INFO_NTHD_RUNNABLE);
 }
 
+/**
+ * @brief Pushes the data into the channel sync buffer
+ * @param c The channel being modified
+ * @param data The data being sent
+ */
+static int push_data_into_sync_buffer(lwt_chan_t c, void * data){
+	//check if there is a receiver
+	if(!c || !c->receiver){
+		perror("No receiver for sending channel\n");
+		return -1;
+	}
+
+	//block
+	__update_lwt_info(lwt_current(), LWT_INFO_NSENDING);
+	insert_blocked_sender_tail(c, lwt_current());
+	//check receiver is waiting
+	while(c->receiver->info != LWT_INFO_NRECEIVING){
+		//printf("Waiting on receiver in channel: %d\n", (int)c);
+		lwt_yield(LWT_NULL);
+	}
+	//check if we can go ahead and send
+	while(c->blocked_senders_head && c->blocked_senders_head != lwt_current()){
+		//printf("Waiting on blocked senders head in channel: %d\n", (int)c);
+		if(c->blocked_senders_head->kthd == lwt_current()->kthd){
+			lwt_yield(c->blocked_senders_head);
+		}
+		else{
+			lwt_yield(LWT_NULL);
+		}
+	}
+
+	c->sync_buffer = data;
+	//send data
+	__init_event(c, data);
+
+
+	//wait until receiver picks up buffer
+	__update_lwt_info(c->receiver, LWT_INFO_NTHD_RUNNABLE);
+	lwt_yield(c->receiver);
+	return 0;
+}
 
 /**
  * @brief Pops the data into the buffer
@@ -228,8 +269,8 @@ static void push_data_into_async_buffer(lwt_chan_t c, void * data){
  * If the buffer is empty, it will block until there is something to read
  */
 void * __pop_data_from_async_buffer(lwt_chan_t c){
+	__update_lwt_info(lwt_current(), LWT_INFO_NRECEIVING);
 	while(c->num_entries <= 0){
-		lwt_current()->info = LWT_INFO_NRECEIVING;
 		if(c->blocked_senders_head){
 			lwt_t sender = c->blocked_senders_head;
 			__remove_from_blocked_sender(c, sender);
@@ -245,9 +286,44 @@ void * __pop_data_from_async_buffer(lwt_chan_t c){
 	c->async_buffer[index] = NULL;
 	//decrement the number of entries
 	fetch_and_add(&c->num_entries, -1);
+	__update_lwt_info(lwt_current(), LWT_INFO_NTHD_RUNNABLE);
 	return data;
 }
 
+/**
+ * @brief Pops the data from the sync buffer
+ * @param c The channel being examined
+ */
+static void * pop_data_from_sync_buffer(lwt_chan_t c){
+	if(!c || !c->senders_head || !c->senders_tail){
+		perror("NO Senders for receiving channel\n");
+		return NULL;
+	}
+	__update_lwt_info(lwt_current(), LWT_INFO_NRECEIVING);
+	//block until there's a sender
+	while(!c->blocked_senders_head){
+		//lwt_current()->info = LWT_INFO_NRECEIVING;
+		//printf("Receiver waiting for sender in %d\n", (int)c);
+		lwt_yield(LWT_NULL);
+	}
+	//detach the head
+	lwt_t sender = c->blocked_senders_head;
+
+	while(!c->sync_buffer){
+		//lwt_current()->info = LWT_INFO_NRECEIVING;
+		//printf("Receiver waiting for buffer to be read in: %d\n", (int)c);
+		lwt_yield(sender);
+	}
+
+	__remove_from_blocked_sender(c, sender);
+	__update_lwt_info(sender, LWT_INFO_NTHD_RUNNABLE);
+
+	void * data = c->sync_buffer;
+	c->sync_buffer = NULL;
+	__update_lwt_info(lwt_current(), LWT_INFO_NTHD_RUNNABLE);
+
+	return data;
+}
 
 /**
  * @brief Creates the channel on the receiving thread
@@ -301,38 +377,11 @@ int lwt_snd(lwt_chan_t c, void * data){
 	assert(data);
 	if(c->buffer_size > 0){
 		push_data_into_async_buffer(c, data);
+		return 0;
 	}
 	else{
-		//check if there is a receiver
-		if(!c || !c->receiver){
-			perror("No receiver for sending channel\n");
-			return -1;
-		}
-
-		//block
-		lwt_current()->info = LWT_INFO_NSENDING;
-		insert_blocked_sender_tail(c, lwt_current());
-		//check receiver is waiting
-		while(c->receiver->info != LWT_INFO_NRECEIVING){
-			//printf("Waiting on receiver in channel: %d\n", (int)c);
-			lwt_yield(LWT_NULL);
-		}
-		//check if we can go ahead and send
-		while(c->blocked_senders_head && c->blocked_senders_head != lwt_current()){
-			//printf("Waiting on blocked senders head in channel: %d\n", (int)c);
-			lwt_yield(c->blocked_senders_head);
-		}
-
-		c->sync_buffer = data;
-		//send data
-		__init_event(c, data);
-
-
-		//wait until receiver picks up buffer
-		c->receiver->info = LWT_INFO_NTHD_RUNNABLE;
-		lwt_yield(c->receiver);
+		return push_data_into_sync_buffer(c, data);
 	}
-	return 0;
 }
 
 
@@ -398,34 +447,7 @@ void * lwt_rcv(lwt_chan_t c){
 		return __pop_data_from_async_buffer(c);
 	}
 	else{
-		if(!c || !c->senders_head || !c->senders_tail){
-			perror("NO Senders for receiving channel\n");
-			return NULL;
-		}
-		lwt_current()->info = LWT_INFO_NRECEIVING;
-		//block until there's a sender
-		while(!c->blocked_senders_head){
-			//lwt_current()->info = LWT_INFO_NRECEIVING;
-			//printf("Receiver waiting for sender in %d\n", (int)c);
-			lwt_yield(LWT_NULL);
-		}
-		//detach the head
-		lwt_t sender = c->blocked_senders_head;
-
-		while(!c->sync_buffer){
-			//lwt_current()->info = LWT_INFO_NRECEIVING;
-			//printf("Receiver waiting for buffer to be read in: %d\n", (int)c);
-			lwt_yield(sender);
-		}
-
-		__remove_from_blocked_sender(c, sender);
-		sender->info = LWT_INFO_NTHD_RUNNABLE;
-
-		void * data = c->sync_buffer;
-		c->sync_buffer = NULL;
-		lwt_current()->info = LWT_INFO_NTHD_RUNNABLE;
-
-		return data;
+		return pop_data_from_sync_buffer(c);
 	}
 }
 

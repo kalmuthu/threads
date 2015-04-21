@@ -10,11 +10,12 @@
 #include "assert.h"
 #include "pthread.h"
 #include "faa.h"
+#include "stdio.h"
 
 /**
  * Pointer to the kthd for the pthread
  */
-__thread lwt_kthd_t pthread_kthd;
+static __thread lwt_kthd_t pthread_kthd;
 
 static void insert_lwt_into_head(lwt_kthd_t kthd, lwt_t thread){
 	if(kthd->lwt_head){
@@ -49,7 +50,7 @@ void __insert_lwt_into_tail(lwt_kthd_t kthd, lwt_t thread){
 	}
 }
 
-void __remove_thread_from_kthd(lwt_kthd_t kthd, lwt_t thread){
+void __remove_lwt_from_kthd(lwt_kthd_t kthd, lwt_t thread){
 	if(thread->previous_kthd_thread){
 		thread->previous_kthd_thread->next_kthd_thread = thread->next_kthd_thread;
 	}
@@ -121,7 +122,7 @@ int __push_to_buffer(lwt_kthd_t kthd, struct kthd_event * data){
 			kthd->buffer_head == kthd->buffer_tail){
 		return -1;
 	}
-	int tail = __sync_fetch_and_add(&kthd->buffer_tail, 1) % EVENT_BUFFER_SIZE;
+	int tail = fetch_and_add(&kthd->buffer_tail, 1) % EVENT_BUFFER_SIZE;
 	kthd->event_buffer[tail] = data;
 	//wake up buffer thread
 	pthread_mutex_lock(&kthd->blocked_mutex);
@@ -132,8 +133,35 @@ int __push_to_buffer(lwt_kthd_t kthd, struct kthd_event * data){
 	return 0;
 }
 
+static struct kthd_event * init_kthd_event(lwt_t requested_lwt, lwt_info_t new_info){
+	struct kthd_event * kthd_event = (struct kthd_event *)malloc(sizeof(struct kthd_event));
+	assert(kthd_event);
+	kthd_event->lwt = requested_lwt;
+	kthd_event->new_info = new_info;
+	return kthd_event;
+}
+
+void __update_lwt_info(lwt_t requested_lwt, lwt_info_t new_info){
+	//check if lwt is on same kthd
+	if(requested_lwt->kthd == lwt_current()->kthd){
+		//if yes -> no need to communicate via buffer
+		requested_lwt->info = new_info;
+	}
+	else{
+		//push kthd event
+		struct kthd_event * kthd_event = init_kthd_event(requested_lwt, new_info);
+		__push_to_buffer(requested_lwt->kthd, kthd_event);
+	}
+}
+
 void __init_kthd(lwt_t lwt){
 	//ensure block is set to 0's
 	pthread_kthd = (lwt_kthd_t)calloc(1, sizeof(struct lwt_kthd));
+	assert(pthread_kthd);
 	pthread_kthd->pthread = pthread_self();
+	lwt->kthd = pthread_kthd;
+}
+
+lwt_kthd_t __get_kthd(){
+	return pthread_kthd;
 }

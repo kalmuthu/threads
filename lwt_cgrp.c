@@ -150,22 +150,34 @@ static void remove_event_from_group(struct event * event, lwt_cgrp_t group){
 /**
  * @brief Initializes the event for when data is added to the channel
  * @param channel The channel with the new data
+ * @param sender The sender lwt
  * @param data The data being inserted
  */
 void __init_event(lwt_chan_t channel, void * data){
-	if(channel->channel_group){//  && !channel->has_event){
-		struct event * event_t = (struct event *)malloc(sizeof(struct event));
-		assert(event_t);
-		event_t->data = data;
-		event_t->channel = channel;
-		event_t->previous_event = NULL;
-		event_t->next_event = NULL;
-		insert_into_event_tail(channel->channel_group, event_t);
+	if(channel->channel_group){
+		struct event * event = __create_event(channel, data);
+		insert_into_event_tail(channel->channel_group, event);
 		if(channel->async_buffer && channel->channel_group->waiting_thread && channel->channel_group->waiting_thread->info != LWT_INFO_NTHD_RUNNABLE){
 			channel->channel_group->waiting_thread->info = LWT_INFO_NTHD_RUNNABLE;
 			__insert_runnable_tail(channel->channel_group->waiting_thread);
 		}
 	}
+}
+
+/**
+ * @brief Constructs an event
+ * @param channel The channel being sent on
+ * @param sender The sending LWT
+ * @param data The data being sent
+ */
+struct event * __create_event(lwt_chan_t channel, void * data){
+	struct event * event = (struct event *)malloc(sizeof(struct event));
+	assert(event);
+	event->data = data;
+	event->channel = channel;
+	event->previous_event = NULL;
+	event->next_event = NULL;
+	return event;
 }
 
 /**
@@ -270,12 +282,12 @@ int lwt_cgrp_rem(lwt_cgrp_t group, lwt_chan_t channel){
  */
 lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t group){
 	group->waiting_thread = lwt_current();
-	group->waiting_thread->info = LWT_INFO_NRECEIVING;
+	__update_lwt_info(group->waiting_thread, LWT_INFO_NRECEIVING);
 	//wait until there is an event in the queue
 	while(!group->event_head){
 		lwt_yield(LWT_NULL);
 	}
-	lwt_current()->info = LWT_INFO_NTHD_RUNNABLE;
+	__update_lwt_info(lwt_current(), LWT_INFO_NTHD_RUNNABLE);
 	group->waiting_thread = NULL;
 	lwt_chan_t channel = group->event_head->channel;
 	__pop_event(group);

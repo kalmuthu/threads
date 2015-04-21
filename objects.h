@@ -59,7 +59,7 @@ struct event{
 	 */
 	struct event * next_event;
 	/**
-	 * The channel with the new event
+	 * The receiving channel with the new event
 	 */
 	lwt_chan_t channel;
 	/**
@@ -138,15 +138,15 @@ struct lwt_channel{
 	/**
 	 * Start index of the buffer
 	 */
-	unsigned int start_index;
+	volatile unsigned int start_index;
 	/**
 	 * End index of the buffer
 	 */
-	unsigned int end_index;
+	volatile unsigned int end_index;
 	/**
 	 * Size of the buffer
 	 */
-	unsigned int buffer_size;
+	volatile unsigned int buffer_size;
 	/**
 	 * Current number of entries in buffer
 	 */
@@ -179,10 +179,8 @@ struct lwt_channel{
 };
 
 struct kthd_event{
-	void * data;
-	lwt_cgrp_t group;
-	lwt_chan_t channel;
-	lwt_t owner;
+	lwt_t lwt;
+	lwt_info_t new_info;
 };
 
 struct lwt_kthd{
@@ -194,8 +192,8 @@ struct lwt_kthd{
 	pthread_cond_t blocked_cv;
 	lwt_t buffer_thread;
 	struct kthd_event * event_buffer[EVENT_BUFFER_SIZE];
-	unsigned int buffer_head;
-	unsigned int buffer_tail;
+	volatile unsigned int buffer_head;
+	volatile unsigned int buffer_tail;
 };
 
 struct lwt_kthd_data{

@@ -60,5 +60,4 @@ typedef enum{
 }lwt_flags_t;
 
 
-
 #endif /* ENUMS_H_ */
