@@ -15,7 +15,7 @@
 /**
  * Pointer to the kthd for the pthread
  */
-static __thread lwt_kthd_t pthread_kthd;
+__thread lwt_kthd_t pthread_kthd;
 
 static void insert_lwt_into_head(lwt_kthd_t kthd, lwt_t thread){
 	if(kthd->lwt_head){
@@ -72,7 +72,6 @@ void * pthread_function(void * data){
 	struct lwt_kthd_data * thd_data = (struct lwt_kthd_data *)data;
 	lwt_t lwt = lwt_create_chan(thd_data->channel_fn, thd_data->channel, thd_data->flags);
 	assert(lwt);
-	__init_kthd(lwt);
 	while(pthread_kthd->lwt_head){
 		lwt_yield(LWT_NULL);
 	}
@@ -97,6 +96,10 @@ int lwt_kthd_create(lwt_chan_fn_t fn, lwt_chan_t c, lwt_flags_t flags){
 	}
 	if(pthread_create(&thread, &attr, &pthread_function, &data)){
 		return -1;
+	}
+	//wait until there's a head
+	while(!c->senders_head){
+		lwt_yield(LWT_NULL);
 	}
 	if(pthread_attr_destroy(&attr)){
 		return -1;
@@ -127,6 +130,7 @@ int __push_to_buffer(lwt_kthd_t kthd, struct kthd_event * data){
 	//wake up buffer thread
 	pthread_mutex_lock(&kthd->blocked_mutex);
 	if(kthd->is_blocked){
+		kthd->is_blocked = 0;
 		pthread_cond_signal(&kthd->blocked_cv);
 	}
 	pthread_mutex_unlock(&kthd->blocked_mutex);
