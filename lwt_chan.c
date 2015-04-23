@@ -158,7 +158,7 @@ lwt_chan_t lwt_chan(int sz){
 	assert(channel);
 	lwt_t current = lwt_current();
 	channel->receiver = current;
-	LIST_INSERT_HEAD(&current->head_channel, channel, channels);
+	LIST_INSERT_HEAD(&current->head_receiver_channel, channel, receiver_channels);
 	LIST_INIT(&channel->head_senders);
 	channel->snd_cnt = 0;
 	TAILQ_INIT(&channel->head_blocked_senders);
@@ -233,7 +233,7 @@ lwt_chan_t lwt_rcv_chan(lwt_chan_t c){
 void lwt_chan_deref(lwt_chan_t c){
 	if(c->receiver == lwt_current()){
 		//printf("Removing receiver\n");
-		LIST_REMOVE(c, channels);
+		LIST_REMOVE(c, receiver_channels);
 		c->receiver = NULL;
 	}
 	else{

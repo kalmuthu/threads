@@ -147,9 +147,9 @@ struct lwt_channel{
 	 */
 	unsigned int num_entries;
 	/**
-	 * List of channels in lwt
+	 * List of receiver channels in a lwt
 	 */
-	LIST_ENTRY(lwt_channel) channels;
+	LIST_ENTRY(lwt_channel) receiver_channels;
 
 	/**
 	 * Channel group
@@ -189,8 +189,10 @@ struct lwt_kthd_data{
 	lwt_flags_t flags;
 };
 
-
-LIST_HEAD(head_channel, lwt_channel) head_channel;
+/**
+ * Head of the receiver channels associated with the lwt
+ */
+LIST_HEAD(head_receiver_channel, lwt_channel) head_receiver_channel;
 /**
  * @brief The Lightweight Thread (LWT) struct
  */
@@ -268,7 +270,7 @@ struct lwt
 	/**
 	 * Head of list of channels associated with lwt
 	 */
-	struct head_channel head_channel;
+	struct head_receiver_channel head_receiver_channel;
 
 	/**
 	 * The start routine for the thread to run
