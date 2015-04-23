@@ -23,7 +23,7 @@ void * pthread_function(void * data){
 	struct lwt_kthd_data * thd_data = (struct lwt_kthd_data *)data;
 	lwt_t lwt = lwt_create_chan(thd_data->channel_fn, thd_data->channel, thd_data->flags);
 	assert(lwt);
-	while(pthread_kthd->head_lwt_in_kthd.lh_first){
+	while(pthread_kthd->head_lwts_in_kthd.lh_first){
 		lwt_yield(LWT_NULL);
 	}
 	__destroy__();
@@ -115,7 +115,7 @@ void __init_kthd(lwt_t lwt){
 	assert(pthread_kthd);
 	pthread_kthd->pthread = pthread_self();
 	lwt->kthd = pthread_kthd;
-	LIST_INIT(&pthread_kthd->head_lwt_in_kthd);
+	LIST_INIT(&pthread_kthd->head_lwts_in_kthd);
 }
 
 lwt_kthd_t __get_kthd(){

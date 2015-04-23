@@ -64,26 +64,20 @@ struct event{
 	void * data;
 };
 
-/**
- * @brief Definition of the head in the channels
- */
-LIST_HEAD(head_channels_in_group, lwt_channel) head_channels_in_group;
-/**
- * @brief Definition of the head node for the event queue
- */
-TAILQ_HEAD(head_event, event) head_event;
+
+
 /**
  * @brief Channel group for handling events within a group
  */
 struct lwt_cgrp{
 	/**
-	 * Head of the list of channels in groups
+	 * Definition of the head in the channels
 	 */
-	struct head_channels_in_group head_channels_in_group;
+	LIST_HEAD(head_channels_in_group, lwt_channel) head_channels_in_group;
 	/**
-	 * Head of the event queue
+	 * Definition of the head node for the event queue
 	 */
-	struct head_event head_event;
+	TAILQ_HEAD(head_event, event) head_event;
 	/**
 	 * Waiting thread
 	 */
@@ -95,29 +89,21 @@ struct lwt_cgrp{
 };
 
 /**
- * @brief Definition of the senders head pointer
- */
-LIST_HEAD(head_senders, lwt) head_senders;
-/**
- * @brief Definition of the blocked senders head pointer
- */
-TAILQ_HEAD(head_blocked_senders, lwt) head_blocked_senders;
-/**
  * @brief The channel for synchronous and asynchronous communication
  */
 struct lwt_channel{
 	/**
-	 * The head of the senders list
+	 * Definition of the senders head pointer
 	 */
-	struct head_senders head_senders;
+	LIST_HEAD(head_senders, lwt) head_senders;
 	/**
 	 * The number of senders
 	 */
 	int snd_cnt;
 	/**
-	 * The head of the blocked senders list
+	 * Definition of the blocked senders head pointer
 	 */
-	struct head_blocked_senders head_blocked_senders;
+	TAILQ_HEAD(head_blocked_senders, lwt) head_blocked_senders;
 	/**
 	 * The receiving thread
 	 */
@@ -170,13 +156,12 @@ struct kthd_event{
 	lwt_info_t new_info;
 };
 
-/**
- * Point to the head of the list of lwts associated with a kthd
- */
-LIST_HEAD(head_lwts_in_kthd, lwt) head_lwts_in_kthd;
 struct lwt_kthd{
 	pthread_t pthread;
-	struct head_lwts_in_kthd head_lwt_in_kthd;
+	/**
+	 * Point to the head of the list of lwts associated with a kthd
+	 */
+	LIST_HEAD(head_lwts_in_kthd, lwt) head_lwts_in_kthd;
 	int is_blocked;
 	pthread_mutex_t blocked_mutex;
 	pthread_cond_t blocked_cv;
@@ -192,14 +177,8 @@ struct lwt_kthd_data{
 	lwt_flags_t flags;
 };
 
-/**
- * Head of the receiver channels associated with the lwt
- */
-LIST_HEAD(head_receiver_channel, lwt_channel) head_receiver_channel;
-/**
- * Head of the list of children lwt's associated with the lwt
- */
-LIST_HEAD(head_children, lwt) head_children;
+
+
 /**
  * @brief The Lightweight Thread (LWT) struct
  */
@@ -227,22 +206,18 @@ struct lwt
 	 */
 	lwt_t parent;
 	/**
-	 * List of children threads
+	 * Head of the list of children lwt's associated with the lwt
 	 */
-	struct head_children head_children;
+	LIST_HEAD(head_children, lwt) head_children;
 	/**
 	 * Pointers to sibling threads
 	 */
 	LIST_ENTRY(lwt) siblings;
 
 	/**
-	 * Previous current thread
+	 * Pointers to the current threads
 	 */
-	lwt_t previous_current;
-	/**
-	 * Next current thread
-	 */
-	lwt_t next_current;
+	LIST_ENTRY(lwt) current_threads;
 
 	/**
 	 * Previous runnable thread
@@ -271,9 +246,9 @@ struct lwt
 	 */
 	TAILQ_ENTRY(lwt) blocked_senders;
 	/**
-	 * Head of list of channels associated with lwt
+	 * Head of the receiver channels associated with the lwt
 	 */
-	struct head_receiver_channel head_receiver_channel;
+	LIST_HEAD(head_receiver_channel, lwt_channel) head_receiver_channel;
 
 	/**
 	 * The start routine for the thread to run

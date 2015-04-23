@@ -51,7 +51,7 @@ __thread lwt_t original_thread = NULL;
 /**
  * @brief List of all active threads created
  */
-__thread lwt_t current_threads = NULL;
+__thread LIST_HEAD(head_current, lwt) head_current;
 /**
  * @brief Head of the list of all runnable threads
  */
@@ -81,53 +81,6 @@ static inline int get_new_id(){
 	return next_id++;
 }
 
-
-/**
- * @brief Inserts the new thread before the old thread in the current list
- * @param old The old thread
- * @param new The new thread
- */
-static void insert_before_current(lwt_t old, lwt_t new){
-	//adjust new
-	new->next_current = old;
-	new->previous_current = old->previous_current;
-	//adjust old
-	if(old->previous_current){
-		old->previous_current->next_current = new;
-	}
-	old->previous_current = new;
-}
-
-
-/**
- * @brief Insert the new thread after the old thread in the current thread list
- * @param old The old thread
- * @param new The new thread
- */
-static void insert_after_current(lwt_t old, lwt_t new){
-	//adjust new
-	new->next_current = old->next_current;
-	new->previous_current = old;
-	//adjust old
-	if(old->next_current){
-		old->next_current->previous_current = new;
-	}
-	old->next_current = new;
-}
-
-/**
- * @brief Remove the given thread from the current list
- * @param thread The thread to be removed
- */
-static void remove_current(lwt_t thread){
-	//detach -> update next  + previous
-	if(thread->next_current){
-		thread->next_current->previous_current = thread->previous_current;
-	}
-	if(thread->previous_current){
-		thread->previous_current->next_current = thread->next_current;
-	}
-}
 
 /**
  * @brief Inserts the given thread to the head of the runnable thread list
@@ -282,7 +235,7 @@ lwt_t inline lwt_current(){
  */
 int lwt_info(lwt_info_t t){
 	int count = 0;
-	lwt_t current_thread = current_threads;
+	lwt_t current_thread = head_current.lh_first;
 	if(t == LWT_INFO_NCHAN){
 		while(current_thread){
 			lwt_chan_t current_channel = current_thread->head_receiver_channel.lh_first;
@@ -290,7 +243,7 @@ int lwt_info(lwt_info_t t){
 				count++;
 				current_channel = current_channel->receiver_channels.le_next;
 			}
-			current_thread = current_thread->next_current;
+			current_thread = current_thread->current_threads.le_next;
 		}
 	}
 	else{
@@ -298,7 +251,7 @@ int lwt_info(lwt_info_t t){
 			if(current_thread->info == t){
 				count++;
 			}
-			current_thread = current_thread->next_current;
+			current_thread = current_thread->current_threads.le_next;
 		}
 	}
 	return count;
@@ -321,14 +274,12 @@ void __init_lwt_main(lwt_t thread){
 	thread->parent = NULL;
 	LIST_INIT(&thread->head_children);
 
-	thread->previous_current = NULL;
-	thread->next_current = NULL;
-
 	thread->next_runnable = NULL;
 	thread->previous_runnable = NULL;
 
 	//add to current threads
-	current_threads = thread;
+	LIST_INIT(&head_current);
+	LIST_INSERT_HEAD(&head_current, thread, current_threads);
 
 	//set current thread
 	current_thread = thread;
@@ -338,7 +289,7 @@ void __init_lwt_main(lwt_t thread){
 	LIST_INIT(&thread->head_receiver_channel);
 
 	__init_kthd(thread);
-	LIST_INSERT_HEAD(&__get_kthd()->head_lwt_in_kthd, thread, lwts_in_kthd);
+	LIST_INSERT_HEAD(&__get_kthd()->head_lwts_in_kthd, thread, lwts_in_kthd);
 
 	thread->info = LWT_INFO_NTHD_RUNNABLE;
 }
@@ -353,9 +304,6 @@ void __init_new_lwt(lwt_t thread){
 	thread->max_addr_thread_stack = (long *)(thread->min_addr_thread_stack + STACK_SIZE);
 	assert(thread->max_addr_thread_stack);
 
-	thread->previous_current = NULL;
-	thread->next_current = NULL;
-
 	//init head to children
 	LIST_INIT(&thread->head_children);
 
@@ -363,7 +311,7 @@ void __init_new_lwt(lwt_t thread){
 	LIST_INIT(&thread->head_receiver_channel);
 
 	//add to the list of threads
-	insert_after_current(current_thread, thread);
+	LIST_INSERT_HEAD(&head_current, thread, current_threads);
 }
 
 /**
@@ -388,9 +336,6 @@ void __reinit_lwt(lwt_t thread){
 
 	//check that there are no children
 	assert(!thread->head_children.lh_first);
-	//check that there are no siblings
-	//assert(!thread->siblings.le_prev);
-	//assert(!thread->siblings.le_next);
 
 	thread->previous_ready_pool_thread = NULL;
 	thread->next_ready_pool_thread = NULL;
@@ -608,7 +553,7 @@ __attribute__((constructor)) void __init__(){
 	lwt_kthd_t pthread_kthd = __get_kthd();
 	pthread_kthd->buffer_thread = lwt_create(lwt_buffer, NULL, LWT_NOJOIN);
 	remove_from_runnable_threads(pthread_kthd->buffer_thread);
-	remove_current(pthread_kthd->buffer_thread);
+	LIST_REMOVE(pthread_kthd->buffer_thread, current_threads);
 	LIST_REMOVE(pthread_kthd->buffer_thread, siblings);
 	LIST_REMOVE(pthread_kthd->buffer_thread, lwts_in_kthd);
 	//pthread_kthd->buffer_thread->info = LWT_INFO_NTHD_BLOCKED;
@@ -629,14 +574,14 @@ __attribute__((destructor)) void __destroy__(){
 		free(pthread_kthd->buffer_thread);
 	}
 	//free threads
-	lwt_t current = current_threads;
+	lwt_t current = head_current.lh_first;
 	lwt_t next = NULL;
 	lwt_chan_t rcv_channels = NULL;
 	lwt_chan_t next_channel = NULL;
 
 	//check for no-joined threads and switch to them to let them die
 	while(current){
-		next = current->next_current;
+		next = current->current_threads.le_next;
 		if(current->flags == LWT_NOJOIN){
 			lwt_yield(current);
 		}
@@ -644,11 +589,11 @@ __attribute__((destructor)) void __destroy__(){
 		current = next;
 	}
 
-	current = current_threads;
+	current = head_current.lh_first;
 	next = NULL;
 
 	while(current){
-		next = current->next_current;
+		next = current->current_threads.le_next;
 
 		//remove any channels
 		rcv_channels = current->head_receiver_channel.lh_first;
@@ -723,7 +668,7 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data, lwt_flags_t flags){
 	//associate with kthd
 	lwt_kthd_t pthread_kthd = __get_kthd();
 	thread->kthd = pthread_kthd;
-	LIST_INSERT_HEAD(&pthread_kthd->head_lwt_in_kthd, thread, lwts_in_kthd);
+	LIST_INSERT_HEAD(&pthread_kthd->head_lwts_in_kthd, thread, lwts_in_kthd);
 
 	//insert into runnable list
 	__insert_runnable_tail(thread);
