@@ -170,6 +170,9 @@ struct kthd_event{
 	lwt_info_t new_info;
 };
 
+/**
+ * Point to the head of the list of lwts associated with a kthd
+ */
 LIST_HEAD(head_lwts_in_kthd, lwt) head_lwts_in_kthd;
 struct lwt_kthd{
 	pthread_t pthread;
@@ -193,6 +196,10 @@ struct lwt_kthd_data{
  * Head of the receiver channels associated with the lwt
  */
 LIST_HEAD(head_receiver_channel, lwt_channel) head_receiver_channel;
+/**
+ * Head of the list of children lwt's associated with the lwt
+ */
+LIST_HEAD(head_children, lwt) head_children;
 /**
  * @brief The Lightweight Thread (LWT) struct
  */
@@ -222,15 +229,11 @@ struct lwt
 	/**
 	 * List of children threads
 	 */
-	lwt_t children;
+	struct head_children head_children;
 	/**
-	 * Previous sibling
+	 * Pointers to sibling threads
 	 */
-	lwt_t previous_sibling;
-	/**
-	 * Next sibling
-	 */
-	lwt_t next_sibling;
+	LIST_ENTRY(lwt) siblings;
 
 	/**
 	 * Previous current thread

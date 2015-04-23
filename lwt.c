@@ -77,7 +77,7 @@ __thread lwt_t ready_pool_threads_tail = NULL;
  * @brief Counter for the id
  * @return The next id to use
  */
-static int get_new_id(){
+static inline int get_new_id(){
 	return next_id++;
 }
 
@@ -98,21 +98,6 @@ static void insert_before_current(lwt_t old, lwt_t new){
 	old->previous_current = new;
 }
 
-/**
- * @brief Inserts the new thread before the old thread in the sibling list
- * @param old The old thread
- * @param new The new thread
- */
-static void insert_before_sibling(lwt_t old, lwt_t new){
-	//adjust new
-	new->next_sibling = old;
-	new->previous_sibling = old->previous_sibling;
-	//adjust old
-	if(old->previous_sibling){
-		old->previous_sibling->next_sibling = new;
-	}
-	old->previous_sibling = new;
-}
 
 /**
  * @brief Insert the new thread after the old thread in the current thread list
@@ -131,22 +116,6 @@ static void insert_after_current(lwt_t old, lwt_t new){
 }
 
 /**
- * @brief Inserts the new thread after the old thread in the sibling thread list
- * @param old The old thread
- * @param new The new thread
- */
-static void insert_after_sibling(lwt_t old, lwt_t new){
-	//adjust new
-	new->next_sibling = old->next_sibling;
-	new->previous_sibling = old;
-	//adjust old
-	if(old->next_sibling){
-		old->next_sibling->previous_sibling = new;
-	}
-	old->next_sibling = new;
-}
-
-/**
  * @brief Remove the given thread from the current list
  * @param thread The thread to be removed
  */
@@ -159,22 +128,6 @@ static void remove_current(lwt_t thread){
 		thread->previous_current->next_current = thread->next_current;
 	}
 }
-
-/**
- * @brief Remove the given thread from the sibling list
- * @param thread The thread to be removed
- */
-static void remove_sibling(lwt_t thread){
-	//detach -> update next + previous
-	if(thread->next_sibling){
-		thread->next_sibling->previous_sibling = thread->previous_sibling;
-	}
-	if(thread->previous_sibling){
-		thread->previous_sibling->next_sibling = thread->next_sibling;
-	}
-}
-
-
 
 /**
  * @brief Inserts the given thread to the head of the runnable thread list
@@ -308,7 +261,7 @@ static void remove_ready_pool_thread(lwt_t thread){
  * @brief Gets the thread id
  * @return The id of the thread
  */
-int lwt_id(lwt_t thread){
+int inline lwt_id(lwt_t thread){
 	return thread->id;
 }
 
@@ -317,7 +270,7 @@ int lwt_id(lwt_t thread){
  * @brief Gets the current thread
  * @return The current thread
  */
-lwt_t lwt_current(){
+lwt_t inline lwt_current(){
 	return current_thread;
 }
 
@@ -366,10 +319,7 @@ void __init_lwt_main(lwt_t thread){
 	thread->id = get_new_id();
 
 	thread->parent = NULL;
-	thread->children = NULL;
-
-	thread->previous_sibling = NULL;
-	thread->next_sibling = NULL;
+	LIST_INIT(&thread->head_children);
 
 	thread->previous_current = NULL;
 	thread->next_current = NULL;
@@ -406,6 +356,9 @@ void __init_new_lwt(lwt_t thread){
 	thread->previous_current = NULL;
 	thread->next_current = NULL;
 
+	//init head to children
+	LIST_INIT(&thread->head_children);
+
 	//init receiving channels
 	LIST_INIT(&thread->head_receiver_channel);
 
@@ -432,10 +385,12 @@ void __reinit_lwt(lwt_t thread){
 
 	//set up parent
 	thread->parent = NULL;
-	thread->children = NULL;
 
-	thread->previous_sibling = NULL;
-	thread->next_sibling = NULL;
+	//check that there are no children
+	assert(!thread->head_children.lh_first);
+	//check that there are no siblings
+	//assert(!thread->siblings.le_prev);
+	//assert(!thread->siblings.le_next);
 
 	thread->previous_ready_pool_thread = NULL;
 	thread->next_ready_pool_thread = NULL;
@@ -518,23 +473,16 @@ void * lwt_join(lwt_t thread){
 void lwt_die(void * value){
 	current_thread->return_value = value;
 	//check to see if we can return
-	while(current_thread->children){
+	while(current_thread->head_children.lh_first){
 		current_thread->info = LWT_INFO_NTHD_BLOCKED;
 		lwt_yield(LWT_NULL);
 	}
 	//remove from parent thread
 	if(current_thread->parent){
-		//check siblings
-		if(current_thread->next_sibling ||
-				current_thread->previous_sibling){
-			remove_sibling(current_thread);
-		}
-		else{
-			current_thread->parent->children = NULL;
-		}
+		LIST_REMOVE(current_thread, siblings);
 
 		//check if parent can be unblocked
-		if(!current_thread->parent->children && current_thread->parent->info == LWT_INFO_NTHD_BLOCKED){
+		if(!current_thread->parent->head_children.lh_first && current_thread->parent->info == LWT_INFO_NTHD_BLOCKED){
 			current_thread->parent->info = LWT_INFO_NTHD_RUNNABLE;
 			__insert_runnable_tail(current_thread->parent);
 		}
@@ -661,7 +609,7 @@ __attribute__((constructor)) void __init__(){
 	pthread_kthd->buffer_thread = lwt_create(lwt_buffer, NULL, LWT_NOJOIN);
 	remove_from_runnable_threads(pthread_kthd->buffer_thread);
 	remove_current(pthread_kthd->buffer_thread);
-	remove_sibling(pthread_kthd->buffer_thread);
+	LIST_REMOVE(pthread_kthd->buffer_thread, siblings);
 	LIST_REMOVE(pthread_kthd->buffer_thread, lwts_in_kthd);
 	//pthread_kthd->buffer_thread->info = LWT_INFO_NTHD_BLOCKED;
 	//set up mutex and cv
@@ -763,6 +711,8 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data, lwt_flags_t flags){
 	remove_ready_pool_thread(thread);
 	//set thread's parent
 	thread->parent = current_thread;
+	//insert into parent's siblings
+	LIST_INSERT_HEAD(&current_thread->head_children, thread, siblings);
 	//set status
 	thread->info = LWT_INFO_NTHD_RUNNABLE;
 
