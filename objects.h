@@ -224,14 +224,11 @@ struct lwt
 	 */
 	TAILQ_ENTRY(lwt) runnable_threads;
 
+
 	/**
-	 * Previous ready pool thread
+	 * Pointers to ready pool threads
 	 */
-	lwt_t previous_ready_pool_thread;
-	/**
-	 * Next ready pool thread
-	 */
-	lwt_t next_ready_pool_thread;
+	LIST_ENTRY(lwt) ready_pool_threads;
 
 	/**
 	 * List of senders
