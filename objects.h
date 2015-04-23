@@ -10,6 +10,9 @@
 
 #include "pthread.h"
 #include "stdlib.h"
+
+#include <sys/queue.h>
+
 #include "enums.h"
 
 /**
@@ -50,14 +53,7 @@ typedef struct lwt* lwt_t;
  * @brief Event data
  */
 struct event{
-	/**
-	 * The previous event
-	 */
-	struct event * previous_event;
-	/**
-	 * The next event
-	 */
-	struct event * next_event;
+	TAILQ_ENTRY(event) events;
 	/**
 	 * The receiving channel with the new event
 	 */
@@ -68,26 +64,20 @@ struct event{
 	void * data;
 };
 
+LIST_HEAD(head_channels_in_group, lwt_channel) head_channels_in_group;
+TAILQ_HEAD(head_event, event) head_event;
 /**
  * @brief Channel group for handling events within a group
  */
 struct lwt_cgrp{
 	/**
-	 * Head of the list of channels
+	 * Head of the list of channels in groups
 	 */
-	lwt_chan_t channel_head;
-	/**
-	 * Tail of the list of channels
-	 */
-	lwt_chan_t channel_tail;
+	struct head_channels_in_group head_channels_in_group;
 	/**
 	 * Head of the event queue
 	 */
-	struct event * event_head;
-	/**
-	 * Tail of the event queue
-	 */
-	struct event * event_tail;
+	struct head_event head_event;
 	/**
 	 * Waiting thread
 	 */
@@ -138,15 +128,15 @@ struct lwt_channel{
 	/**
 	 * Start index of the buffer
 	 */
-	volatile unsigned int start_index;
+	unsigned int start_index;
 	/**
 	 * End index of the buffer
 	 */
-	volatile unsigned int end_index;
+	unsigned int end_index;
 	/**
 	 * Size of the buffer
 	 */
-	volatile unsigned int buffer_size;
+	unsigned int buffer_size;
 	/**
 	 * Current number of entries in buffer
 	 */
@@ -165,13 +155,9 @@ struct lwt_channel{
 	 */
 	lwt_cgrp_t channel_group;
 	/**
-	 * Previous channel in group
+	 * Channels in group entries
 	 */
-	lwt_chan_t previous_channel_in_group;
-	/**
-	 * Next channel in group
-	 */
-	lwt_chan_t next_channel_in_group;
+	LIST_ENTRY(lwt_channel) channels_in_group;
 	/**
 	 * Mark for channel
 	 */

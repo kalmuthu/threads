@@ -720,8 +720,8 @@ __attribute__((destructor)) void __destroy__(){
 			lwt_cgrp_t group = rcv_channels->channel_group;
 			if(group && group->creator_thread == current){
 				//free the buffer
-				while(group->event_head){
-					__pop_event(group);
+				while(group->head_event.tqh_first){
+					TAILQ_REMOVE(&group->head_event, group->head_event.tqh_first, events);
 				}
 				free(group);
 			}

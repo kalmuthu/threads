@@ -211,11 +211,12 @@ static void push_data_into_async_buffer(lwt_chan_t c, void * data){
 		lwt_yield(c->receiver);
 	}
 	//insert data into buffer
-	unsigned int index = fetch_and_add(&c->end_index, 1) % c->buffer_size;
+	unsigned int index = c->end_index % c->buffer_size;
+	c->end_index++;
 	c->async_buffer[index] = data;
 	__init_event(c, data);
 	//increment the num of entries
-	fetch_and_add(&c->num_entries, 1);
+	c->num_entries++;
 	//update status
 	__update_lwt_info(lwt_current(), LWT_INFO_NTHD_RUNNABLE);
 }
@@ -280,12 +281,13 @@ void * __pop_data_from_async_buffer(lwt_chan_t c){
 			lwt_yield(LWT_NULL);
 		}
 	}
-	unsigned int index = fetch_and_add(&c->start_index, 1) % c->buffer_size;
+	unsigned int index = c->start_index % c->buffer_size;
 	void * data = c->async_buffer[index];
+	c->start_index++;
 	//update buffer value
 	c->async_buffer[index] = NULL;
 	//decrement the number of entries
-	fetch_and_add(&c->num_entries, -1);
+	c->num_entries--;
 	__update_lwt_info(lwt_current(), LWT_INFO_NTHD_RUNNABLE);
 	return data;
 }
@@ -358,8 +360,6 @@ lwt_chan_t lwt_chan(int sz){
 	channel->num_entries = 0;
 	//prepare group
 	channel->channel_group = NULL;
-	channel->previous_channel_in_group = NULL;
-	channel->next_channel_in_group = NULL;
 	//mark
 	channel->mark = NULL;
 	return channel;

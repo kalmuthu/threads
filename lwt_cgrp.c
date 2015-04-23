@@ -12,139 +12,8 @@
 #include "stdlib.h"
 #include "assert.h"
 #include "stdio.h"
+#include "sys/queue.h"
 
-
-/**
- * @brief Inserts the channel into the head of the group
- * @param group The channel group to insert into
- * @param channel The channel to add
- */
-static void channel_insert_into_group_head(lwt_cgrp_t group, lwt_chan_t channel){
-	if(group->channel_head){
-		//channel will be new head
-		channel->next_channel_in_group = group->channel_head->next_channel_in_group;
-		channel->previous_channel_in_group = NULL;
-		group->channel_head->previous_channel_in_group = channel;
-		group->channel_head = channel;
-	}
-	else{
-		//channel will be head and tail
-		channel->previous_channel_in_group = NULL;
-		channel->next_channel_in_group = NULL;
-		group->channel_head = channel;
-		group->channel_tail = channel;
-	}
-}
-
-
-/**
- * @brief Adds the channel to the tail of the list
- * @param group The group to append to
- * @param channel The channel to add
- */
-static void channel_insert_group_tail(lwt_cgrp_t group, lwt_chan_t channel){
-	if(group->channel_tail){
-		//channel becomes new tail
-		channel->previous_channel_in_group = group->channel_tail;
-		channel->next_channel_in_group = NULL;
-		group->channel_tail->next_channel_in_group = channel;
-		group->channel_tail = channel;
-	}
-	else{
-		//channel becomes head and tail
-		channel->previous_channel_in_group = NULL;
-		channel->next_channel_in_group = NULL;
-		group->channel_head = channel;
-		group->channel_tail = channel;
-	}
-}
-
-/**
- * @brief Inserts the channel to the end of the event queue
- * @param group The channel group to append to
- * @param event The event to add
- */
-static void insert_into_event_tail(lwt_cgrp_t group, struct event * event){
-	if(group->event_tail){
-		event->previous_event = group->event_tail;
-		event->next_event = NULL;
-		group->event_tail->next_event = event;
-		group->event_tail = event;
-	}
-	else{
-		event->previous_event = NULL;
-		event->next_event = NULL;
-		group->event_head = event;
-		group->event_tail = event;
-	}
-}
-
-/**
- * @brief  Adds the channel to the event queue
- * @param group The group to add the event to
- * @param event The event to add
- */
-static void insert_into_event_head(lwt_cgrp_t group, struct event * event){
-	if(group->event_head){
-		//event will be new head
-		event->next_event = group->event_head;
-		event->previous_event = NULL;
-		group->event_head->next_event = event;
-		group->event_head = event;
-	}
-	else{
-		//channel will be new head and tail
-		event->next_event = NULL;
-		event->previous_event = NULL;
-		group->event_head = event;
-		group->event_tail = event;
-	}
-}
-
-
-/**
- * @brief Removes the channel from the group
- * @param channel The channel to remove
- * @param group The group to remove the channel from
- */
-static void remove_channel_from_group(lwt_chan_t channel, lwt_cgrp_t group){
-	//detach
-	if(channel->previous_channel_in_group){
-		channel->previous_channel_in_group->next_channel_in_group = channel->next_channel_in_group;
-	}
-	if(channel->next_channel_in_group){
-		channel->next_channel_in_group->previous_channel_in_group = channel->previous_channel_in_group;
-	}
-	if(channel == group->channel_head){
-		group->channel_head = group->channel_head->next_channel_in_group;
-	}
-	if(channel == group->channel_tail){
-		group->channel_tail = group->channel_tail->previous_channel_in_group;
-	}
-	channel->channel_group = NULL;
-}
-
-
-
-/**
- * @brief Removes the channel from the event queue
- * @param event The event to remove
- * @param group The group to alter
- */
-static void remove_event_from_group(struct event * event, lwt_cgrp_t group){
-	if(event->previous_event){
-		event->previous_event->next_event = event->next_event;
-	}
-	if(event->next_event){
-		event->next_event->previous_event = event->previous_event;
-	}
-	if(event == group->event_head){
-		group->event_head = group->event_head->next_event;
-	}
-	if(event == group->event_tail){
-		group->event_tail = group->event_tail->previous_event;
-	}
-}
 
 
 /**
@@ -156,7 +25,7 @@ static void remove_event_from_group(struct event * event, lwt_cgrp_t group){
 void __init_event(lwt_chan_t channel, void * data){
 	if(channel->channel_group){
 		struct event * event = __create_event(channel, data);
-		insert_into_event_tail(channel->channel_group, event);
+		TAILQ_INSERT_TAIL(&channel->channel_group->head_event, event, events);
 		if(channel->async_buffer && channel->channel_group->waiting_thread && channel->channel_group->waiting_thread->info != LWT_INFO_NTHD_RUNNABLE){
 			channel->channel_group->waiting_thread->info = LWT_INFO_NTHD_RUNNABLE;
 			__insert_runnable_tail(channel->channel_group->waiting_thread);
@@ -175,8 +44,6 @@ struct event * __create_event(lwt_chan_t channel, void * data){
 	assert(event);
 	event->data = data;
 	event->channel = channel;
-	event->previous_event = NULL;
-	event->next_event = NULL;
 	return event;
 }
 
@@ -186,19 +53,9 @@ struct event * __create_event(lwt_chan_t channel, void * data){
  */
 void free_event(struct event * event){
 	if(event->channel->channel_group){
-		remove_event_from_group(event, event->channel->channel_group);
+
 	}
 	free(event);
-}
-
-/**
- * @brief Pops the event from the group
- * @param group The channel group to alter
- */
-void __pop_event(lwt_cgrp_t group){
-	if(group->event_head){
-		free_event(group->event_head);
-	}
 }
 
 
@@ -212,10 +69,8 @@ lwt_cgrp_t lwt_cgrp(){
 	if(!group){
 		return LWT_NULL;
 	}
-	group->channel_head = NULL;
-	group->channel_tail = NULL;
-	group->event_head = NULL;
-	group->event_tail = NULL;
+	LIST_INIT(&group->head_channels_in_group);
+	TAILQ_INIT(&group->head_event);
 	group->waiting_thread = NULL;
 	group->creator_thread = lwt_current();
 	return group;
@@ -229,12 +84,12 @@ lwt_cgrp_t lwt_cgrp(){
  * @return 0 if successful; -1 if there are pending events
  */
 int lwt_cgrp_free(lwt_cgrp_t group){
-	if(group->event_head){
+	if(group->head_event.tqh_first){
 		return -1;
 	}
 	//remove the group from the channels
-	while(group->channel_head){
-		remove_channel_from_group(group->channel_head, group);
+	while(group->head_channels_in_group.lh_first){
+		LIST_REMOVE(group->head_channels_in_group.lh_first, channels_in_group);
 	}
 	free(group);
 	return 0;
@@ -251,7 +106,7 @@ int lwt_cgrp_add(lwt_cgrp_t group, lwt_chan_t channel){
 		return -1;
 	}
 	channel->channel_group = group;
-	channel_insert_group_tail(group, channel);
+	LIST_INSERT_HEAD(&group->head_channels_in_group, channel, channels_in_group);
 
 	return 0;
 }
@@ -267,11 +122,11 @@ int lwt_cgrp_rem(lwt_cgrp_t group, lwt_chan_t channel){
 		//printf("Assigned group is not provided channel\n");
 		return -1;
 	}
-	if(group->event_head){
+	if(group->head_event.tqh_first){
 		//printf("Event queue is not empty\n");
 		return 1;
 	}
-	remove_channel_from_group(channel, group);
+	LIST_REMOVE(channel, channels_in_group);
 	return 0;
 }
 
@@ -284,13 +139,13 @@ lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t group){
 	group->waiting_thread = lwt_current();
 	__update_lwt_info(group->waiting_thread, LWT_INFO_NRECEIVING);
 	//wait until there is an event in the queue
-	while(!group->event_head){
+	while(!group->head_event.tqh_first){
 		lwt_yield(LWT_NULL);
 	}
 	__update_lwt_info(lwt_current(), LWT_INFO_NTHD_RUNNABLE);
 	group->waiting_thread = NULL;
-	lwt_chan_t channel = group->event_head->channel;
-	__pop_event(group);
+	lwt_chan_t channel = group->head_event.tqh_first->channel;
+	TAILQ_REMOVE(&group->head_event, group->head_event.tqh_first, events);
 	return channel;
 }
 
