@@ -220,9 +220,13 @@ struct lwt
 	LIST_ENTRY(lwt) current_threads;
 
 	/**
-	 * Pointers to runnable threads
+	 * Previous runnable thread
 	 */
-	TAILQ_ENTRY(lwt) runnable_threads;
+	lwt_t previous_runnable;
+	/**
+	 * Next runnable thread
+	 */
+	lwt_t next_runnable;
 
 	/**
 	 * Previous ready pool thread
