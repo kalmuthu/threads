@@ -64,7 +64,13 @@ struct event{
 	void * data;
 };
 
+/**
+ * @brief Definition of the head in the channels
+ */
 LIST_HEAD(head_channels_in_group, lwt_channel) head_channels_in_group;
+/**
+ * @brief Definition of the head node for the event queue
+ */
 TAILQ_HEAD(head_event, event) head_event;
 /**
  * @brief Channel group for handling events within a group
@@ -88,31 +94,30 @@ struct lwt_cgrp{
 	lwt_t creator_thread;
 };
 
-
+/**
+ * @brief Definition of the senders head pointer
+ */
+LIST_HEAD(head_senders, lwt) head_senders;
+/**
+ * @brief Definition of the blocked senders head pointer
+ */
+TAILQ_HEAD(head_blocked_senders, lwt) head_blocked_senders;
 /**
  * @brief The channel for synchronous and asynchronous communication
  */
 struct lwt_channel{
 	/**
-	 * The list of senders head
+	 * The head of the senders list
 	 */
-	lwt_t senders_head;
-	/**
-	 * The list of senders tail
-	 */
-	lwt_t senders_tail;
+	struct head_senders head_senders;
 	/**
 	 * The number of senders
 	 */
 	int snd_cnt;
 	/**
-	 * The head of the blocked senders
+	 * The head of the blocked senders list
 	 */
-	lwt_t blocked_senders_head;
-	/**
-	 * The tail of the blocked senders
-	 */
-	lwt_t blocked_senders_tail;
+	struct head_blocked_senders head_blocked_senders;
 	/**
 	 * The receiving thread
 	 */
@@ -257,21 +262,13 @@ struct lwt
 	lwt_t next_ready_pool_thread;
 
 	/**
-	 * Previous sender thread
+	 * List of senders
 	 */
-	lwt_t previous_sender;
+	LIST_ENTRY(lwt) senders;
 	/**
-	 * Next sender thread
+	 * List of blocked senders
 	 */
-	lwt_t next_sender;
-	/**
-	 * Previous blocked sender thread
-	 */
-	lwt_t previous_blocked_sender;
-	/**
-	 * Next blocked sender thread
-	 */
-	lwt_t next_blocked_sender;
+	TAILQ_ENTRY(lwt) blocked_senders;
 	/**
 	 * List of receiving channels associated with the thread
 	 */

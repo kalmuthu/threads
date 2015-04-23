@@ -377,12 +377,6 @@ void __init_lwt_main(lwt_t thread){
 	thread->next_runnable = NULL;
 	thread->previous_runnable = NULL;
 
-	thread->next_sender = NULL;
-	thread->previous_sender = NULL;
-	thread->receiving_channels = NULL;
-	thread->next_blocked_sender = NULL;
-	thread->previous_blocked_sender = NULL;
-
 	//add to current threads
 	current_threads = thread;
 
@@ -436,12 +430,6 @@ void __reinit_lwt(lwt_t thread){
 
 	thread->previous_sibling = NULL;
 	thread->next_sibling = NULL;
-
-	thread->previous_sender = NULL;
-	thread->next_sender = NULL;
-	thread->receiving_channels = NULL;
-	thread->next_blocked_sender = NULL;
-	thread->previous_blocked_sender = NULL;
 
 	thread->previous_ready_pool_thread = NULL;
 	thread->next_ready_pool_thread = NULL;

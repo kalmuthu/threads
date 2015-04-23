@@ -98,7 +98,7 @@ int lwt_kthd_create(lwt_chan_fn_t fn, lwt_chan_t c, lwt_flags_t flags){
 		return -1;
 	}
 	//wait until there's a head
-	while(!c->senders_head){
+	while(!c->head_senders.lh_first){
 		lwt_yield(LWT_NULL);
 	}
 	if(pthread_attr_destroy(&attr)){
