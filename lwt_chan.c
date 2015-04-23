@@ -8,57 +8,13 @@
 #include "lwt.h"
 #include "lwt_cgrp.h"
 
+#include "objects.h"
+
 #include "stdio.h"
 #include "stdlib.h"
 #include "assert.h"
 #include "faa.h"
 
-/**
- * @brief Inserts the new channel before the old channel in the channel list
- * @param old The old channel
- * @param new The new channel
- */
-static void insert_before_chan(lwt_chan_t old, lwt_chan_t new){
-	//adjust new
-	new->next_sibling = old;
-	new->previous_sibling = old->previous_sibling;
-	//adjust old
-	if(old->previous_sibling){
-		old->previous_sibling->next_sibling = new;
-	}
-	old->previous_sibling = new;
-}
-
-/**
- * @brief Inserts the new channel after the old channel in the channel list
- * @param old The old thread
- * @param new The new thread
- */
-static void insert_after_channel(lwt_chan_t old, lwt_chan_t new){
-	//adjust new
-	new->next_sibling = old->next_sibling;
-	new->previous_sibling = old;
-	//adjust old
-	if(old->next_sibling){
-		old->next_sibling->previous_sibling = new;
-	}
-	old->next_sibling = new;
-}
-
-
-/**
- * @brief Remove the channel from the list of channels
- * @param channel The channel to be removed
- */
-void __remove_channel(lwt_chan_t channel){
-	//detach -> update next + previous
-	if(channel->next_sibling){
-		channel->next_sibling->previous_sibling = channel->previous_sibling;
-	}
-	if(channel->previous_sibling){
-		channel->previous_sibling->next_sibling = channel->next_sibling;
-	}
-}
 
 
 /**
@@ -200,9 +156,9 @@ lwt_chan_t lwt_chan(int sz){
 	assert(sz >= 0);
 	lwt_chan_t channel = (lwt_chan_t)malloc(sizeof(struct lwt_channel));
 	assert(channel);
-	channel->receiver = lwt_current();
-	channel->next_sibling = NULL;
-	channel->previous_sibling = NULL;
+	lwt_t current = lwt_current();
+	channel->receiver = current;
+	LIST_INSERT_HEAD(&current->head_channel, channel, channels);
 	LIST_INIT(&channel->head_senders);
 	channel->snd_cnt = 0;
 	TAILQ_INIT(&channel->head_blocked_senders);
@@ -277,12 +233,7 @@ lwt_chan_t lwt_rcv_chan(lwt_chan_t c){
 void lwt_chan_deref(lwt_chan_t c){
 	if(c->receiver == lwt_current()){
 		//printf("Removing receiver\n");
-		if(c->next_sibling || c->previous_sibling){
-			__remove_channel(c);
-		}
-		else{
-			c->receiver->receiving_channels = NULL;
-		}
+		LIST_REMOVE(c, channels);
 		c->receiver = NULL;
 	}
 	else{

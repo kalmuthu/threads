@@ -145,7 +145,9 @@ lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t group){
 	__update_lwt_info(lwt_current(), LWT_INFO_NTHD_RUNNABLE);
 	group->waiting_thread = NULL;
 	lwt_chan_t channel = group->head_event.tqh_first->channel;
-	TAILQ_REMOVE(&group->head_event, group->head_event.tqh_first, events);
+	struct event * head_event = group->head_event.tqh_first;
+	TAILQ_REMOVE(&group->head_event, head_event, events);
+	free(head_event);
 	return channel;
 }
 

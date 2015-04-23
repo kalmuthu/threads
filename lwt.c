@@ -332,10 +332,10 @@ int lwt_info(lwt_info_t t){
 	lwt_t current_thread = current_threads;
 	if(t == LWT_INFO_NCHAN){
 		while(current_thread){
-			lwt_chan_t current_channel = current_thread->receiving_channels;
+			lwt_chan_t current_channel = current_thread->head_channel.lh_first;
 			while(current_channel){
 				count++;
-				current_channel = current_channel->next_sibling;
+				current_channel = current_channel->channels.le_next;
 			}
 			current_thread = current_thread->next_current;
 		}
@@ -384,6 +384,9 @@ void __init_lwt_main(lwt_t thread){
 	current_thread = thread;
 	original_thread = thread;
 
+	//init receiving channels
+	LIST_INIT(&thread->head_channel);
+
 	__init_kthd(thread);
 	__insert_lwt_into_tail(__get_kthd(), thread);
 
@@ -402,6 +405,9 @@ void __init_new_lwt(lwt_t thread){
 
 	thread->previous_current = NULL;
 	thread->next_current = NULL;
+
+	//init receiving channels
+	LIST_INIT(&thread->head_channel);
 
 	//add to the list of threads
 	insert_after_current(current_thread, thread);
@@ -436,6 +442,9 @@ void __reinit_lwt(lwt_t thread){
 
 	thread->previous_kthd_thread = NULL;
 	thread->next_kthd_thread = NULL;
+
+	//check that there are no channels
+	assert(!thread->head_channel.lh_first);
 
 	//reset flags to 0
 	thread->flags = LWT_JOIN;
@@ -697,9 +706,9 @@ __attribute__((destructor)) void __destroy__(){
 		next = current->next_current;
 
 		//remove any channels
-		rcv_channels = current->receiving_channels;
+		rcv_channels = current->head_channel.lh_first;
 		while(rcv_channels){
-			next_channel = rcv_channels->next_sibling;
+			next_channel = rcv_channels->channels.le_next;
 			//free buffer
 			if(rcv_channels->async_buffer){
 				free(rcv_channels->async_buffer);

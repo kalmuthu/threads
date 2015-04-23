@@ -147,13 +147,9 @@ struct lwt_channel{
 	 */
 	unsigned int num_entries;
 	/**
-	 * Previous sibling channel
+	 * List of channels in lwt
 	 */
-	lwt_chan_t previous_sibling;
-	/**
-	 * Next sibling channel
-	 */
-	lwt_chan_t next_sibling;
+	LIST_ENTRY(lwt_channel) channels;
 
 	/**
 	 * Channel group
@@ -194,7 +190,7 @@ struct lwt_kthd_data{
 };
 
 
-
+LIST_HEAD(head_channel, lwt_channel) head_channel;
 /**
  * @brief The Lightweight Thread (LWT) struct
  */
@@ -270,9 +266,9 @@ struct lwt
 	 */
 	TAILQ_ENTRY(lwt) blocked_senders;
 	/**
-	 * List of receiving channels associated with the thread
+	 * Head of list of channels associated with lwt
 	 */
-	lwt_chan_t receiving_channels;
+	struct head_channel head_channel;
 
 	/**
 	 * The start routine for the thread to run
