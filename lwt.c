@@ -388,7 +388,7 @@ void __init_lwt_main(lwt_t thread){
 	LIST_INIT(&thread->head_channel);
 
 	__init_kthd(thread);
-	__insert_lwt_into_tail(__get_kthd(), thread);
+	LIST_INSERT_HEAD(&__get_kthd()->head_lwt_in_kthd, thread, lwts_in_kthd);
 
 	thread->info = LWT_INFO_NTHD_RUNNABLE;
 }
@@ -439,9 +439,6 @@ void __reinit_lwt(lwt_t thread){
 
 	thread->previous_ready_pool_thread = NULL;
 	thread->next_ready_pool_thread = NULL;
-
-	thread->previous_kthd_thread = NULL;
-	thread->next_kthd_thread = NULL;
 
 	//check that there are no channels
 	assert(!thread->head_channel.lh_first);
@@ -554,7 +551,7 @@ void lwt_die(void * value){
 
 	//remove from kthd
 	if(current_thread->kthd){
-		__remove_lwt_from_kthd(current_thread->kthd, current_thread);
+		LIST_REMOVE(current_thread, lwts_in_kthd);
 	}
 
 	//switch to another thread
@@ -665,7 +662,7 @@ __attribute__((constructor)) void __init__(){
 	remove_from_runnable_threads(pthread_kthd->buffer_thread);
 	remove_current(pthread_kthd->buffer_thread);
 	remove_sibling(pthread_kthd->buffer_thread);
-	__remove_lwt_from_kthd(pthread_kthd, pthread_kthd->buffer_thread);
+	LIST_REMOVE(pthread_kthd->buffer_thread, lwts_in_kthd);
 	//pthread_kthd->buffer_thread->info = LWT_INFO_NTHD_BLOCKED;
 	//set up mutex and cv
 	pthread_mutex_init(&pthread_kthd->blocked_mutex, NULL);
@@ -776,7 +773,7 @@ lwt_t lwt_create(lwt_fnt_t fn, void * data, lwt_flags_t flags){
 	//associate with kthd
 	lwt_kthd_t pthread_kthd = __get_kthd();
 	thread->kthd = pthread_kthd;
-	__insert_lwt_into_tail(pthread_kthd, thread);
+	LIST_INSERT_HEAD(&pthread_kthd->head_lwt_in_kthd, thread, lwts_in_kthd);
 
 	//insert into runnable list
 	__insert_runnable_tail(thread);

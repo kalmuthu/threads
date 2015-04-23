@@ -17,62 +17,13 @@
  */
 __thread lwt_kthd_t pthread_kthd;
 
-static void insert_lwt_into_head(lwt_kthd_t kthd, lwt_t thread){
-	if(kthd->lwt_head){
-		//thread becomes new head
-		thread->previous_kthd_thread = NULL;
-		thread->next_kthd_thread = kthd->lwt_head;
-		kthd->lwt_head->previous_kthd_thread = thread;
-		kthd->lwt_head = thread;
-	}
-	else{
-		//thread becomes head and tail
-		thread->previous_kthd_thread = NULL;
-		thread->next_kthd_thread = NULL;
-		kthd->lwt_head = thread;
-		kthd->lwt_tail = thread;
-	}
-}
-
-void __insert_lwt_into_tail(lwt_kthd_t kthd, lwt_t thread){
-	if(kthd->lwt_tail){
-		//thread becomes new tail
-		thread->next_kthd_thread = NULL;
-		thread->previous_kthd_thread = kthd->lwt_tail;
-		kthd->lwt_tail->next_kthd_thread = thread;
-		kthd->lwt_tail = thread;
-	}
-	else{
-		thread->next_kthd_thread = NULL;
-		thread->previous_kthd_thread = NULL;
-		kthd->lwt_head = thread;
-		kthd->lwt_tail = thread;
-	}
-}
-
-void __remove_lwt_from_kthd(lwt_kthd_t kthd, lwt_t thread){
-	if(thread->previous_kthd_thread){
-		thread->previous_kthd_thread->next_kthd_thread = thread->next_kthd_thread;
-	}
-	if(thread->next_kthd_thread){
-		thread->next_kthd_thread->previous_kthd_thread = thread->previous_kthd_thread;
-	}
-	//adjust head
-	if(kthd->lwt_head == thread){
-		kthd->lwt_head = kthd->lwt_head->next_kthd_thread;
-	}
-	//adjust tail
-	if(kthd->lwt_tail == thread){
-		kthd->lwt_tail = kthd->lwt_tail->previous_kthd_thread;
-	}
-}
 
 void * pthread_function(void * data){
 	__init__();
 	struct lwt_kthd_data * thd_data = (struct lwt_kthd_data *)data;
 	lwt_t lwt = lwt_create_chan(thd_data->channel_fn, thd_data->channel, thd_data->flags);
 	assert(lwt);
-	while(pthread_kthd->lwt_head){
+	while(pthread_kthd->head_lwt_in_kthd.lh_first){
 		lwt_yield(LWT_NULL);
 	}
 	__destroy__();
@@ -164,6 +115,7 @@ void __init_kthd(lwt_t lwt){
 	assert(pthread_kthd);
 	pthread_kthd->pthread = pthread_self();
 	lwt->kthd = pthread_kthd;
+	LIST_INIT(&pthread_kthd->head_lwt_in_kthd);
 }
 
 lwt_kthd_t __get_kthd(){

@@ -170,10 +170,10 @@ struct kthd_event{
 	lwt_info_t new_info;
 };
 
+LIST_HEAD(head_lwts_in_kthd, lwt) head_lwts_in_kthd;
 struct lwt_kthd{
 	pthread_t pthread;
-	lwt_t lwt_head;
-	lwt_t lwt_tail;
+	struct head_lwts_in_kthd head_lwt_in_kthd;
 	int is_blocked;
 	pthread_mutex_t blocked_mutex;
 	pthread_cond_t blocked_cv;
@@ -294,13 +294,9 @@ struct lwt
 	int id;
 
 	/**
-	 * Previous thread in kernel thread list
+	 * List of lwts in the kthd
 	 */
-	lwt_t previous_kthd_thread;
-	/**
-	 * Next thread in kernel thread list
-	 */
-	lwt_t next_kthd_thread;
+	LIST_ENTRY(lwt) lwts_in_kthd;
 	/**
 	 * Pointer to kthd
 	 */
