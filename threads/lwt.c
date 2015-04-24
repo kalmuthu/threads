@@ -66,12 +66,7 @@ __thread lwt_t runnable_threads_tail = NULL;
 /**
  * @brief Head of ready pool threads
  */
-__thread lwt_t ready_pool_threads_head = NULL;
-
-/**
- * @brief Tail of ready pool threads
- */
-__thread lwt_t ready_pool_threads_tail = NULL;
+__thread LIST_HEAD(head_ready_pool_threads, lwt) head_ready_pool_threads;
 
 /**
  * @brief Counter for the id
@@ -104,28 +99,6 @@ static void insert_runnable_head(lwt_t thread){
 }
 
 /**
- * @brief Inserts the thread to the head of the pool
- * @param thread The thread to be inserted
- */
-static void insert_ready_pool_thread_head(lwt_t thread){
-	if(ready_pool_threads_head){
-		//thread will be new head
-		thread->previous_ready_pool_thread = NULL;
-		thread->next_ready_pool_thread = ready_pool_threads_head;
-		ready_pool_threads_head->previous_ready_pool_thread = thread;
-		ready_pool_threads_head = thread;
-	}
-	else{
-		//thread will be new head and tail
-		thread->previous_ready_pool_thread = NULL;
-		thread->next_ready_pool_thread = NULL;
-		ready_pool_threads_head = thread;
-		ready_pool_threads_tail = thread;
-	}
-}
-
-
-/**
  * @brief Inserts the given thread to the tail of the runnable thread list
  * @param thread The new thread to be inserted in the list of runnable threads
  */
@@ -143,27 +116,6 @@ void __insert_runnable_tail(lwt_t thread){
 		thread->next_runnable = NULL;
 		runnable_threads_head = thread;
 		runnable_threads_tail = thread;
-	}
-}
-
-/**
- * @brief Inserts the pool thread at the tail of the ready pool
- * @param thread The thread to be pushed
- */
-static void insert_ready_pool_thread_tail(lwt_t thread){
-	if(ready_pool_threads_tail){
-		//thread will be new tail
-		thread->next_ready_pool_thread = NULL;
-		thread->previous_ready_pool_thread = ready_pool_threads_tail;
-		ready_pool_threads_tail->next_ready_pool_thread = thread;
-		ready_pool_threads_tail = thread;
-	}
-	else{
-		//thread will be head and tail
-		thread->previous_ready_pool_thread = NULL;
-		thread->next_ready_pool_thread = NULL;
-		ready_pool_threads_head = thread;
-		ready_pool_threads_tail = thread;
 	}
 }
 
@@ -186,27 +138,6 @@ static void remove_from_runnable_threads(lwt_t thread){
 	//update tail
 	if(thread == runnable_threads_tail){
 		runnable_threads_tail = runnable_threads_tail->previous_runnable;
-	}
-}
-
-/**
- * @brief Removes the thread from the ready pool
- * @param thread The thread to be removed
- */
-static void remove_ready_pool_thread(lwt_t thread){
-	if(thread->next_ready_pool_thread){
-		thread->next_ready_pool_thread->previous_ready_pool_thread = thread->previous_ready_pool_thread;
-	}
-	if(thread->previous_ready_pool_thread){
-		thread->previous_ready_pool_thread->next_ready_pool_thread = thread->next_ready_pool_thread;
-	}
-	//adjust head
-	if(thread == ready_pool_threads_head){
-		ready_pool_threads_head = ready_pool_threads_head->next_ready_pool_thread;
-	}
-	//adjust tail
-	if(thread == ready_pool_threads_tail){
-		ready_pool_threads_tail = ready_pool_threads_tail->previous_ready_pool_thread;
 	}
 }
 
@@ -337,9 +268,6 @@ void __reinit_lwt(lwt_t thread){
 	//check that there are no children
 	assert(!thread->head_children.lh_first);
 
-	thread->previous_ready_pool_thread = NULL;
-	thread->next_ready_pool_thread = NULL;
-
 	//check that there are no channels
 	assert(!thread->head_receiver_channel.lh_first);
 
@@ -348,7 +276,7 @@ void __reinit_lwt(lwt_t thread){
 
 	//add to ready pool
 	thread->info = LWT_INFO_NTHD_READY_POOL;
-	insert_ready_pool_thread_tail(thread);
+	LIST_INSERT_HEAD(&head_ready_pool_threads, thread, ready_pool_threads);
 }
 
 /**
@@ -542,6 +470,7 @@ __attribute__((constructor)) void __init__(){
 	__init_lwt_main(curr_thread);
 	//set up pool
 	int num_threads;
+	LIST_INIT(&head_ready_pool_threads);
 	lwt_t new_pool_thread;
 	for(num_threads = 0; num_threads < POOL_SIZE; ++num_threads){
 		new_pool_thread = (lwt_t)malloc(sizeof(struct lwt));
@@ -647,13 +576,13 @@ __attribute__((destructor)) void __destroy__(){
  */
 lwt_t lwt_create(lwt_fnt_t fn, void * data, lwt_flags_t flags){
 	//wait until there's a free thread
-	while(!ready_pool_threads_head){
+	while(!head_ready_pool_threads.lh_first){
 		lwt_yield(LWT_NULL);
 	}
 
 	//pop the head of the ready pool list
-	lwt_t thread = ready_pool_threads_head;
-	remove_ready_pool_thread(thread);
+	lwt_t thread = head_ready_pool_threads.lh_first;
+	LIST_REMOVE(thread, ready_pool_threads);
 	//set thread's parent
 	thread->parent = current_thread;
 	//insert into parent's siblings

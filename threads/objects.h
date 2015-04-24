@@ -229,13 +229,9 @@ struct lwt
 	lwt_t next_runnable;
 
 	/**
-	 * Previous ready pool thread
+	 * List of runnable pool threads
 	 */
-	lwt_t previous_ready_pool_thread;
-	/**
-	 * Next ready pool thread
-	 */
-	lwt_t next_ready_pool_thread;
+	LIST_ENTRY(lwt) ready_pool_threads;
 
 	/**
 	 * List of senders
