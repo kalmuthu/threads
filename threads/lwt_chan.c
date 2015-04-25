@@ -54,23 +54,28 @@ static int push_data_into_sync_buffer(lwt_chan_t c, void * data){
 		return -1;
 	}
 
+	lwt_current()->sync_buffer = data;
 	//insert into blocked queue
 	TAILQ_INSERT_TAIL(&c->head_blocked_senders, lwt_current(), blocked_senders);
+	c->num_entries = 1;
+	__init_event(c);
+	if(c->receiver->info == LWT_INFO_NRECEIVING){
+		lwt_signal(c->receiver);
+		lwt_yield(LWT_NULL);
+	}
 	//if receiver isn't waiting to receive block
-	while(c->receiver->info != LWT_INFO_NRECEIVING){
-		lwt_block(LWT_INFO_NSENDING);
+	else{
+		//while(c->receiver->info != LWT_INFO_NRECEIVING){
+			lwt_block(LWT_INFO_NSENDING);
+		//}
 	}
 
-	c->sync_buffer = data;
-	c->num_entries = 1;
-	//send data
-	__init_event(c);
+
 
 	//signal receiver
 	//printf("Signaling receiver on lwt: %d\n", lwt_current()->id);
 
-	lwt_signal(c->receiver);
-	lwt_yield(LWT_NULL);
+	//lwt_signal(c->receiver);
 	return 0;
 }
 
@@ -107,7 +112,7 @@ void * __pop_data_from_async_buffer(lwt_chan_t c){
  * @param c The channel being examined
  */
 static void * pop_data_from_sync_buffer(lwt_chan_t c){
-	if(!c || !c->head_senders.lh_first){
+	if(!c || c->snd_cnt <= 0){
 		perror("NO Senders for receiving channel\n");
 		return NULL;
 	}
@@ -121,15 +126,9 @@ static void * pop_data_from_sync_buffer(lwt_chan_t c){
 	lwt_t sender = c->head_blocked_senders.tqh_first;
 	TAILQ_REMOVE(&c->head_blocked_senders, sender, blocked_senders);
 
-	while(!c->sync_buffer){
-		//printf("Receiver waiting for buffer to be read in: %d\n", (int)c);
-		lwt_signal(sender);
-		lwt_block(LWT_INFO_NRECEIVING);
-	}
-
-	void * data = c->sync_buffer;
-	c->sync_buffer = NULL;
-	c->num_entries = 0;
+	void * data = sender->sync_buffer;
+	sender->sync_buffer = NULL;
+	assert(data);
 
 	lwt_signal(sender);
 
@@ -225,12 +224,13 @@ void lwt_chan_deref(lwt_chan_t c){
 		LIST_REMOVE(c, receiver_channels);
 		c->receiver = NULL;
 	}
-	else{
+	else if(c->snd_cnt > 0){
 		LIST_REMOVE(lwt_current(), senders);
 		c->snd_cnt--;
 		//printf("Removing sender (%d) from channel: %d\n", lwt_current()->id, (int)c);
 	}
-	if(!c->receiver && !c->head_senders.lh_first){
+	//printf("Current sender count: %d\n", c->snd_cnt);
+	if(!c->receiver && c->snd_cnt == 0){
 		//printf("FREEING CHANNEL: %d!!\n", (int)c);
 		if(c->async_buffer){
 			free(c->async_buffer);

@@ -503,7 +503,6 @@ __attribute__((destructor)) void __destroy__(){
 				}
 				free(group);
 			}
-
 			free(rcv_channels);
 			rcv_channels = next_channel;
 		}

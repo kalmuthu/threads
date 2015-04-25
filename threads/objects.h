@@ -249,6 +249,11 @@ struct lwt
 	LIST_HEAD(head_receiver_channel, lwt_channel) head_receiver_channel;
 
 	/**
+	 * Sync buffer
+	 */
+	void * sync_buffer;
+
+	/**
 	 * The start routine for the thread to run
 	 */
 	lwt_fnt_t start_routine;
