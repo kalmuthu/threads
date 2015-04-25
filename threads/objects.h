@@ -33,6 +33,8 @@
  */
 #define STACK_SIZE PAGE_SIZE*NUM_PAGES
 
+#define DEBUG 1
+
 /**
  * Null id for yields
  */
@@ -77,7 +79,7 @@ struct lwt_cgrp{
 	/**
 	 * Definition of the head node for the event queue
 	 */
-	TAILQ_HEAD(head_event, event) head_event;
+	TAILQ_HEAD(head_event, lwt_channel) head_event;
 	/**
 	 * Waiting thread
 	 */
@@ -149,6 +151,10 @@ struct lwt_channel{
 	 * Mark for channel
 	 */
 	void * mark;
+	/**
+	 * Channels in event
+	 */
+	TAILQ_ENTRY(lwt_channel) events;
 };
 
 struct kthd_event{
@@ -220,13 +226,9 @@ struct lwt
 	LIST_ENTRY(lwt) current_threads;
 
 	/**
-	 * Previous runnable thread
+	 * List of runnable threads
 	 */
-	lwt_t previous_runnable;
-	/**
-	 * Next runnable thread
-	 */
-	lwt_t next_runnable;
+	TAILQ_ENTRY(lwt) runnable_threads;
 
 	/**
 	 * List of runnable pool threads

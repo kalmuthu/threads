@@ -20,15 +20,15 @@
  * @brief Initializes the event for when data is added to the channel
  * @param channel The channel with the new data
  * @param sender The sender lwt
- * @param data The data being inserted
  */
-void __init_event(lwt_chan_t channel, void * data){
-	if(channel->channel_group){
-		struct event * event = __create_event(channel, data);
-		TAILQ_INSERT_TAIL(&channel->channel_group->head_event, event, events);
-		if(channel->async_buffer && channel->channel_group->waiting_thread && channel->channel_group->waiting_thread->info != LWT_INFO_NTHD_RUNNABLE){
-			channel->channel_group->waiting_thread->info = LWT_INFO_NTHD_RUNNABLE;
-			__insert_runnable_tail(channel->channel_group->waiting_thread);
+void __init_event(lwt_chan_t channel){
+	if(channel->channel_group && channel->num_entries == 1){
+		//printf("Inserting event for channel: %d\n", (int)channel);
+		//printf("Num entries: %d\n", channel->num_entries);
+		//printf("Channel already has been added: %d\n", channel->events.tqe_next);
+		TAILQ_INSERT_TAIL(&channel->channel_group->head_event, channel, events);
+		if(channel->channel_group->waiting_thread){
+			lwt_signal(channel->channel_group->waiting_thread);
 		}
 	}
 }
@@ -47,16 +47,6 @@ struct event * __create_event(lwt_chan_t channel, void * data){
 	return event;
 }
 
-/**
- * @brief Removes the event from the group
- * @param event The event being removed
- */
-void free_event(struct event * event){
-	if(event->channel->channel_group){
-
-	}
-	free(event);
-}
 
 
 /**
@@ -137,17 +127,17 @@ int lwt_cgrp_rem(lwt_cgrp_t group, lwt_chan_t channel){
  */
 lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t group){
 	group->waiting_thread = lwt_current();
-	__update_lwt_info(group->waiting_thread, LWT_INFO_NRECEIVING);
 	//wait until there is an event in the queue
 	while(!group->head_event.tqh_first){
-		lwt_yield(LWT_NULL);
+		//printf("Waiting for new event in lwt: %d\n", lwt_current()->id);
+		lwt_block(LWT_INFO_NRECEIVING);
 	}
-	__update_lwt_info(lwt_current(), LWT_INFO_NTHD_RUNNABLE);
 	group->waiting_thread = NULL;
-	lwt_chan_t channel = group->head_event.tqh_first->channel;
-	struct event * head_event = group->head_event.tqh_first;
-	TAILQ_REMOVE(&group->head_event, head_event, events);
-	free(head_event);
+	lwt_chan_t channel = group->head_event.tqh_first;
+	if(channel->num_entries == 1){
+		TAILQ_REMOVE(&group->head_event, channel, events);
+	}
+	//printf("Received channel: %d with num entries: %d\n", (int)channel, channel->num_entries);
 	return channel;
 }
 

@@ -289,7 +289,7 @@ fn_async_steam(lwt_chan_t to)
 	
 	for (i = 0 ; i < ITER ; i++) lwt_snd(to, (void*)(i+1));
 	lwt_chan_deref(to);
-	
+
 	return NULL;
 }
 
@@ -370,7 +370,7 @@ test_grpwait(int chsz, int grpsz)
 		c = lwt_cgrp_wait(g);
 		assert(c);
 		r = (int)lwt_rcv(c);
-		//assert(r == (int)lwt_chan_mark_get(c));
+		assert(r == (int)lwt_chan_mark_get(c));
 	}
 	for (i = 0 ; i < grpsz ; i++) {
 		lwt_cgrp_rem(g, cs[i]);
