@@ -69,11 +69,10 @@ static void push_data_into_async_buffer(lwt_chan_t c, void * data){
 	}
 	//printf("Writing to buffer on lwt: %d\n", lwt_current()->id);
 	//insert data into buffer
-	unsigned int index = c->end_index % c->buffer_size;
-	c->end_index++;
+	unsigned int start_index = c->start_index;
+	unsigned int num_entries = fetch_and_add(&c->num_entries, 1);
+	unsigned int index = (start_index + num_entries) % c->buffer_size;
 	c->async_buffer[index] = data;
-	//increment the num of entries
-	c->num_entries++;
 	__init_event(c);
 	//printf("Write complete\n");
 	lwt_signal(c->receiver);
@@ -130,13 +129,14 @@ void * __pop_data_from_async_buffer(lwt_chan_t c){
 		lwt_block(LWT_INFO_NRECEIVING);
 	}
 	//printf("Reading in async receiver: %d\n", lwt_current()->id);
-	unsigned int index = c->start_index % c->buffer_size;
+	unsigned int start_index = fetch_and_add(&c->start_index, 1);
+	fetch_and_add(&c->num_entries, -1);
+	unsigned int index = start_index % c->buffer_size;
 	void * data = c->async_buffer[index];
-	c->start_index++;
 	//update buffer value
 	c->async_buffer[index] = NULL;
 	//decrement the number of entries
-	c->num_entries--;
+	//c->num_entries--;
 	//printf("Async receive complete!\n");
 	lwt_t head_blocked_senders = c->head_blocked_senders.tqh_first;
 	if(head_blocked_senders){
@@ -201,7 +201,6 @@ lwt_chan_t lwt_chan(int sz){
 	}
 	channel->sync_buffer = NULL;
 	channel->start_index = 0;
-	channel->end_index = 0;
 	channel->buffer_size = sz;
 	channel->num_entries = 0;
 	//prepare group
