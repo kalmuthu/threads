@@ -140,6 +140,10 @@ struct lwt_channel{
 	 * Channels in event
 	 */
 	TAILQ_ENTRY(lwt_channel) events;
+	/**
+	 * Kthd of the receiver
+	 */
+	lwt_kthd_t kthd;
 };
 
 struct kthd_event{

@@ -17,7 +17,7 @@
 #include "faa.h"
 
 void __insert_sender_to_chan(lwt_chan_t chan, lwt_t lwt){
-	if(__get_kthd() == chan->receiver->kthd){
+	if(__get_kthd() == chan->kthd){
 		LIST_INSERT_HEAD(&chan->head_senders, lwt, senders);
 		chan->snd_cnt++;
 	}
@@ -27,7 +27,7 @@ void __insert_sender_to_chan(lwt_chan_t chan, lwt_t lwt){
 }
 
 void __remove_sender_from_chan(lwt_chan_t chan, lwt_t lwt){
-	if(__get_kthd() == chan->receiver->kthd){
+	if(__get_kthd() == chan->kthd){
 		LIST_REMOVE(lwt, senders);
 		chan->snd_cnt--;
 	}
@@ -97,14 +97,14 @@ static int push_data_into_sync_buffer(lwt_chan_t c, void * data){
 	c->num_entries = 1;
 	__init_event(c);
 	if(c->receiver->info == LWT_INFO_NRECEIVING){
-		printf("Signaling receiver that data is ready\n");
+		//printf("Signaling receiver that data is ready\n");
 		lwt_signal(c->receiver);
 		lwt_yield(LWT_NULL);
 	}
 	//if receiver isn't waiting to receive block
 	else{
 	//while(lwt_current()->blocked_senders.tqe_next || c->head_blocked_senders.tqh_first == lwt_current()){
-		printf("Blocking sender\n");
+		//printf("Blocking sender\n");
 		lwt_block(LWT_INFO_NSENDING);
 	//}
 	}
@@ -158,7 +158,7 @@ static void * pop_data_from_sync_buffer(lwt_chan_t c){
 	//__update_lwt_info(lwt_current(), LWT_INFO_NRECEIVING);
 	//block until there's a sender
 	while(!c->head_blocked_senders.tqh_first){
-		printf("Receiver waiting for sender in %d\n", (int)c);
+		//printf("Receiver waiting for sender in %d\n", (int)c);
 		lwt_block(LWT_INFO_NRECEIVING);
 	}
 	//detach the head
@@ -185,6 +185,7 @@ lwt_chan_t lwt_chan(int sz){
 	assert(channel);
 	lwt_t current = lwt_current();
 	channel->receiver = current;
+	channel->kthd = current->kthd;
 	LIST_INSERT_HEAD(&current->head_receiver_channel, channel, receiver_channels);
 	LIST_INIT(&channel->head_senders);
 	channel->snd_cnt = 0;
