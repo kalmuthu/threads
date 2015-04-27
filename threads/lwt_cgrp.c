@@ -33,19 +33,6 @@ void __init_event(lwt_chan_t channel){
 	}
 }
 
-/**
- * @brief Constructs an event
- * @param channel The channel being sent on
- * @param sender The sending LWT
- * @param data The data being sent
- */
-struct event * __create_event(lwt_chan_t channel, void * data){
-	struct event * event = (struct event *)malloc(sizeof(struct event));
-	assert(event);
-	event->data = data;
-	event->channel = channel;
-	return event;
-}
 
 
 

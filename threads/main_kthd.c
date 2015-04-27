@@ -15,6 +15,7 @@
 
 void * kthd_ping(lwt_chan_t ping_channel){
 	lwt_chan_t pong_channel = lwt_chan(0);
+	assert(pong_channel);
 	lwt_snd_chan(ping_channel, pong_channel);
 	int value = (int)lwt_rcv(pong_channel);
 	while(value < MAX_PING_PONG_VALUE){
@@ -31,14 +32,14 @@ void kthd_ping_pong_sync(){
 	lwt_chan_t ping_channel = lwt_chan(0);
 	assert(lwt_kthd_create(kthd_ping, ping_channel, LWT_NOJOIN) >= 0);
 	lwt_chan_t pong_channel = lwt_rcv_chan(ping_channel);
-	int value = 0;
+	int value = 1;
 	while(value < MAX_PING_PONG_VALUE){
 		lwt_snd(pong_channel, (void *)value);
 		value = (int)lwt_rcv(ping_channel);
 		printf("Received %d at ping channel\n", value);
 		value++;
 	}
-	assert(value > MAX_PING_PONG_VALUE);
+	assert(value >= MAX_PING_PONG_VALUE);
 }
 
 int main(){

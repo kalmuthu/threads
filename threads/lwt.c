@@ -52,10 +52,6 @@ __thread lwt_t original_thread = NULL;
  * @brief List of all active threads created
  */
 __thread LIST_HEAD(head_current, lwt) head_current;
-/**
- * @brief Head of the list of all runnable threads
- */
-__thread TAILQ_HEAD(head_runnable_threads, lwt) head_runnable_threads;
 
 
 /**
@@ -78,7 +74,7 @@ static inline int get_new_id(){
  * @param thread The new thread to be inserted in the list of runnable threads
  */
 void __insert_runnable_tail(lwt_t thread){
-	TAILQ_INSERT_TAIL(&head_runnable_threads, thread, runnable_threads);
+	TAILQ_INSERT_TAIL(&__get_kthd()->head_runnable_threads, thread, runnable_threads);
 }
 
 /**
@@ -95,6 +91,8 @@ int inline lwt_id(lwt_t thread){
  * @return The current thread
  */
 lwt_t inline lwt_current(){
+	assert(current_thread);
+	//assert(current_thread->info == LWT_INFO_NTHD_RUNNABLE);
 	return current_thread;
 }
 
@@ -156,10 +154,10 @@ void __init_lwt_main(lwt_t thread){
 	//init receiving channels
 	LIST_INIT(&thread->head_receiver_channel);
 
-	__init_kthd(thread);
 	LIST_INSERT_HEAD(&__get_kthd()->head_lwts_in_kthd, thread, lwts_in_kthd);
 
 	thread->info = LWT_INFO_NTHD_RUNNABLE;
+	thread->kthd = __get_kthd();
 }
 
 /**
@@ -308,6 +306,10 @@ void lwt_die(void * value){
 	//remove from kthd
 	if(current_thread->kthd){
 		LIST_REMOVE(current_thread, lwts_in_kthd);
+		//signal the original thread to die if this is the last thread
+		if(!current_thread->kthd->head_lwts_in_kthd.lh_first){
+			lwt_signal(original_thread);
+		}
 	}
 
 	//switch to another thread
@@ -321,15 +323,21 @@ void lwt_die(void * value){
 void lwt_block(lwt_info_t info){
 	//ensure info isn't LWT_INFO_NRUNNING
 	assert(info != LWT_INFO_NTHD_RUNNABLE);
-	lwt_current()->info = info;
+	current_thread->info = info;
 	lwt_yield(LWT_NULL);
 }
 
 void lwt_signal(lwt_t thread){
-	if(thread->info != LWT_INFO_NTHD_RUNNABLE){
-		thread->info = LWT_INFO_NTHD_RUNNABLE;
-		//insert at head
-		TAILQ_INSERT_HEAD(&head_runnable_threads, thread, runnable_threads);
+	assert(thread);
+	if(__get_kthd() == thread->kthd){
+		if(thread->info != LWT_INFO_NTHD_RUNNABLE){
+			thread->info = LWT_INFO_NTHD_RUNNABLE;
+			//insert at head
+			TAILQ_INSERT_HEAD(&__get_kthd()->head_runnable_threads, thread, runnable_threads);
+		}
+	}
+	else{
+		__init_kthd_event(thread, NULL, thread->kthd, LWT_REMOTE_SIGNAL, 0);
 	}
 }
 
@@ -352,10 +360,10 @@ int lwt_yield(lwt_t lwt){
 		current_thread = lwt;
 		//remove it from the runqueue
 		//remove_from_runnable_threads(lwt);
-		TAILQ_REMOVE(&head_runnable_threads, lwt, runnable_threads);
+		TAILQ_REMOVE(&__get_kthd()->head_runnable_threads, lwt, runnable_threads);
 		//put it out in front
 		//insert_runnable_head(curr_thread);
-		TAILQ_INSERT_HEAD(&head_runnable_threads, curr_thread, runnable_threads);
+		TAILQ_INSERT_HEAD(&__get_kthd()->head_runnable_threads, curr_thread, runnable_threads);
 		__lwt_dispatch(lwt, curr_thread);
 		//__lwt_trampoline();
 	}
@@ -366,10 +374,10 @@ int lwt_yield(lwt_t lwt){
  * @brief Schedules the next_current thread to switch to and dispatches
  */
 void __lwt_schedule(){
-	//assert(head_runnable_threads.tqh_first);
-	//assert(head_runnable_threads.tqh_first != current_thread);
-	if(head_runnable_threads.tqh_first != NULL &&
-			head_runnable_threads.tqh_first != current_thread){
+	//assert(__get_kthd()->head_runnable_threads.tqh_first);
+	//assert(__get_kthd()->head_runnable_threads.tqh_first != current_thread);
+	if(__get_kthd()->head_runnable_threads.tqh_first != NULL &&
+			__get_kthd()->head_runnable_threads.tqh_first != current_thread){
 		lwt_t curr_thread = current_thread;
 		//move current thread to the end of the queue
 		if(current_thread->info == LWT_INFO_NTHD_RUNNABLE){
@@ -377,58 +385,39 @@ void __lwt_schedule(){
 			__insert_runnable_tail(current_thread);
 		}
 		//pop the queue
-		lwt_t next_thread = head_runnable_threads.tqh_first;
-		TAILQ_REMOVE(&head_runnable_threads, next_thread, runnable_threads);
+		lwt_t next_thread = __get_kthd()->head_runnable_threads.tqh_first;
+		assert(next_thread->info == LWT_INFO_NTHD_RUNNABLE);
+		TAILQ_REMOVE(&__get_kthd()->head_runnable_threads, next_thread, runnable_threads);
 		assert(next_thread);
+		current_thread = next_thread;
+		__lwt_dispatch(next_thread, curr_thread);
+	}
+	//all threads are blocked now
+	else if(current_thread->info != LWT_INFO_NTHD_RUNNABLE){
+		//move to idle thread
+		printf("Starting idle thread\n");
+		lwt_t curr_thread = current_thread;
+		lwt_t next_thread = __get_kthd()->buffer_thread;
+		__get_kthd()->buffer_thread->info = LWT_INFO_NTHD_RUNNABLE;
+		TAILQ_REMOVE(&__get_kthd()->head_runnable_threads, next_thread, runnable_threads);
 		current_thread = next_thread;
 		__lwt_dispatch(next_thread, curr_thread);
 	}
 }
 
-void * lwt_buffer(void * d){
-	struct kthd_event * event;
-	lwt_kthd_t pthread_kthd = __get_kthd();
-	while(lwt_current()->kthd){
-		pthread_mutex_lock(&pthread_kthd->blocked_mutex);
 
-		event = __pop_from_buffer(pthread_kthd);
-		while(!event){
-			pthread_kthd->is_blocked = 1;
-			pthread_cond_wait(&pthread_kthd->blocked_cv, &pthread_kthd->blocked_mutex);
-			pthread_kthd->is_blocked = 0;
-			if(!lwt_current()->kthd){
-				break;
-			}
-			event = __pop_from_buffer(pthread_kthd);
-		}
-
-		//ignore break condition
-		if(event){
-			//wait until thread is runnable
-			/*while(event->lwt->info == LWT_INFO_NTHD_RUNNABLE){
-				lwt_yield(LWT_NULL);
-			}*/
-			event->lwt->info = event->new_info;
-			lwt_yield(event->lwt);
-			free(event);
-		}
-
-		pthread_mutex_unlock(&pthread_kthd->blocked_mutex);
-	}
-	return NULL;
-}
 
 /**
  * @brief Initializes the LWT by wrapping the current thread as a LWT
  */
 __attribute__((constructor)) void __init__(){
+
 	//assert pool size >= 1
 	assert(POOL_SIZE >= 1);
 	lwt_t curr_thread = (lwt_t)malloc(sizeof(struct lwt));
 	assert(curr_thread);
+	__init_kthd(curr_thread);
 	__init_lwt_main(curr_thread);
-	//set runnable threads
-	TAILQ_INIT(&head_runnable_threads);
 	//set up pool
 	int num_threads;
 	LIST_INIT(&head_ready_pool_threads);
@@ -442,8 +431,8 @@ __attribute__((constructor)) void __init__(){
 
 	//buffer thread is special
 	lwt_kthd_t pthread_kthd = __get_kthd();
-	pthread_kthd->buffer_thread = lwt_create(lwt_buffer, NULL, LWT_NOJOIN);
-	TAILQ_REMOVE(&head_runnable_threads, pthread_kthd->buffer_thread, runnable_threads);
+	pthread_kthd->buffer_thread = lwt_create(__lwt_buffer, NULL, LWT_NOJOIN);
+	TAILQ_REMOVE(&__get_kthd()->head_runnable_threads, pthread_kthd->buffer_thread, runnable_threads);
 	LIST_REMOVE(pthread_kthd->buffer_thread, current_threads);
 	LIST_REMOVE(pthread_kthd->buffer_thread, siblings);
 	LIST_REMOVE(pthread_kthd->buffer_thread, lwts_in_kthd);

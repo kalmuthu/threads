@@ -7,6 +7,7 @@
 #include "lwt_chan.h"
 #include "lwt.h"
 #include "lwt_cgrp.h"
+#include "lwt_kthd.h"
 
 #include "objects.h"
 
@@ -15,7 +16,43 @@
 #include "assert.h"
 #include "faa.h"
 
+void __insert_sender_to_chan(lwt_chan_t chan, lwt_t lwt){
+	if(__get_kthd() == chan->receiver->kthd){
+		LIST_INSERT_HEAD(&chan->head_senders, lwt, senders);
+		chan->snd_cnt++;
+	}
+	else{
+		__init_kthd_event(lwt, chan, chan->receiver->kthd, LWT_REMOTE_ADD_SENDER_TO_CHANNEL, 1);
+	}
+}
 
+void __remove_sender_from_chan(lwt_chan_t chan, lwt_t lwt){
+	if(__get_kthd() == chan->receiver->kthd){
+		LIST_REMOVE(lwt, senders);
+		chan->snd_cnt--;
+	}
+	else{
+		__init_kthd_event(lwt, chan, chan->receiver->kthd, LWT_REMOTE_REMOVE_SENDER_FROM_CHANNEL, 1);
+	}
+}
+
+void __insert_blocked_sender_to_chan(lwt_chan_t chan, lwt_t lwt){
+	if(__get_kthd() == chan->receiver->kthd){
+		TAILQ_INSERT_TAIL(&chan->head_blocked_senders, lwt, blocked_senders);
+	}
+	else{
+		__init_kthd_event(lwt, chan, chan->receiver->kthd, LWT_REMOTE_ADD_BLOCKED_SENDER_TO_CHANNEL, 1);
+	}
+}
+
+void __remove_blocked_sender_from_chan(lwt_chan_t chan, lwt_t lwt){
+	if(__get_kthd() == chan->receiver->kthd){
+		TAILQ_REMOVE(&chan->head_blocked_senders, lwt, blocked_senders);
+	}
+	else{
+		__init_kthd_event(lwt, chan, chan->receiver->kthd, LWT_REMOTE_REMOVE_BLOCKED_SENDER_FROM_CHANNEL, 1);
+	}
+}
 
 /**
  * @brief Pushes the data into the buffer
@@ -27,7 +64,7 @@ static void push_data_into_async_buffer(lwt_chan_t c, void * data){
 	//check that the buffer isn't at capacity
 	while(c->num_entries >= c->buffer_size){
 		//printf("Blocking async sender: %d\n", lwt_current()->id);
-		TAILQ_INSERT_TAIL(&c->head_blocked_senders, lwt_current(), blocked_senders);
+		__insert_blocked_sender_to_chan(c, lwt_current());
 		lwt_block(LWT_INFO_NSENDING);
 	}
 	//printf("Writing to buffer on lwt: %d\n", lwt_current()->id);
@@ -56,18 +93,20 @@ static int push_data_into_sync_buffer(lwt_chan_t c, void * data){
 
 	lwt_current()->sync_buffer = data;
 	//insert into blocked queue
-	TAILQ_INSERT_TAIL(&c->head_blocked_senders, lwt_current(), blocked_senders);
+	__insert_blocked_sender_to_chan(c, lwt_current());
 	c->num_entries = 1;
 	__init_event(c);
 	if(c->receiver->info == LWT_INFO_NRECEIVING){
+		printf("Signaling receiver that data is ready\n");
 		lwt_signal(c->receiver);
 		lwt_yield(LWT_NULL);
 	}
 	//if receiver isn't waiting to receive block
 	else{
-		//while(c->receiver->info != LWT_INFO_NRECEIVING){
-			lwt_block(LWT_INFO_NSENDING);
-		//}
+	//while(lwt_current()->blocked_senders.tqe_next || c->head_blocked_senders.tqh_first == lwt_current()){
+		printf("Blocking sender\n");
+		lwt_block(LWT_INFO_NSENDING);
+	//}
 	}
 
 
@@ -101,7 +140,7 @@ void * __pop_data_from_async_buffer(lwt_chan_t c){
 	//printf("Async receive complete!\n");
 	lwt_t head_blocked_senders = c->head_blocked_senders.tqh_first;
 	if(head_blocked_senders){
-		TAILQ_REMOVE(&c->head_blocked_senders, head_blocked_senders, blocked_senders);
+		__remove_blocked_sender_from_chan(c, head_blocked_senders);
 		lwt_signal(head_blocked_senders);
 	}
 	return data;
@@ -119,12 +158,12 @@ static void * pop_data_from_sync_buffer(lwt_chan_t c){
 	//__update_lwt_info(lwt_current(), LWT_INFO_NRECEIVING);
 	//block until there's a sender
 	while(!c->head_blocked_senders.tqh_first){
-		//printf("Receiver waiting for sender in %d\n", (int)c);
+		printf("Receiver waiting for sender in %d\n", (int)c);
 		lwt_block(LWT_INFO_NRECEIVING);
 	}
 	//detach the head
 	lwt_t sender = c->head_blocked_senders.tqh_first;
-	TAILQ_REMOVE(&c->head_blocked_senders, sender, blocked_senders);
+	__remove_blocked_sender_from_chan(c, sender);
 
 	void * data = sender->sync_buffer;
 	sender->sync_buffer = NULL;
@@ -197,6 +236,7 @@ int lwt_snd(lwt_chan_t c, void * data){
  * @param sending The channel to send
  */
 int lwt_snd_chan(lwt_chan_t c, lwt_chan_t sending){
+	__insert_sender_to_chan(sending, c->receiver);
 	return lwt_snd(c, sending);
 }
 
@@ -208,8 +248,6 @@ int lwt_snd_chan(lwt_chan_t c, lwt_chan_t sending){
 lwt_chan_t lwt_rcv_chan(lwt_chan_t c){
 	//add current channel to senders
 	lwt_chan_t new_channel = (lwt_chan_t)lwt_rcv(c);
-	LIST_INSERT_HEAD(&new_channel->head_senders, lwt_current(), senders);
-	new_channel->snd_cnt++;
 	return new_channel;
 }
 
@@ -225,7 +263,7 @@ void lwt_chan_deref(lwt_chan_t c){
 		c->receiver = NULL;
 	}
 	else if(c->snd_cnt > 0){
-		LIST_REMOVE(lwt_current(), senders);
+		__remove_sender_from_chan(c, lwt_current());
 		c->snd_cnt--;
 		//printf("Removing sender (%d) from channel: %d\n", lwt_current()->id, (int)c);
 	}
@@ -264,8 +302,7 @@ void * lwt_rcv(lwt_chan_t c){
  */
 lwt_t lwt_create_chan(lwt_chan_fn_t fn, lwt_chan_t c, lwt_flags_t flags){
 	lwt_t new_thread = lwt_create((lwt_fnt_t)fn, (void*)c, flags);
-	LIST_INSERT_HEAD(&c->head_senders, new_thread, senders);
-	c->snd_cnt++;
+	__insert_sender_to_chan(c, new_thread);
 	return new_thread;
 }
 
