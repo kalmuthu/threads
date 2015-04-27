@@ -20,7 +20,7 @@ void __remove_lwt_from_kthd(lwt_kthd_t, lwt_t);
 lwt_kthd_t __get_kthd();
 
 void * __lwt_buffer(void *);
-void __init_kthd_event(lwt_t, lwt_chan_t, lwt_kthd_t, lwt_remote_op_t, int);
+void __init_kthd_event(lwt_t, lwt_chan_t, lwt_cgrp_t, lwt_kthd_t, lwt_remote_op_t, int);
 
 
 

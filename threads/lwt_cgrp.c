@@ -26,14 +26,26 @@ void __init_event(lwt_chan_t channel){
 		//printf("Inserting event for channel: %d\n", (int)channel);
 		//printf("Num entries: %d\n", channel->num_entries);
 		//printf("Channel already has been added: %d\n", channel->events.tqe_next);
-		TAILQ_INSERT_TAIL(&channel->channel_group->head_event, channel, events);
+		if(__get_kthd() == channel->channel_group->creator_thread->kthd){
+			TAILQ_INSERT_TAIL(&channel->channel_group->head_event, channel, events);
+		}
+		else{
+			__init_kthd_event(NULL, channel, channel->channel_group, channel->channel_group->creator_thread->kthd, LWT_REMOTE_ADD_EVENT_TO_GROUP, 1);
+		}
 		if(channel->channel_group->waiting_thread){
 			lwt_signal(channel->channel_group->waiting_thread);
 		}
 	}
 }
 
-
+void __remove_event(lwt_chan_t channel, lwt_cgrp_t group){
+	if(__get_kthd() == group->creator_thread->kthd){
+		TAILQ_REMOVE(&group->head_event, channel, events);
+	}
+	else{
+		__init_kthd_event(NULL, channel, channel->channel_group, channel->channel_group->creator_thread->kthd, LWT_REMOTE_REMOVE_EVENT_FROM_GROUP, 1);
+	}
+}
 
 
 /**
@@ -82,9 +94,13 @@ int lwt_cgrp_add(lwt_cgrp_t group, lwt_chan_t channel){
 	if(channel->channel_group){
 		return -1;
 	}
-	channel->channel_group = group;
-	LIST_INSERT_HEAD(&group->head_channels_in_group, channel, channels_in_group);
-
+	if(__get_kthd() == group->creator_thread->kthd){
+		channel->channel_group = group;
+		LIST_INSERT_HEAD(&group->head_channels_in_group, channel, channels_in_group);
+	}
+	else{
+		__init_kthd_event(NULL, channel, group, group->creator_thread->kthd, LWT_REMOTE_ADD_CHANNEL_TO_GROUP, 1);
+	}
 	return 0;
 }
 
@@ -103,7 +119,11 @@ int lwt_cgrp_rem(lwt_cgrp_t group, lwt_chan_t channel){
 		//printf("Event queue is not empty\n");
 		return 1;
 	}
-	LIST_REMOVE(channel, channels_in_group);
+	if(__get_kthd() == group->creator_thread->kthd){
+		LIST_REMOVE(channel, channels_in_group);
+	}else{
+		__init_kthd_event(NULL, channel, group, group->creator_thread->kthd, LWT_REMOTE_REMOVE_CHANNEL_FROM_GROUP, 1);
+	}
 	return 0;
 }
 
@@ -122,7 +142,7 @@ lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t group){
 	group->waiting_thread = NULL;
 	lwt_chan_t channel = group->head_event.tqh_first;
 	if(channel->num_entries == 1){
-		TAILQ_REMOVE(&group->head_event, channel, events);
+		__remove_event(channel, group);
 	}
 	//printf("Received channel: %d with num entries: %d\n", (int)channel, channel->num_entries);
 	return channel;

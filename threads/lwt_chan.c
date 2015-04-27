@@ -22,7 +22,7 @@ void __insert_sender_to_chan(lwt_chan_t chan, lwt_t lwt){
 		chan->snd_cnt++;
 	}
 	else{
-		__init_kthd_event(lwt, chan, chan->receiver->kthd, LWT_REMOTE_ADD_SENDER_TO_CHANNEL, 1);
+		__init_kthd_event(lwt, chan, NULL, chan->receiver->kthd, LWT_REMOTE_ADD_SENDER_TO_CHANNEL, 1);
 	}
 }
 
@@ -32,7 +32,7 @@ void __remove_sender_from_chan(lwt_chan_t chan, lwt_t lwt){
 		chan->snd_cnt--;
 	}
 	else{
-		__init_kthd_event(lwt, chan, chan->receiver->kthd, LWT_REMOTE_REMOVE_SENDER_FROM_CHANNEL, 1);
+		__init_kthd_event(lwt, chan, NULL, chan->receiver->kthd, LWT_REMOTE_REMOVE_SENDER_FROM_CHANNEL, 1);
 	}
 }
 
@@ -41,7 +41,7 @@ void __insert_blocked_sender_to_chan(lwt_chan_t chan, lwt_t lwt){
 		TAILQ_INSERT_TAIL(&chan->head_blocked_senders, lwt, blocked_senders);
 	}
 	else{
-		__init_kthd_event(lwt, chan, chan->receiver->kthd, LWT_REMOTE_ADD_BLOCKED_SENDER_TO_CHANNEL, 1);
+		__init_kthd_event(lwt, chan, NULL, chan->receiver->kthd, LWT_REMOTE_ADD_BLOCKED_SENDER_TO_CHANNEL, 1);
 	}
 }
 
@@ -50,7 +50,7 @@ void __remove_blocked_sender_from_chan(lwt_chan_t chan, lwt_t lwt){
 		TAILQ_REMOVE(&chan->head_blocked_senders, lwt, blocked_senders);
 	}
 	else{
-		__init_kthd_event(lwt, chan, chan->receiver->kthd, LWT_REMOTE_REMOVE_BLOCKED_SENDER_FROM_CHANNEL, 1);
+		__init_kthd_event(lwt, chan, NULL, chan->receiver->kthd, LWT_REMOTE_REMOVE_BLOCKED_SENDER_FROM_CHANNEL, 1);
 	}
 }
 

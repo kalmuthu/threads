@@ -124,8 +124,20 @@ void * __lwt_buffer(void * d){
 			case LWT_REMOTE_REMOVE_BLOCKED_SENDER_FROM_CHANNEL:
 					__remove_blocked_sender_from_chan(event->channel, event->lwt);
 					break;
-				default:
-					perror("Unknown op provided\n");
+			case LWT_REMOTE_ADD_CHANNEL_TO_GROUP:
+					lwt_cgrp_add(event->group, event->channel);
+					break;
+			case LWT_REMOTE_REMOVE_CHANNEL_FROM_GROUP:
+					lwt_cgrp_rem(event->group, event->channel);
+					break;
+			case LWT_REMOTE_ADD_EVENT_TO_GROUP:
+					__init_event(event->channel);
+					break;
+			case LWT_REMOTE_REMOVE_EVENT_FROM_GROUP:
+					__remove_event(event->channel, event->group);
+					break;
+			default:
+				perror("Unknown op provided\n");
 			}
 			event->is_done = 1;
 			if(event->block){
@@ -151,7 +163,7 @@ lwt_kthd_t __get_kthd(){
 	return pthread_kthd;
 }
 
-void __init_kthd_event(lwt_t remote_lwt, lwt_chan_t remote_chan, lwt_kthd_t kthd, lwt_remote_op_t remote_op, int block){
+void __init_kthd_event(lwt_t remote_lwt, lwt_chan_t remote_chan, lwt_cgrp_t remote_group, lwt_kthd_t kthd, lwt_remote_op_t remote_op, int block){
 	lwt_t current = lwt_current();
 	struct kthd_event * event = (struct kthd_event *)malloc(sizeof(struct kthd_event));
 	assert(event);

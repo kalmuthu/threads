@@ -146,6 +146,7 @@ struct kthd_event{
 	lwt_t originator;
 	lwt_t lwt;
 	lwt_chan_t channel;
+	lwt_cgrp_t group;
 	lwt_kthd_t kthd;
 	int is_done;
 	int block;
