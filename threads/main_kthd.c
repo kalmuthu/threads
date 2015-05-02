@@ -78,6 +78,7 @@ test_grpwait(int chsz, int grpsz)
 	assert(g);
 
 	for (i = 0 ; i < grpsz ; i++) {
+		printf("Iteration: (%d/%d)\n");
 		cs[i] = lwt_chan(chsz);
 		assert(cs[i]);
 		assert(!lwt_kthd_create(fn_grpwait, cs[i], 0));
@@ -96,12 +97,15 @@ test_grpwait(int chsz, int grpsz)
 	 */
 	//for (i = 0 ; i < ((ITER * grpsz)-(grpsz*chsz)); i++) {
 	for(i = 0; i < ITER * grpsz; i++){
+		printf("Iteration: (%d/%d)\n", i+1, (ITER*grpsz));
 		lwt_chan_t c;
 		int r;
 		c = lwt_cgrp_wait(g);
 		assert(c);
-		r = (int)lwt_rcv(c);
-		assert(r == (int)lwt_chan_mark_get(c));
+		while(c->start_index < c->end_index){
+			r = (int)lwt_rcv(c);
+			assert(r == (int)lwt_chan_mark_get(c));
+		}
 	}
 	for (i = 0 ; i < grpsz ; i++) {
 		lwt_cgrp_rem(g, cs[i]);

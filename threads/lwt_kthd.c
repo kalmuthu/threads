@@ -62,9 +62,9 @@ int lwt_kthd_create(lwt_chan_fn_t fn, lwt_chan_t c, lwt_flags_t flags){
 }
 
 struct kthd_event * __pop_from_buffer(lwt_kthd_t kthd){
-	//wait until there's data
-	while(kthd->buffer_head >= kthd->buffer_tail){
-		pthread_yield();
+	//return null if there's no data
+	if(kthd->buffer_head >= kthd->buffer_tail){
+		return NULL;
 	}
 	//grab the current head
 	unsigned int head = fetch_and_add(&kthd->buffer_head, 1);
@@ -76,8 +76,8 @@ struct kthd_event * __pop_from_buffer(lwt_kthd_t kthd){
 
 int __push_to_buffer(lwt_kthd_t kthd, struct kthd_event * data){
 	//block the current pthread until
-	while(kthd->buffer_tail >= kthd->buffer_head + EVENT_BUFFER_SIZE){
-		pthread_yield();
+	if(kthd->buffer_tail >= kthd->buffer_head + EVENT_BUFFER_SIZE){
+		return -1;
 	}
 	unsigned int tail = fetch_and_add(&kthd->buffer_tail, 1) % EVENT_BUFFER_SIZE;
 	kthd->event_buffer[tail] = data;
@@ -211,7 +211,8 @@ void __init_kthd_event(lwt_t remote_lwt, lwt_chan_t remote_chan, lwt_cgrp_t remo
 			op = "Unknown";
 	}
 	printf("Created event: %d for op: %s; target lwt: %d; target kthd: %d\n", (int)event, op, (int)remote_lwt, (int)kthd);
-	__push_to_buffer(event->kthd, event);
+	int result = __push_to_buffer(event->kthd, event);
+	assert(result == 0);
 	while(block && event->is_done == 0){
 		printf("Waiting for return signal event\n");
 		lwt_block(LWT_INFO_NTHD_BLOCKED);

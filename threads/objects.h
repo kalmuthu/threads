@@ -18,7 +18,7 @@
 /**
  * Size of the event buffer
  */
-#define EVENT_BUFFER_SIZE 10
+#define EVENT_BUFFER_SIZE 10000
 
 /**
  * Size of the a page in the OS -> 4K
