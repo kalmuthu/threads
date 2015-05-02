@@ -337,7 +337,7 @@ void lwt_signal(lwt_t thread){
 		}
 	}
 	else{
-		__init_kthd_event(thread, NULL, NULL, thread->kthd, LWT_REMOTE_SIGNAL, 1);
+		__init_kthd_event(thread, NULL, NULL, thread->kthd, LWT_REMOTE_SIGNAL, 0);
 	}
 }
 
