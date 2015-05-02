@@ -102,10 +102,10 @@ test_grpwait(int chsz, int grpsz)
 		int r;
 		c = lwt_cgrp_wait(g);
 		assert(c);
-		while(c->start_index < c->end_index){
+		//while(c->start_index < c->end_index){
 			r = (int)lwt_rcv(c);
 			assert(r == (int)lwt_chan_mark_get(c));
-		}
+		//}
 	}
 	for (i = 0 ; i < grpsz ; i++) {
 		lwt_cgrp_rem(g, cs[i]);
@@ -120,7 +120,7 @@ test_grpwait(int chsz, int grpsz)
 
 int main(){
 	kthd_ping_pong_sync();
-	//test_grpwait(0, 3);
-	test_grpwait(3, 3);
+	test_grpwait(0, 3);
+	//test_grpwait(3, 3);
 	return 0;
 }

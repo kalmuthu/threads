@@ -213,7 +213,10 @@ void __init_kthd_event(lwt_t remote_lwt, lwt_chan_t remote_chan, lwt_cgrp_t remo
 	printf("Created event: %d for op: %s; target lwt: %d; target kthd: %d\n", (int)event, op, (int)remote_lwt, (int)kthd);
 	*/
 	int result = __push_to_buffer(event->kthd, event);
-	assert(result == 0);
+	while(result != 0){
+		lwt_yield(LWT_NULL);
+		result = __push_to_buffer(event->kthd, event);
+	}
 	while(block && event->is_done == 0){
 		//printf("Waiting for return signal event\n");
 		lwt_block(LWT_INFO_NTHD_BLOCKED);
