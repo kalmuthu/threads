@@ -337,7 +337,7 @@ void lwt_signal(lwt_t thread){
 		}
 	}
 	else{
-		__init_kthd_event(thread, NULL, NULL, thread->kthd, LWT_REMOTE_SIGNAL, 0);
+		__init_kthd_event(thread, NULL, NULL, thread->kthd, LWT_REMOTE_SIGNAL, 1);
 	}
 }
 
@@ -449,8 +449,6 @@ __attribute__((destructor)) void __destroy__(){
 	lwt_kthd_t pthread_kthd = __get_kthd();
 	//clean up buffer thread
 	if(pthread_kthd->buffer_thread){
-		pthread_kthd->buffer_thread->kthd = NULL;
-		lwt_yield(pthread_kthd->buffer_thread);
 		free(pthread_kthd->buffer_thread);
 	}
 	//free threads

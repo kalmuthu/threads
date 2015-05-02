@@ -62,24 +62,24 @@ int lwt_kthd_create(lwt_chan_fn_t fn, lwt_chan_t c, lwt_flags_t flags){
 }
 
 struct kthd_event * __pop_from_buffer(lwt_kthd_t kthd){
-	//check if empty
-	if(!kthd->event_buffer[kthd->buffer_head % EVENT_BUFFER_SIZE] &&
-			kthd->buffer_head == kthd->buffer_tail){
-		return NULL;
+	//wait until there's data
+	while(kthd->buffer_head >= kthd->buffer_tail){
+		pthread_yield();
 	}
-	int head = fetch_and_add(&kthd->buffer_head, 1) % EVENT_BUFFER_SIZE;
+	//grab the current head
+	unsigned int head = fetch_and_add(&kthd->buffer_head, 1);
+	head = head % EVENT_BUFFER_SIZE;
 	struct kthd_event * data = kthd->event_buffer[head];
 	kthd->event_buffer[head] = NULL;
 	return data;
 }
 
 int __push_to_buffer(lwt_kthd_t kthd, struct kthd_event * data){
-	//check if full
-	if(kthd->event_buffer[kthd->buffer_tail % EVENT_BUFFER_SIZE] != NULL &&
-			kthd->buffer_head == kthd->buffer_tail){
-		return -1;
+	//block the current pthread until
+	while(kthd->buffer_tail >= kthd->buffer_head + EVENT_BUFFER_SIZE){
+		pthread_yield();
 	}
-	int tail = fetch_and_add(&kthd->buffer_tail, 1) % EVENT_BUFFER_SIZE;
+	unsigned int tail = fetch_and_add(&kthd->buffer_tail, 1) % EVENT_BUFFER_SIZE;
 	kthd->event_buffer[tail] = data;
 	//wake up the pthread
 	pthread_mutex_lock(&kthd->blocked_mutex);
@@ -97,6 +97,8 @@ void __init_kthd(lwt_t lwt){
 	assert(pthread_kthd);
 	pthread_kthd->pthread = pthread_self();
 	pthread_kthd->is_blocked = 0;
+	pthread_kthd->buffer_head = 0;
+	pthread_kthd->buffer_tail = 0;
 	LIST_INIT(&pthread_kthd->head_lwts_in_kthd);
 	TAILQ_INIT(&pthread_kthd->head_runnable_threads);
 }

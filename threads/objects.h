@@ -108,13 +108,17 @@ struct lwt_channel{
 	 */
 	unsigned volatile int start_index;
 	/**
+	 * End index of the buffer
+	 */
+	unsigned volatile int end_index;
+	/**
+	 * Num entries
+	 */
+	unsigned int num_entries;
+	/**
 	 * Size of the buffer
 	 */
 	unsigned int buffer_size;
-	/**
-	 * Current number of entries in buffer
-	 */
-	unsigned volatile int num_entries;
 	/**
 	 * List of receiver channels in a lwt
 	 */

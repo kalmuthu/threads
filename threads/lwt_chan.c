@@ -37,7 +37,7 @@ void __remove_sender_from_chan(lwt_chan_t chan, lwt_t lwt){
 }
 
 void __insert_blocked_sender_to_chan(lwt_chan_t chan, lwt_t lwt){
-	if(__get_kthd() == chan->receiver->kthd){
+	if(__get_kthd() == chan->kthd){
 		TAILQ_INSERT_TAIL(&chan->head_blocked_senders, lwt, blocked_senders);
 	}
 	else{
@@ -46,7 +46,7 @@ void __insert_blocked_sender_to_chan(lwt_chan_t chan, lwt_t lwt){
 }
 
 void __remove_blocked_sender_from_chan(lwt_chan_t chan, lwt_t lwt){
-	if(__get_kthd() == chan->receiver->kthd){
+	if(__get_kthd() == chan->kthd){
 		TAILQ_REMOVE(&chan->head_blocked_senders, lwt, blocked_senders);
 	}
 	else{
@@ -62,16 +62,17 @@ void __remove_blocked_sender_from_chan(lwt_chan_t chan, lwt_t lwt){
  */
 static void push_data_into_async_buffer(lwt_chan_t c, void * data){
 	//check that the buffer isn't at capacity
-	while(c->num_entries >= c->buffer_size){
+	while(c->end_index >= c->start_index + c->buffer_size){
 		//printf("Blocking async sender: %d\n", lwt_current()->id);
 		__insert_blocked_sender_to_chan(c, lwt_current());
 		lwt_block(LWT_INFO_NSENDING);
 	}
+	unsigned int tail = fetch_and_add(&c->end_index, 1);
 	//printf("Writing to buffer on lwt: %d\n", lwt_current()->id);
 	//insert data into buffer
-	unsigned int start_index = c->start_index;
-	unsigned int num_entries = fetch_and_add(&c->num_entries, 1);
-	unsigned int index = (start_index + num_entries) % c->buffer_size;
+	unsigned int index = tail % c->buffer_size;
+	c->num_entries++;
+	assert(c->num_entries <= c->buffer_size);
 	c->async_buffer[index] = data;
 	__init_event(c);
 	//printf("Write complete\n");
@@ -124,17 +125,18 @@ static int push_data_into_sync_buffer(lwt_chan_t c, void * data){
  * If the buffer is empty, it will block until there is something to read
  */
 void * __pop_data_from_async_buffer(lwt_chan_t c){
-	while(c->num_entries <= 0){
-		//printf("Blocking async receiver: %d\n", lwt_current()->id);
+	while(c->start_index >= c->end_index){
+		printf("Blocking async receiver: %d\n", lwt_current()->id);
 		lwt_block(LWT_INFO_NRECEIVING);
 	}
-	//printf("Reading in async receiver: %d\n", lwt_current()->id);
 	unsigned int start_index = fetch_and_add(&c->start_index, 1);
-	fetch_and_add(&c->num_entries, -1);
+	//printf("Reading in async receiver: %d\n", lwt_current()->id);
+	assert(c->num_entries > 0);
+	c->num_entries--;
 	unsigned int index = start_index % c->buffer_size;
 	void * data = c->async_buffer[index];
 	//update buffer value
-	c->async_buffer[index] = NULL;
+	//c->async_buffer[index] = NULL;
 	//decrement the number of entries
 	//c->num_entries--;
 	//printf("Async receive complete!\n");
@@ -164,9 +166,9 @@ static void * pop_data_from_sync_buffer(lwt_chan_t c){
 	//detach the head
 	lwt_t sender = c->head_blocked_senders.tqh_first;
 	__remove_blocked_sender_from_chan(c, sender);
-
+	printf("Reading from sync buffer on thread: %d; kthd: %d; received value: %d\n", (int)sender, (int)sender->kthd, (int)sender->sync_buffer);
 	void * data = sender->sync_buffer;
-	sender->sync_buffer = NULL;
+	//sender->sync_buffer = NULL;
 	assert(data);
 
 	lwt_signal(sender);
@@ -201,6 +203,7 @@ lwt_chan_t lwt_chan(int sz){
 	}
 	channel->sync_buffer = NULL;
 	channel->start_index = 0;
+	channel->end_index = 0;
 	channel->buffer_size = sz;
 	channel->num_entries = 0;
 	//prepare group
@@ -257,15 +260,14 @@ lwt_chan_t lwt_rcv_chan(lwt_chan_t c){
  * @param c The channel to deallocate
  */
 void lwt_chan_deref(lwt_chan_t c){
-	if(c->receiver == lwt_current()){
-		//printf("Removing receiver (%d) from channel: %d\n", c->receiver->id, (int)c);
+	if(c->receiver == lwt_current() && c->kthd == __get_kthd()){
+		printf("Removing receiver (%d) from channel: %d\n", c->receiver->id, (int)c);
 		LIST_REMOVE(c, receiver_channels);
 		c->receiver = NULL;
 	}
 	else if(c->snd_cnt > 0){
 		__remove_sender_from_chan(c, lwt_current());
-		c->snd_cnt--;
-		//printf("Removing sender (%d) from channel: %d\n", lwt_current()->id, (int)c);
+		printf("Removing sender (%d) from channel: %d\n", lwt_current()->id, (int)c);
 	}
 	//printf("Current sender count: %d\n", c->snd_cnt);
 	if(!c->receiver && c->snd_cnt == 0){

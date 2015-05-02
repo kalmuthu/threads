@@ -255,6 +255,7 @@ test_multisend(int chsz)
 	t2 = lwt_create_chan(fn_snder_1, c, 0);
 	for (i = 0 ; i < ITER*2 ; i++) {
 		//if (i % 5 == 0) lwt_yield(LWT_NULL);
+		printf("Iteration: (%d/%d)\n", i+1, ITER*2);
 		ret[i] = (int)lwt_rcv(c);
 		if (sndrcv_cnt > maxcnt) maxcnt = sndrcv_cnt;
 		sndrcv_cnt--;
@@ -308,7 +309,9 @@ test_perf_async_steam(int chsz)
 	t = lwt_create_chan(fn_async_steam, from, 0);
 	assert(lwt_info(LWT_INFO_NTHD_RUNNABLE) == 2);
 	rdtscll(start);
-	for (i = 0 ; i < ITER ; i++) assert(i+1 == (int)lwt_rcv(from));
+	for (i = 0 ; i < ITER ; i++) {
+		assert(i+1 == (int)lwt_rcv(from));
+	}
 	rdtscll(end);
 	printf("[PERF] %5lld <- asynchronous snd->rcv (buffer size %d)\n",
 	       (end-start)/(ITER*2), chsz);
