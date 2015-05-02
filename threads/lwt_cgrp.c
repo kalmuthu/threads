@@ -74,7 +74,7 @@ lwt_cgrp_t lwt_cgrp(){
  */
 int lwt_cgrp_free(lwt_cgrp_t group){
 	if(group->head_event.tqh_first){
-		perror("There is still an event to consume\n");
+		//perror("There is still an event to consume\n");
 		return -1;
 	}
 	//remove the group from the channels

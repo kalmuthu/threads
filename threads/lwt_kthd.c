@@ -109,7 +109,7 @@ void * __lwt_buffer(void * d){
 
 		event = __pop_from_buffer(pthread_kthd);
 		if(event){
-			printf("Received event: %d; on kthd: %d\n", (int)event, (int)pthread_kthd);
+			//printf("Received event: %d; on kthd: %d\n", (int)event, (int)pthread_kthd);
 			switch(event->op){
 			case LWT_REMOTE_SIGNAL:
 					lwt_signal(event->lwt);
@@ -151,7 +151,7 @@ void * __lwt_buffer(void * d){
 		}
 		else{
 			pthread_mutex_lock(&pthread_kthd->blocked_mutex);
-			printf("Putting pthread to sleep on kthd: %d\n", (int)pthread_kthd);
+			//printf("Putting pthread to sleep on kthd: %d\n", (int)pthread_kthd);
 			pthread_kthd->is_blocked = 1;
 			pthread_cond_wait(&pthread_kthd->blocked_cv, &pthread_kthd->blocked_mutex);
 			pthread_mutex_unlock(&pthread_kthd->blocked_mutex);
@@ -178,7 +178,7 @@ void __init_kthd_event(lwt_t remote_lwt, lwt_chan_t remote_chan, lwt_cgrp_t remo
 	event->op = remote_op;
 	event->is_done = 0;
 	event->block = block;
-	char * op;
+	/*char * op;
 	switch(remote_op){
 		case LWT_REMOTE_SIGNAL:
 			op = "Signal";
@@ -211,14 +211,15 @@ void __init_kthd_event(lwt_t remote_lwt, lwt_chan_t remote_chan, lwt_cgrp_t remo
 			op = "Unknown";
 	}
 	printf("Created event: %d for op: %s; target lwt: %d; target kthd: %d\n", (int)event, op, (int)remote_lwt, (int)kthd);
+	*/
 	int result = __push_to_buffer(event->kthd, event);
 	assert(result == 0);
 	while(block && event->is_done == 0){
-		printf("Waiting for return signal event\n");
+		//printf("Waiting for return signal event\n");
 		lwt_block(LWT_INFO_NTHD_BLOCKED);
 	}
 	if(block){
-		printf("Freeing event: %d\n", (int)event);
+		//printf("Freeing event: %d\n", (int)event);
 		free(event);
 	}
 }

@@ -126,7 +126,7 @@ static int push_data_into_sync_buffer(lwt_chan_t c, void * data){
  */
 void * __pop_data_from_async_buffer(lwt_chan_t c){
 	while(c->start_index >= c->end_index){
-		printf("Blocking async receiver: %d\n", lwt_current()->id);
+		//printf("Blocking async receiver: %d\n", lwt_current()->id);
 		lwt_block(LWT_INFO_NRECEIVING);
 	}
 	unsigned int start_index = fetch_and_add(&c->start_index, 1);
@@ -166,7 +166,7 @@ static void * pop_data_from_sync_buffer(lwt_chan_t c){
 	//detach the head
 	lwt_t sender = c->head_blocked_senders.tqh_first;
 	__remove_blocked_sender_from_chan(c, sender);
-	printf("Reading from sync buffer on thread: %d; kthd: %d; received value: %d\n", (int)sender, (int)sender->kthd, (int)sender->sync_buffer);
+	//printf("Reading from sync buffer on thread: %d; kthd: %d; received value: %d\n", (int)sender, (int)sender->kthd, (int)sender->sync_buffer);
 	void * data = sender->sync_buffer;
 	//sender->sync_buffer = NULL;
 	assert(data);
@@ -261,13 +261,13 @@ lwt_chan_t lwt_rcv_chan(lwt_chan_t c){
  */
 void lwt_chan_deref(lwt_chan_t c){
 	if(c->receiver == lwt_current() && c->kthd == __get_kthd()){
-		printf("Removing receiver (%d) from channel: %d\n", c->receiver->id, (int)c);
+		//printf("Removing receiver (%d) from channel: %d\n", c->receiver->id, (int)c);
 		LIST_REMOVE(c, receiver_channels);
 		c->receiver = NULL;
 	}
 	else if(c->snd_cnt > 0){
 		__remove_sender_from_chan(c, lwt_current());
-		printf("Removing sender (%d) from channel: %d\n", lwt_current()->id, (int)c);
+		//printf("Removing sender (%d) from channel: %d\n", lwt_current()->id, (int)c);
 	}
 	//printf("Current sender count: %d\n", c->snd_cnt);
 	if(!c->receiver && c->snd_cnt == 0){

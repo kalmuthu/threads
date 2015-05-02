@@ -327,6 +327,10 @@ void lwt_block(lwt_info_t info){
 	lwt_yield(LWT_NULL);
 }
 
+/**
+ * @brief Signals the non-running thread to run
+ * @param thread The thread to be worken
+ */
 void lwt_signal(lwt_t thread){
 	assert(thread);
 	if(__get_kthd() == thread->kthd){
@@ -395,7 +399,7 @@ void __lwt_schedule(){
 	//all threads are blocked now
 	else if(current_thread->info != LWT_INFO_NTHD_RUNNABLE){
 		//move to idle thread
-		printf("Starting idle thread\n");
+		//printf("Starting idle thread\n");
 		lwt_t curr_thread = current_thread;
 		lwt_t next_thread = __get_kthd()->buffer_thread;
 		__get_kthd()->buffer_thread->info = LWT_INFO_NTHD_RUNNABLE;
