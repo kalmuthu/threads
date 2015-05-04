@@ -38,6 +38,11 @@ void __init_event(lwt_chan_t channel){
 	}
 }
 
+/**
+ * @brief Removes an event from the group
+ * @param channel The channel (i.e. event) to remove
+ * @param group The group to remove the event from
+ */
 void __remove_event(lwt_chan_t channel, lwt_cgrp_t group){
 	if(__get_kthd() == group->creator_thread->kthd){
 		TAILQ_REMOVE(&group->head_event, channel, events);

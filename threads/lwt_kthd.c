@@ -13,10 +13,15 @@
 #include "stdio.h"
 
 /**
- * Pointer to the kthd for the pthread
+ * @brief Pointer to the kthd for the pthread
  */
 __thread lwt_kthd_t pthread_kthd;
 
+/**
+ * @brief Function for the kthd (i.e. pthread) LWT wrapper to perform
+ * @param data The kthd data used for storing the params for the create chan call
+ * @return NULL
+ */
 void * pthread_function(void * data){
 	__init__();
 	struct lwt_kthd_data * thd_data = (struct lwt_kthd_data *)data;
@@ -32,6 +37,12 @@ void * pthread_function(void * data){
 	return NULL;
 }
 
+/**
+ * @brief Creates an N:M kthd
+ * @param fn The channel function to run on the remote kthd
+ * @param c The channel used as input to that function
+ * @param flags The flags for the function
+ */
 int lwt_kthd_create(lwt_chan_fn_t fn, lwt_chan_t c, lwt_flags_t flags){
 	struct lwt_kthd_data data;
 	data.channel_fn = fn;
@@ -61,8 +72,13 @@ int lwt_kthd_create(lwt_chan_fn_t fn, lwt_chan_t c, lwt_flags_t flags){
 	return 0;
 }
 
+/**
+ * @brief Pops a kthd event from the buffer
+ * @param kthd The kthd to pop
+ * @return The kthd event for the action to perform in the reaper function
+ */
 struct kthd_event * __pop_from_buffer(lwt_kthd_t kthd){
-	//return null if there's no data
+	//return null if there's no data; we're to assume that the buffer is sufficiently large
 	if(kthd->buffer_head >= kthd->buffer_tail){
 		return NULL;
 	}
@@ -74,8 +90,14 @@ struct kthd_event * __pop_from_buffer(lwt_kthd_t kthd){
 	return data;
 }
 
+/**
+ * @brief Pushes a kthd event into the event buffer
+ * @param kthd The kthd to modify
+ * @param data The data to insert
+ * @return 0 if successful; -1 if not
+ */
 int __push_to_buffer(lwt_kthd_t kthd, struct kthd_event * data){
-	//block the current pthread until
+	//check if full; we're to asssume the buffer is sufficiently large
 	if(kthd->buffer_tail >= kthd->buffer_head + EVENT_BUFFER_SIZE){
 		return -1;
 	}
@@ -91,6 +113,10 @@ int __push_to_buffer(lwt_kthd_t kthd, struct kthd_event * data){
 	return 0;
 }
 
+/**
+ * @brief Initializes a kthd
+ * @param lwt The lwt for the kthd
+ */
 void __init_kthd(lwt_t lwt){
 	//ensure block is set to 0's
 	pthread_kthd = (lwt_kthd_t)calloc(1, sizeof(struct lwt_kthd));
@@ -103,6 +129,11 @@ void __init_kthd(lwt_t lwt){
 	TAILQ_INIT(&pthread_kthd->head_runnable_threads);
 }
 
+/**
+ * @brief Function for the reaper lwt; when all other lwts are blocked, processes events for the kthd
+ * @param d Data; unused; needed to match file signature
+ * @return NULL
+ */
 void * __lwt_buffer(void * d){
 	struct kthd_event * event;
 	while(lwt_current()->kthd){
@@ -161,10 +192,23 @@ void * __lwt_buffer(void * d){
 	return NULL;
 }
 
+/**
+ * @brief Helper method for returning the current kthd
+ * @return The current kthd
+ */
 lwt_kthd_t __get_kthd(){
 	return pthread_kthd;
 }
 
+/**
+ * @brief Initializes a kthd event
+ * @param remote_lwt The lwt to modify
+ * @param remote_chan The channel to modify
+ * @param remote_group The group to modify
+ * @param kthd The kthd to modify
+ * @param remote_op The operation to perform
+ * @param block Is the operation blocking (generally yes; signal is not)
+ */
 void __init_kthd_event(lwt_t remote_lwt, lwt_chan_t remote_chan, lwt_cgrp_t remote_group, lwt_kthd_t kthd, lwt_remote_op_t remote_op, int block){
 	lwt_t current = lwt_current();
 	struct kthd_event * event = (struct kthd_event *)malloc(sizeof(struct kthd_event));

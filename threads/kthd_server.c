@@ -27,6 +27,7 @@
 #define POOL_SIZE 2
 #define MAX_ACCEPTORS 2
 #define LWT_CACHE 3
+#define MAX_REQ_SZ 1024
 
 /*
  * Once a request has been formulated (of type char *, with length
@@ -74,7 +75,11 @@ done:
 	return;
 }
 
-#define MAX_REQ_SZ 1024
+/**
+ * @brief Helper function for creating an http request
+ * @param new_fd The file descriptor to open
+ * @return The Http request received from the file descriptor
+ */
 struct http_req *
 newfd_create_req_kthd(int new_fd)
 {
@@ -107,9 +112,13 @@ newfd_create_req_kthd(int new_fd)
 	return r;
 }
 
-
+/**
+ * @brief Processes the file system request; used for thread pool
+ * @param cache_channel The channel to receive
+ * @return NULL
+ */
 void * read_fs(lwt_chan_t cache_channel){
-	//create channel
+	//create channel; probably not the best method for this but instructions said to use thread pool
 	lwt_chan_t fs_channel = lwt_chan(2);
 	//send it
 	lwt_snd_chan(cache_channel, fs_channel);
@@ -125,6 +134,10 @@ void * read_fs(lwt_chan_t cache_channel){
 	return NULL;
 }
 
+/**
+ * @brief Wrapper for the the file system workers; used for thread pool
+ * @param main_channel The channel for sending the fs channel to
+ */
 void * spawn_fs_workers(lwt_chan_t main_channel){
 	//create channel
 	lwt_chan_t spawn_channel = lwt_chan(3);
@@ -144,7 +157,11 @@ void * spawn_fs_workers(lwt_chan_t main_channel){
 
 	return NULL;
 }
-
+/**
+ * @brief LWT function for caching; checks if the path has been cached; if so, return it; else hit fs threads
+ * @param kthd_channel The channel for the spawner
+ * @return NULL
+ */
 void * read_cache(lwt_chan_t kthd_channel){
 	ENTRY query;
 	ENTRY * result;
@@ -156,6 +173,7 @@ void * read_cache(lwt_chan_t kthd_channel){
 
 	int num_hash_entries = 0;
 
+	//set up channels
 	lwt_chan_t my_channel = lwt_chan(3);
 	assert(my_channel);
 	lwt_snd_chan(kthd_channel, my_channel);
@@ -224,6 +242,7 @@ void * read_cache(lwt_chan_t kthd_channel){
 		}
 		respond_and_free_req_kthd(r, data, len);
 	}
+	//cleanup
 	lwt_chan_deref(main_channel);
 	lwt_chan_deref(response_channel);
 	lwt_chan_deref(my_channel);
@@ -231,6 +250,11 @@ void * read_cache(lwt_chan_t kthd_channel){
 	return NULL;
 }
 
+/**
+ * @brief Function for running on cache to manage lwt thread pool
+ * @param main_channel The channel from main used for passing data to other kthds
+ * @return NULL
+ */
 void * read_cache_kthd(lwt_chan_t main_channel){
 	//create cache channel
 	lwt_chan_t cache_channels[MAX_ACCEPTORS];
@@ -258,6 +282,7 @@ void * read_cache_kthd(lwt_chan_t main_channel){
 
 	i = 0;
 	while(1){
+		//hey hey hey! here's the group wait!
 		accept_channel = lwt_cgrp_wait(accept_group);
 		fd = (int)lwt_rcv(accept_channel);
 		lwt_snd(worker_channels[i], (void *)fd);
@@ -276,6 +301,11 @@ void * read_cache_kthd(lwt_chan_t main_channel){
 	lwt_chan_deref(my_channel);
 }
 
+/**
+ * @brief Accept worker kthd; accepts the new httd request
+ * @param main_channel The channel to send data across
+ * @return NULL
+ */
 void * accept_worker(lwt_chan_t main_channel){
 	int server_fd;
 	//create channel
@@ -291,7 +321,7 @@ void * accept_worker(lwt_chan_t main_channel){
 	}
 
 	i = 0;
-	//receive file descriptor
+	//receive file descriptor; send to cache round robin style
 	int fd = (int)lwt_rcv(worker_channel);
 	while(1){
 		server_fd = server_accept(fd);
@@ -303,6 +333,10 @@ void * accept_worker(lwt_chan_t main_channel){
 	}
 }
 
+/**
+ * @brief Main function for the server; sets up channels and then passes data from cache to kthd modules
+ * @param accept_fd The file descriptor for the http port being used
+ */
 void process_kthd_server(int accept_fd){
 	//create channel
 	lwt_chan_t main_channel = lwt_chan(20);

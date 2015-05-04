@@ -16,6 +16,11 @@
 #include "assert.h"
 #include "faa.h"
 
+/**
+ * @brief Inserts the sender into the channel
+ * @param chan The channel to insert the sender
+ * @param lwt The sender lwt
+ */
 void __insert_sender_to_chan(lwt_chan_t chan, lwt_t lwt){
 	if(__get_kthd() == chan->kthd){
 		LIST_INSERT_HEAD(&chan->head_senders, lwt, senders);
@@ -26,6 +31,11 @@ void __insert_sender_to_chan(lwt_chan_t chan, lwt_t lwt){
 	}
 }
 
+/**
+ * @brief Removes the sender from the channel
+ * @param chan The channel to remove the sender from
+ * @param lwt The sender to remove
+ */
 void __remove_sender_from_chan(lwt_chan_t chan, lwt_t lwt){
 	if(__get_kthd() == chan->kthd){
 		LIST_REMOVE(lwt, senders);
@@ -36,6 +46,11 @@ void __remove_sender_from_chan(lwt_chan_t chan, lwt_t lwt){
 	}
 }
 
+/**
+ * @brief Inserts the sender onto the blocked queue
+ * @param chan The channel owning the queue
+ * @param lwt The sender to add to the queue
+ */
 void __insert_blocked_sender_to_chan(lwt_chan_t chan, lwt_t lwt){
 	if(__get_kthd() == chan->kthd){
 		TAILQ_INSERT_TAIL(&chan->head_blocked_senders, lwt, blocked_senders);
@@ -45,6 +60,11 @@ void __insert_blocked_sender_to_chan(lwt_chan_t chan, lwt_t lwt){
 	}
 }
 
+/**
+ * @brief Removes the sender from the channel's blocked queue
+ * @param chan The channel owning the queue
+ * @param lwt The sender to remove from the queue
+ */
 void __remove_blocked_sender_from_chan(lwt_chan_t chan, lwt_t lwt){
 	if(__get_kthd() == chan->kthd){
 		TAILQ_REMOVE(&chan->head_blocked_senders, lwt, blocked_senders);
@@ -103,18 +123,10 @@ static int push_data_into_sync_buffer(lwt_chan_t c, void * data){
 	}
 	//if receiver isn't waiting to receive block
 	else{
-	//while(lwt_current()->blocked_senders.tqe_next || c->head_blocked_senders.tqh_first == lwt_current()){
 		//printf("Blocking sender\n");
 		lwt_block(LWT_INFO_NSENDING);
-	//}
 	}
 
-
-
-	//signal receiver
-	//printf("Signaling receiver on lwt: %d\n", lwt_current()->id);
-
-	//lwt_signal(c->receiver);
 	return 0;
 }
 
