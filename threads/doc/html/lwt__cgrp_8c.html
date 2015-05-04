@@ -93,18 +93,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <code>#include &quot;stdlib.h&quot;</code><br />
 <code>#include &quot;assert.h&quot;</code><br />
 <code>#include &quot;stdio.h&quot;</code><br />
+<code>#include &quot;sys/queue.h&quot;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a2b6cb3d00fb4039850c8b91dc4798646"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__cgrp_8c.html#a2b6cb3d00fb4039850c8b91dc4798646">__init_event</a> (lwt_chan_t channel, void *data)</td></tr>
-<tr class="memdesc:a2b6cb3d00fb4039850c8b91dc4798646"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the event for when data is added to the channel.  <a href="#a2b6cb3d00fb4039850c8b91dc4798646">More...</a><br /></td></tr>
-<tr class="separator:a2b6cb3d00fb4039850c8b91dc4798646"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade9b4addad673d25b2b8d25f7cb00efb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__cgrp_8c.html#ade9b4addad673d25b2b8d25f7cb00efb">free_event</a> (struct <a class="el" href="structevent.html">event</a> *<a class="el" href="structevent.html">event</a>)</td></tr>
-<tr class="memdesc:ade9b4addad673d25b2b8d25f7cb00efb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the event from the group.  <a href="#ade9b4addad673d25b2b8d25f7cb00efb">More...</a><br /></td></tr>
-<tr class="separator:ade9b4addad673d25b2b8d25f7cb00efb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83a451767f9db6d6e828619ce373a1a2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__cgrp_8c.html#a83a451767f9db6d6e828619ce373a1a2">__pop_event</a> (lwt_cgrp_t group)</td></tr>
-<tr class="memdesc:a83a451767f9db6d6e828619ce373a1a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pops the event from the group.  <a href="#a83a451767f9db6d6e828619ce373a1a2">More...</a><br /></td></tr>
-<tr class="separator:a83a451767f9db6d6e828619ce373a1a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47dd3e90225b5cfabd9efc3e8781708c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__cgrp_8c.html#a47dd3e90225b5cfabd9efc3e8781708c">__init_event</a> (lwt_chan_t channel)</td></tr>
+<tr class="memdesc:a47dd3e90225b5cfabd9efc3e8781708c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the event for when data is added to the channel.  <a href="#a47dd3e90225b5cfabd9efc3e8781708c">More...</a><br /></td></tr>
+<tr class="separator:a47dd3e90225b5cfabd9efc3e8781708c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae29de082e581ec637bce980245091baf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__cgrp_8c.html#ae29de082e581ec637bce980245091baf">__remove_event</a> (lwt_chan_t channel, lwt_cgrp_t group)</td></tr>
+<tr class="memdesc:ae29de082e581ec637bce980245091baf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes an event from the group.  <a href="#ae29de082e581ec637bce980245091baf">More...</a><br /></td></tr>
+<tr class="separator:ae29de082e581ec637bce980245091baf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac91e4f3676e705e0be6bbc900cea2e84"><td class="memItemLeft" align="right" valign="top">lwt_cgrp_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__cgrp_8c.html#ac91e4f3676e705e0be6bbc900cea2e84">lwt_cgrp</a> ()</td></tr>
 <tr class="memdesc:ac91e4f3676e705e0be6bbc900cea2e84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a group of channels.  <a href="#ac91e4f3676e705e0be6bbc900cea2e84">More...</a><br /></td></tr>
 <tr class="separator:ac91e4f3676e705e0be6bbc900cea2e84"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -128,7 +126,7 @@ Functions</h2></td></tr>
 <tr class="separator:a66a102b45c655371da157f02ddc117c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a2b6cb3d00fb4039850c8b91dc4798646"></a>
+<a class="anchor" id="a47dd3e90225b5cfabd9efc3e8781708c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -136,13 +134,38 @@ Functions</h2></td></tr>
           <td class="memname">void __init_event </td>
           <td>(</td>
           <td class="paramtype">lwt_chan_t&#160;</td>
+          <td class="paramname"><em>channel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initializes the event for when data is added to the channel. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">channel</td><td>The channel with the new data </td></tr>
+    <tr><td class="paramname">sender</td><td>The sender lwt </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ae29de082e581ec637bce980245091baf"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void __remove_event </td>
+          <td>(</td>
+          <td class="paramtype">lwt_chan_t&#160;</td>
           <td class="paramname"><em>channel</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>data</em>&#160;</td>
+          <td class="paramtype">lwt_cgrp_t&#160;</td>
+          <td class="paramname"><em>group</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -152,59 +175,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes the event for when data is added to the channel. </p>
+<p>Removes an event from the group. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">channel</td><td>The channel with the new data </td></tr>
-    <tr><td class="paramname">data</td><td>The data being inserted </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a83a451767f9db6d6e828619ce373a1a2"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void __pop_event </td>
-          <td>(</td>
-          <td class="paramtype">lwt_cgrp_t&#160;</td>
-          <td class="paramname"><em>group</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Pops the event from the group. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">group</td><td>The channel group to alter </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="ade9b4addad673d25b2b8d25f7cb00efb"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void free_event </td>
-          <td>(</td>
-          <td class="paramtype">struct <a class="el" href="structevent.html">event</a> *&#160;</td>
-          <td class="paramname"><em>event</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Removes the event from the group. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">event</td><td>The event being removed </td></tr>
+    <tr><td class="paramname">channel</td><td>The channel (i.e. event) to remove </td></tr>
+    <tr><td class="paramname">group</td><td>The group to remove the event from </td></tr>
   </table>
   </dd>
 </dl>
@@ -414,7 +389,7 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 3 2015 21:25:39 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon May 4 2015 13:33:59 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>

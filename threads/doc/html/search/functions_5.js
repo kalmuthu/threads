@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['ping_5fpong_5ftest',['ping_pong_test',['../main__chan_8c.html#a918a89f110cdae481001a711d4d8cbf4',1,'main_chan.c']]]
+  ['kthd_5fping',['kthd_ping',['../main__kthd_8c.html#a07b021ea0ffb6fb588b7acce4de565d5',1,'main_kthd.c']]],
+  ['kthd_5fping_5fpong_5fsync',['kthd_ping_pong_sync',['../main__kthd_8c.html#aeabb6a680dbb2e3bc81eeaa08e0ba51a',1,'main_kthd.c']]]
 ];

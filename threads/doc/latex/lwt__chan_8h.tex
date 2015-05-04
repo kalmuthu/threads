@@ -1,17 +1,7 @@
 \hypertarget{lwt__chan_8h}{\section{lwt\+\_\+chan.\+h File Reference}
 \label{lwt__chan_8h}\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
 }
-{\ttfamily \#include \char`\"{}lwt.\+h\char`\"{}}\\*
-\subsection*{Data Structures}
-\begin{DoxyCompactItemize}
-\item 
-struct \hyperlink{structlwt__channel}{lwt\+\_\+chan\+\_\+t}
-\begin{DoxyCompactList}\small\item\em The channel for synchronous and asynchronous communication. \end{DoxyCompactList}\end{DoxyCompactItemize}
-\subsection*{Typedefs}
-\begin{DoxyCompactItemize}
-\item 
-typedef void $\ast$($\ast$ \hyperlink{lwt__chan_8h_a093f62106d888d547207e375daf75678}{lwt\+\_\+chan\+\_\+fn\+\_\+t} )(lwt\+\_\+chan\+\_\+t)
-\end{DoxyCompactItemize}
+{\ttfamily \#include \char`\"{}objects.\+h\char`\"{}}\\*
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -27,65 +17,95 @@ int \hyperlink{lwt__chan_8h_a58e316e064ab15eb385a81754164058a}{lwt\+\_\+snd\+\_\
 \begin{DoxyCompactList}\small\item\em Sends sending over the channel c. \end{DoxyCompactList}\item 
 lwt\+\_\+chan\+\_\+t \hyperlink{lwt__chan_8h_adcab922fc81de1128ec94e55e8ee3c31}{lwt\+\_\+rcv\+\_\+chan} (lwt\+\_\+chan\+\_\+t)
 \begin{DoxyCompactList}\small\item\em Receives the data over the channel. \end{DoxyCompactList}\item 
-lwt\+\_\+t \hyperlink{lwt__chan_8h_a16b02cbd657006d7c63e8677160540a1}{lwt\+\_\+create\+\_\+chan} (\hyperlink{lwt__chan_8h_a093f62106d888d547207e375daf75678}{lwt\+\_\+chan\+\_\+fn\+\_\+t}, lwt\+\_\+chan\+\_\+t, \hyperlink{lwt_8h_a3e65a66932a8da34b1092c3a23d54c6f}{lwt\+\_\+flags\+\_\+t})
+lwt\+\_\+t \hyperlink{lwt__chan_8h_a16b02cbd657006d7c63e8677160540a1}{lwt\+\_\+create\+\_\+chan} (\hyperlink{objects_8h_a093f62106d888d547207e375daf75678}{lwt\+\_\+chan\+\_\+fn\+\_\+t}, lwt\+\_\+chan\+\_\+t, \hyperlink{enums_8h_a3e65a66932a8da34b1092c3a23d54c6f}{lwt\+\_\+flags\+\_\+t})
 \begin{DoxyCompactList}\small\item\em Creates a lwt with the channel as an arg. \end{DoxyCompactList}\item 
-void \hyperlink{lwt__chan_8h_a1125220c7de58cd60ebfe2722a762716}{\+\_\+\+\_\+remove\+\_\+channel} (lwt\+\_\+chan\+\_\+t)
-\begin{DoxyCompactList}\small\item\em Remove the channel from the list of channels. \end{DoxyCompactList}\item 
-void $\ast$ \hyperlink{lwt__chan_8h_a91c4d1ab15a6893cb02364612b2c78a6}{\+\_\+\+\_\+pop\+\_\+data\+\_\+from\+\_\+async\+\_\+buffer} (lwt\+\_\+chan\+\_\+t)
-\begin{DoxyCompactList}\small\item\em Pops the data into the buffer. \end{DoxyCompactList}\item 
-void \hyperlink{lwt__chan_8h_a7073b7a84377ea1126dc7d39966481d6}{\+\_\+\+\_\+remove\+\_\+from\+\_\+blocked\+\_\+sendera} (lwt\+\_\+chan\+\_\+t, lwt\+\_\+t)
-\end{DoxyCompactItemize}
-
-
-\subsection{Typedef Documentation}
-\hypertarget{lwt__chan_8h_a093f62106d888d547207e375daf75678}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!lwt\+\_\+chan\+\_\+fn\+\_\+t@{lwt\+\_\+chan\+\_\+fn\+\_\+t}}
-\index{lwt\+\_\+chan\+\_\+fn\+\_\+t@{lwt\+\_\+chan\+\_\+fn\+\_\+t}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
-\subsubsection[{lwt\+\_\+chan\+\_\+fn\+\_\+t}]{\setlength{\rightskip}{0pt plus 5cm}typedef void$\ast$($\ast$ lwt\+\_\+chan\+\_\+fn\+\_\+t)(lwt\+\_\+chan\+\_\+t)}}\label{lwt__chan_8h_a093f62106d888d547207e375daf75678}
+void \hyperlink{lwt__chan_8h_a7c71775976134e0cefe1dc9b2d89ac0c}{\+\_\+\+\_\+insert\+\_\+sender\+\_\+to\+\_\+chan} (lwt\+\_\+chan\+\_\+t, lwt\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Inserts the sender into the channel. \end{DoxyCompactList}\item 
+void \hyperlink{lwt__chan_8h_a92c97c376cf6fe5c1fa0d9be817bb0d8}{\+\_\+\+\_\+remove\+\_\+sender\+\_\+from\+\_\+chan} (lwt\+\_\+chan\+\_\+t, lwt\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Removes the sender from the channel. \end{DoxyCompactList}\item 
+void \hyperlink{lwt__chan_8h_a87bdf801cd0f771fda63f5868ca1d528}{\+\_\+\+\_\+insert\+\_\+blocked\+\_\+sender\+\_\+to\+\_\+chan} (lwt\+\_\+chan\+\_\+t, lwt\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Inserts the sender onto the blocked queue. \end{DoxyCompactList}\item 
+void \hyperlink{lwt__chan_8h_a89108e74fcab82985f095ae13c4d8738}{\+\_\+\+\_\+remove\+\_\+blocked\+\_\+sender\+\_\+from\+\_\+chan} (lwt\+\_\+chan\+\_\+t, lwt\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Removes the sender from the channel's blocked queue. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Function Documentation}
-\hypertarget{lwt__chan_8h_a91c4d1ab15a6893cb02364612b2c78a6}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!\+\_\+\+\_\+pop\+\_\+data\+\_\+from\+\_\+async\+\_\+buffer@{\+\_\+\+\_\+pop\+\_\+data\+\_\+from\+\_\+async\+\_\+buffer}}
-\index{\+\_\+\+\_\+pop\+\_\+data\+\_\+from\+\_\+async\+\_\+buffer@{\+\_\+\+\_\+pop\+\_\+data\+\_\+from\+\_\+async\+\_\+buffer}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
-\subsubsection[{\+\_\+\+\_\+pop\+\_\+data\+\_\+from\+\_\+async\+\_\+buffer}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ \+\_\+\+\_\+pop\+\_\+data\+\_\+from\+\_\+async\+\_\+buffer (
+\hypertarget{lwt__chan_8h_a87bdf801cd0f771fda63f5868ca1d528}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!\+\_\+\+\_\+insert\+\_\+blocked\+\_\+sender\+\_\+to\+\_\+chan@{\+\_\+\+\_\+insert\+\_\+blocked\+\_\+sender\+\_\+to\+\_\+chan}}
+\index{\+\_\+\+\_\+insert\+\_\+blocked\+\_\+sender\+\_\+to\+\_\+chan@{\+\_\+\+\_\+insert\+\_\+blocked\+\_\+sender\+\_\+to\+\_\+chan}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{\+\_\+\+\_\+insert\+\_\+blocked\+\_\+sender\+\_\+to\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+insert\+\_\+blocked\+\_\+sender\+\_\+to\+\_\+chan (
 \begin{DoxyParamCaption}
-\item[{lwt\+\_\+chan\+\_\+t}]{c}
+\item[{lwt\+\_\+chan\+\_\+t}]{chan, }
+\item[{lwt\+\_\+t}]{lwt}
 \end{DoxyParamCaption}
-)}}\label{lwt__chan_8h_a91c4d1ab15a6893cb02364612b2c78a6}
+)}}\label{lwt__chan_8h_a87bdf801cd0f771fda63f5868ca1d528}
 
 
-Pops the data into the buffer. 
+Inserts the sender onto the blocked queue. 
 
 
 \begin{DoxyParams}{Parameters}
-{\em c} & The channel to remove the data from \\
+{\em chan} & The channel owning the queue \\
 \hline
-{\em data} & The data to remove If the buffer is empty, it will block until there is something to read \\
+{\em lwt} & The sender to add to the queue \\
 \hline
 \end{DoxyParams}
-\hypertarget{lwt__chan_8h_a1125220c7de58cd60ebfe2722a762716}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!\+\_\+\+\_\+remove\+\_\+channel@{\+\_\+\+\_\+remove\+\_\+channel}}
-\index{\+\_\+\+\_\+remove\+\_\+channel@{\+\_\+\+\_\+remove\+\_\+channel}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
-\subsubsection[{\+\_\+\+\_\+remove\+\_\+channel}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+remove\+\_\+channel (
+\hypertarget{lwt__chan_8h_a7c71775976134e0cefe1dc9b2d89ac0c}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!\+\_\+\+\_\+insert\+\_\+sender\+\_\+to\+\_\+chan@{\+\_\+\+\_\+insert\+\_\+sender\+\_\+to\+\_\+chan}}
+\index{\+\_\+\+\_\+insert\+\_\+sender\+\_\+to\+\_\+chan@{\+\_\+\+\_\+insert\+\_\+sender\+\_\+to\+\_\+chan}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{\+\_\+\+\_\+insert\+\_\+sender\+\_\+to\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+insert\+\_\+sender\+\_\+to\+\_\+chan (
 \begin{DoxyParamCaption}
-\item[{lwt\+\_\+chan\+\_\+t}]{channel}
+\item[{lwt\+\_\+chan\+\_\+t}]{chan, }
+\item[{lwt\+\_\+t}]{lwt}
 \end{DoxyParamCaption}
-)}}\label{lwt__chan_8h_a1125220c7de58cd60ebfe2722a762716}
+)}}\label{lwt__chan_8h_a7c71775976134e0cefe1dc9b2d89ac0c}
 
 
-Remove the channel from the list of channels. 
+Inserts the sender into the channel. 
 
 
 \begin{DoxyParams}{Parameters}
-{\em channel} & The channel to be removed \\
+{\em chan} & The channel to insert the sender \\
+\hline
+{\em lwt} & The sender lwt \\
 \hline
 \end{DoxyParams}
-\hypertarget{lwt__chan_8h_a7073b7a84377ea1126dc7d39966481d6}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!\+\_\+\+\_\+remove\+\_\+from\+\_\+blocked\+\_\+sendera@{\+\_\+\+\_\+remove\+\_\+from\+\_\+blocked\+\_\+sendera}}
-\index{\+\_\+\+\_\+remove\+\_\+from\+\_\+blocked\+\_\+sendera@{\+\_\+\+\_\+remove\+\_\+from\+\_\+blocked\+\_\+sendera}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
-\subsubsection[{\+\_\+\+\_\+remove\+\_\+from\+\_\+blocked\+\_\+sendera}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+remove\+\_\+from\+\_\+blocked\+\_\+sendera (
+\hypertarget{lwt__chan_8h_a89108e74fcab82985f095ae13c4d8738}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!\+\_\+\+\_\+remove\+\_\+blocked\+\_\+sender\+\_\+from\+\_\+chan@{\+\_\+\+\_\+remove\+\_\+blocked\+\_\+sender\+\_\+from\+\_\+chan}}
+\index{\+\_\+\+\_\+remove\+\_\+blocked\+\_\+sender\+\_\+from\+\_\+chan@{\+\_\+\+\_\+remove\+\_\+blocked\+\_\+sender\+\_\+from\+\_\+chan}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{\+\_\+\+\_\+remove\+\_\+blocked\+\_\+sender\+\_\+from\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+remove\+\_\+blocked\+\_\+sender\+\_\+from\+\_\+chan (
 \begin{DoxyParamCaption}
-\item[{lwt\+\_\+chan\+\_\+t}]{, }
-\item[{lwt\+\_\+t}]{}
+\item[{lwt\+\_\+chan\+\_\+t}]{chan, }
+\item[{lwt\+\_\+t}]{lwt}
 \end{DoxyParamCaption}
-)}}\label{lwt__chan_8h_a7073b7a84377ea1126dc7d39966481d6}
+)}}\label{lwt__chan_8h_a89108e74fcab82985f095ae13c4d8738}
+
+
+Removes the sender from the channel's blocked queue. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em chan} & The channel owning the queue \\
+\hline
+{\em lwt} & The sender to remove from the queue \\
+\hline
+\end{DoxyParams}
+\hypertarget{lwt__chan_8h_a92c97c376cf6fe5c1fa0d9be817bb0d8}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!\+\_\+\+\_\+remove\+\_\+sender\+\_\+from\+\_\+chan@{\+\_\+\+\_\+remove\+\_\+sender\+\_\+from\+\_\+chan}}
+\index{\+\_\+\+\_\+remove\+\_\+sender\+\_\+from\+\_\+chan@{\+\_\+\+\_\+remove\+\_\+sender\+\_\+from\+\_\+chan}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
+\subsubsection[{\+\_\+\+\_\+remove\+\_\+sender\+\_\+from\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+\+\_\+remove\+\_\+sender\+\_\+from\+\_\+chan (
+\begin{DoxyParamCaption}
+\item[{lwt\+\_\+chan\+\_\+t}]{chan, }
+\item[{lwt\+\_\+t}]{lwt}
+\end{DoxyParamCaption}
+)}}\label{lwt__chan_8h_a92c97c376cf6fe5c1fa0d9be817bb0d8}
+
+
+Removes the sender from the channel. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em chan} & The channel to remove the sender from \\
+\hline
+{\em lwt} & The sender to remove \\
+\hline
+\end{DoxyParams}
 \hypertarget{lwt__chan_8h_adaeb1141d83bc6d3daa7043386b282f9}{\index{lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}!lwt\+\_\+chan@{lwt\+\_\+chan}}
 \index{lwt\+\_\+chan@{lwt\+\_\+chan}!lwt\+\_\+chan.\+h@{lwt\+\_\+chan.\+h}}
 \subsubsection[{lwt\+\_\+chan}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+chan\+\_\+t lwt\+\_\+chan (

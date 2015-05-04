@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['has_5fevent',['has_event',['../structlwt__channel.html#a188eb6696d72cbe1d1295fb2736ec20c',1,'lwt_channel']]]
+  ['group',['group',['../structkthd__event.html#aed105857e0eafa5a6ea364684ebb0a89',1,'kthd_event']]]
 ];

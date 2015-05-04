@@ -83,6 +83,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
 <div class="title">lwt_cgrp_t Struct Reference</div>  </div>
@@ -92,73 +93,90 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Channel group for handling events within a group.  
  <a href="structlwt__cgrp.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="lwt__cgrp_8h_source.html">lwt_cgrp.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="objects_8h_source.html">objects.h</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a9e64fc8426379432c84b71b3ebb5a265"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__cgrp.html#a9e64fc8426379432c84b71b3ebb5a265">LIST_HEAD</a> (head_channels_in_group, <a class="el" href="structlwt__channel.html">lwt_channel</a>) head_channels_in_group</td></tr>
+<tr class="separator:a9e64fc8426379432c84b71b3ebb5a265"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf2977059a823baa00c6e12b32e5690b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__cgrp.html#aaf2977059a823baa00c6e12b32e5690b">TAILQ_HEAD</a> (head_event, <a class="el" href="structlwt__channel.html">lwt_channel</a>) head_event</td></tr>
+<tr class="separator:aaf2977059a823baa00c6e12b32e5690b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:a50c0e0c6ae5d35a6fcb1c42098e3fc4d"><td class="memItemLeft" align="right" valign="top">lwt_chan_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__cgrp.html#a50c0e0c6ae5d35a6fcb1c42098e3fc4d">channel_head</a></td></tr>
-<tr class="separator:a50c0e0c6ae5d35a6fcb1c42098e3fc4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:addf100f46a0a912555c71bb1efe43380"><td class="memItemLeft" align="right" valign="top">lwt_chan_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__cgrp.html#addf100f46a0a912555c71bb1efe43380">channel_tail</a></td></tr>
-<tr class="separator:addf100f46a0a912555c71bb1efe43380"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b10e0f366557a71518836f2c12328f5"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structevent.html">event</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__cgrp.html#a0b10e0f366557a71518836f2c12328f5">event_head</a></td></tr>
-<tr class="separator:a0b10e0f366557a71518836f2c12328f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a180417922953d4a26cf88f429dde623e"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structevent.html">event</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__cgrp.html#a180417922953d4a26cf88f429dde623e">event_tail</a></td></tr>
-<tr class="separator:a180417922953d4a26cf88f429dde623e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac77ed0ee0cf31bd27b995749f819c32b"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__cgrp.html#ac77ed0ee0cf31bd27b995749f819c32b">waiting_thread</a></td></tr>
 <tr class="separator:ac77ed0ee0cf31bd27b995749f819c32b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af86699c56fb03f7a348fa606510af33b"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__cgrp.html#af86699c56fb03f7a348fa606510af33b">creator_thread</a></td></tr>
+<tr class="separator:af86699c56fb03f7a348fa606510af33b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Channel group for handling events within a group. </p>
-</div><h2 class="groupheader">Field Documentation</h2>
-<a class="anchor" id="a50c0e0c6ae5d35a6fcb1c42098e3fc4d"></a>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a9e64fc8426379432c84b71b3ebb5a265"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">lwt_chan_t lwt_cgrp_t::channel_head</td>
+          <td class="memname">lwt_cgrp_t::LIST_HEAD </td>
+          <td>(</td>
+          <td class="paramtype">head_channels_in_group&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structlwt__channel.html">lwt_channel</a>&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Head of the list of channels </p>
+<p>Definition of the head in the channels </p>
 
 </div>
 </div>
-<a class="anchor" id="addf100f46a0a912555c71bb1efe43380"></a>
+<a class="anchor" id="aaf2977059a823baa00c6e12b32e5690b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">lwt_chan_t lwt_cgrp_t::channel_tail</td>
+          <td class="memname">lwt_cgrp_t::TAILQ_HEAD </td>
+          <td>(</td>
+          <td class="paramtype">head_event&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structlwt__channel.html">lwt_channel</a>&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Tail of the list of channels </p>
+<p>Definition of the head node for the event queue </p>
 
 </div>
 </div>
-<a class="anchor" id="a0b10e0f366557a71518836f2c12328f5"></a>
+<h2 class="groupheader">Field Documentation</h2>
+<a class="anchor" id="af86699c56fb03f7a348fa606510af33b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct <a class="el" href="structevent.html">event</a>* lwt_cgrp_t::event_head</td>
+          <td class="memname">lwt_t lwt_cgrp_t::creator_thread</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Head of the event queue </p>
-
-</div>
-</div>
-<a class="anchor" id="a180417922953d4a26cf88f429dde623e"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct <a class="el" href="structevent.html">event</a>* lwt_cgrp_t::event_tail</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Tail of the event queue </p>
+<p>Creator thread </p>
 
 </div>
 </div>
@@ -176,12 +194,12 @@ Data Fields</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li><a class="el" href="lwt__cgrp_8h_source.html">lwt_cgrp.h</a></li>
+<li><a class="el" href="objects_8h_source.html">objects.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 3 2015 21:25:39 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon May 4 2015 13:33:59 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>

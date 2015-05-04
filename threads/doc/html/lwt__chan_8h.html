@@ -82,28 +82,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Data Structures</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">lwt_chan.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="lwt_8h_source.html">lwt.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="objects_8h_source.html">objects.h</a>&quot;</code><br />
 </div>
 <p><a href="lwt__chan_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Data Structures</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlwt__channel.html">lwt_chan_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The channel for synchronous and asynchronous communication.  <a href="structlwt__channel.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a093f62106d888d547207e375daf75678"><td class="memItemLeft" align="right" valign="top">typedef void *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__chan_8h.html#a093f62106d888d547207e375daf75678">lwt_chan_fn_t</a> )(lwt_chan_t)</td></tr>
-<tr class="separator:a093f62106d888d547207e375daf75678"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:adaeb1141d83bc6d3daa7043386b282f9"><td class="memItemLeft" align="right" valign="top">lwt_chan_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__chan_8h.html#adaeb1141d83bc6d3daa7043386b282f9">lwt_chan</a> (int)</td></tr>
@@ -124,96 +111,38 @@ Functions</h2></td></tr>
 <tr class="memitem:adcab922fc81de1128ec94e55e8ee3c31"><td class="memItemLeft" align="right" valign="top">lwt_chan_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__chan_8h.html#adcab922fc81de1128ec94e55e8ee3c31">lwt_rcv_chan</a> (lwt_chan_t)</td></tr>
 <tr class="memdesc:adcab922fc81de1128ec94e55e8ee3c31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receives the data over the channel.  <a href="#adcab922fc81de1128ec94e55e8ee3c31">More...</a><br /></td></tr>
 <tr class="separator:adcab922fc81de1128ec94e55e8ee3c31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a16b02cbd657006d7c63e8677160540a1"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__chan_8h.html#a16b02cbd657006d7c63e8677160540a1">lwt_create_chan</a> (<a class="el" href="lwt__chan_8h.html#a093f62106d888d547207e375daf75678">lwt_chan_fn_t</a>, lwt_chan_t, <a class="el" href="lwt_8h.html#a3e65a66932a8da34b1092c3a23d54c6f">lwt_flags_t</a>)</td></tr>
+<tr class="memitem:a16b02cbd657006d7c63e8677160540a1"><td class="memItemLeft" align="right" valign="top">lwt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__chan_8h.html#a16b02cbd657006d7c63e8677160540a1">lwt_create_chan</a> (<a class="el" href="objects_8h.html#a093f62106d888d547207e375daf75678">lwt_chan_fn_t</a>, lwt_chan_t, <a class="el" href="enums_8h.html#a3e65a66932a8da34b1092c3a23d54c6f">lwt_flags_t</a>)</td></tr>
 <tr class="memdesc:a16b02cbd657006d7c63e8677160540a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a lwt with the channel as an arg.  <a href="#a16b02cbd657006d7c63e8677160540a1">More...</a><br /></td></tr>
 <tr class="separator:a16b02cbd657006d7c63e8677160540a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1125220c7de58cd60ebfe2722a762716"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__chan_8h.html#a1125220c7de58cd60ebfe2722a762716">__remove_channel</a> (lwt_chan_t)</td></tr>
-<tr class="memdesc:a1125220c7de58cd60ebfe2722a762716"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove the channel from the list of channels.  <a href="#a1125220c7de58cd60ebfe2722a762716">More...</a><br /></td></tr>
-<tr class="separator:a1125220c7de58cd60ebfe2722a762716"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91c4d1ab15a6893cb02364612b2c78a6"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__chan_8h.html#a91c4d1ab15a6893cb02364612b2c78a6">__pop_data_from_async_buffer</a> (lwt_chan_t)</td></tr>
-<tr class="memdesc:a91c4d1ab15a6893cb02364612b2c78a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pops the data into the buffer.  <a href="#a91c4d1ab15a6893cb02364612b2c78a6">More...</a><br /></td></tr>
-<tr class="separator:a91c4d1ab15a6893cb02364612b2c78a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7073b7a84377ea1126dc7d39966481d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__chan_8h.html#a7073b7a84377ea1126dc7d39966481d6">__remove_from_blocked_sendera</a> (lwt_chan_t, lwt_t)</td></tr>
-<tr class="separator:a7073b7a84377ea1126dc7d39966481d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c71775976134e0cefe1dc9b2d89ac0c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__chan_8h.html#a7c71775976134e0cefe1dc9b2d89ac0c">__insert_sender_to_chan</a> (lwt_chan_t, lwt_t)</td></tr>
+<tr class="memdesc:a7c71775976134e0cefe1dc9b2d89ac0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts the sender into the channel.  <a href="#a7c71775976134e0cefe1dc9b2d89ac0c">More...</a><br /></td></tr>
+<tr class="separator:a7c71775976134e0cefe1dc9b2d89ac0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92c97c376cf6fe5c1fa0d9be817bb0d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__chan_8h.html#a92c97c376cf6fe5c1fa0d9be817bb0d8">__remove_sender_from_chan</a> (lwt_chan_t, lwt_t)</td></tr>
+<tr class="memdesc:a92c97c376cf6fe5c1fa0d9be817bb0d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the sender from the channel.  <a href="#a92c97c376cf6fe5c1fa0d9be817bb0d8">More...</a><br /></td></tr>
+<tr class="separator:a92c97c376cf6fe5c1fa0d9be817bb0d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87bdf801cd0f771fda63f5868ca1d528"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__chan_8h.html#a87bdf801cd0f771fda63f5868ca1d528">__insert_blocked_sender_to_chan</a> (lwt_chan_t, lwt_t)</td></tr>
+<tr class="memdesc:a87bdf801cd0f771fda63f5868ca1d528"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts the sender onto the blocked queue.  <a href="#a87bdf801cd0f771fda63f5868ca1d528">More...</a><br /></td></tr>
+<tr class="separator:a87bdf801cd0f771fda63f5868ca1d528"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89108e74fcab82985f095ae13c4d8738"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lwt__chan_8h.html#a89108e74fcab82985f095ae13c4d8738">__remove_blocked_sender_from_chan</a> (lwt_chan_t, lwt_t)</td></tr>
+<tr class="memdesc:a89108e74fcab82985f095ae13c4d8738"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the sender from the channel's blocked queue.  <a href="#a89108e74fcab82985f095ae13c4d8738">More...</a><br /></td></tr>
+<tr class="separator:a89108e74fcab82985f095ae13c4d8738"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Typedef Documentation</h2>
-<a class="anchor" id="a093f62106d888d547207e375daf75678"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef void*(* lwt_chan_fn_t)(lwt_chan_t)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a91c4d1ab15a6893cb02364612b2c78a6"></a>
+<a class="anchor" id="a87bdf801cd0f771fda63f5868ca1d528"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void* __pop_data_from_async_buffer </td>
+          <td class="memname">void __insert_blocked_sender_to_chan </td>
           <td>(</td>
           <td class="paramtype">lwt_chan_t&#160;</td>
-          <td class="paramname"><em>c</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Pops the data into the buffer. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">c</td><td>The channel to remove the data from </td></tr>
-    <tr><td class="paramname">data</td><td>The data to remove If the buffer is empty, it will block until there is something to read </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a1125220c7de58cd60ebfe2722a762716"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void __remove_channel </td>
-          <td>(</td>
-          <td class="paramtype">lwt_chan_t&#160;</td>
-          <td class="paramname"><em>channel</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Remove the channel from the list of channels. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">channel</td><td>The channel to be removed </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a7073b7a84377ea1126dc7d39966481d6"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void __remove_from_blocked_sendera </td>
-          <td>(</td>
-          <td class="paramtype">lwt_chan_t&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>chan</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">lwt_t&#160;</td>
-          <td class="paramname">&#160;</td>
+          <td class="paramname"><em>lwt</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -222,6 +151,120 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Inserts the sender onto the blocked queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan</td><td>The channel owning the queue </td></tr>
+    <tr><td class="paramname">lwt</td><td>The sender to add to the queue </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a7c71775976134e0cefe1dc9b2d89ac0c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void __insert_sender_to_chan </td>
+          <td>(</td>
+          <td class="paramtype">lwt_chan_t&#160;</td>
+          <td class="paramname"><em>chan</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">lwt_t&#160;</td>
+          <td class="paramname"><em>lwt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inserts the sender into the channel. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan</td><td>The channel to insert the sender </td></tr>
+    <tr><td class="paramname">lwt</td><td>The sender lwt </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a89108e74fcab82985f095ae13c4d8738"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void __remove_blocked_sender_from_chan </td>
+          <td>(</td>
+          <td class="paramtype">lwt_chan_t&#160;</td>
+          <td class="paramname"><em>chan</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">lwt_t&#160;</td>
+          <td class="paramname"><em>lwt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes the sender from the channel's blocked queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan</td><td>The channel owning the queue </td></tr>
+    <tr><td class="paramname">lwt</td><td>The sender to remove from the queue </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a92c97c376cf6fe5c1fa0d9be817bb0d8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void __remove_sender_from_chan </td>
+          <td>(</td>
+          <td class="paramtype">lwt_chan_t&#160;</td>
+          <td class="paramname"><em>chan</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">lwt_t&#160;</td>
+          <td class="paramname"><em>lwt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes the sender from the channel. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan</td><td>The channel to remove the sender from </td></tr>
+    <tr><td class="paramname">lwt</td><td>The sender to remove </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -281,7 +324,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">lwt_t lwt_create_chan </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lwt__chan_8h.html#a093f62106d888d547207e375daf75678">lwt_chan_fn_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="objects_8h.html#a093f62106d888d547207e375daf75678">lwt_chan_fn_t</a>&#160;</td>
           <td class="paramname"><em>fn</em>, </td>
         </tr>
         <tr>
@@ -293,7 +336,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="lwt_8h.html#a3e65a66932a8da34b1092c3a23d54c6f">lwt_flags_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="enums_8h.html#a3e65a66932a8da34b1092c3a23d54c6f">lwt_flags_t</a>&#160;</td>
           <td class="paramname"><em>flags</em>&#160;</td>
         </tr>
         <tr>
@@ -441,7 +484,7 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 3 2015 21:25:39 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon May 4 2015 13:33:59 for LWT Threads by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>
