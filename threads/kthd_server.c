@@ -21,10 +21,12 @@
 #include "stdlib.h"
 #include "unistd.h"
 #include "assert.h"
+#include "string.h"
 
 #define MAX_CACHE_ENTRIES 10
 #define POOL_SIZE 2
 #define MAX_ACCEPTORS 2
+#define LWT_CACHE 3
 
 /*
  * Once a request has been formulated (of type char *, with length
@@ -143,7 +145,7 @@ void * spawn_fs_workers(lwt_chan_t main_channel){
 	return NULL;
 }
 
-void * read_cache(lwt_chan_t main_channel){
+void * read_cache(lwt_chan_t kthd_channel){
 	ENTRY query;
 	ENTRY * result;
 
@@ -155,19 +157,15 @@ void * read_cache(lwt_chan_t main_channel){
 
 	int num_hash_entries = 0;
 
+	lwt_chan_t my_channel = lwt_chan(3);
+	assert(my_channel);
+	lwt_snd_chan(kthd_channel, my_channel);
+
+	lwt_chan_t main_channel = lwt_rcv_chan(my_channel);
+
 
 	char * data;
 	lwt_chan_t fs_channel;
-	//create cache channel
-	lwt_chan_t cache_channels[MAX_ACCEPTORS];
-	lwt_cgrp_t accept_group = lwt_cgrp();
-	int i;
-	for(i = 0; i < MAX_ACCEPTORS; ++i){
-		cache_channels[i] = lwt_chan(3);
-		lwt_cgrp_add(accept_group, cache_channels[i]);
-		//send back to main channel
-		lwt_snd_chan(main_channel, cache_channels[i]);
-	}
 	lwt_chan_t response_channel = lwt_chan(0);
 
 	//create hash
@@ -175,9 +173,8 @@ void * read_cache(lwt_chan_t main_channel){
 
 
 	while(1){
-		accept_channel = (lwt_chan_t)lwt_cgrp_wait(accept_group);
 		//wait for request
-		accept_fd = (int)lwt_rcv(accept_channel);
+		accept_fd = (int)lwt_rcv(my_channel);
 
 		/*
 		 * This code will be used to get the request and respond to
@@ -198,7 +195,6 @@ void * read_cache(lwt_chan_t main_channel){
 		//data is cached
 		if(result && result->data){
 			data = result->data;
-			printf("Found data: %s\n", data);
 		}
 		else
 		{
@@ -216,7 +212,7 @@ void * read_cache(lwt_chan_t main_channel){
 			//insert data into cache if there's capacity
 			if(num_hash_entries < MAX_CACHE_ENTRIES){
 				query.data = (char *)calloc(MAX_REQ_SZ, sizeof(char));
-				strcpy(query.data, data);
+				strncpy(query.data, data, MAX_REQ_SZ);
 				result = hsearch(query, ENTER);
 				//there should be no errors insertion
 				assert(result);
@@ -225,13 +221,56 @@ void * read_cache(lwt_chan_t main_channel){
 		}
 		respond_and_free_req_kthd(r, data, len);
 	}
-	for(i = 0; i < MAX_ACCEPTORS; i++){
-		lwt_cgrp_rem(accept_group, cache_channels[i]);
-		lwt_chan_deref(cache_channels[i]);
-	}
+	lwt_chan_deref(main_channel);
 	lwt_chan_deref(response_channel);
+	lwt_chan_deref(my_channel);
 
 	return NULL;
+}
+
+void * read_cache_kthd(lwt_chan_t main_channel){
+	//create cache channel
+	lwt_chan_t cache_channels[MAX_ACCEPTORS];
+	lwt_cgrp_t accept_group = lwt_cgrp();
+	int i;
+	for(i = 0; i < MAX_ACCEPTORS; ++i){
+		cache_channels[i] = lwt_chan(3);
+		lwt_cgrp_add(accept_group, cache_channels[i]);
+		//send back to main channel
+		lwt_snd_chan(main_channel, cache_channels[i]);
+	}
+
+	lwt_chan_t my_channel = lwt_chan(10);
+	assert(my_channel);
+
+	lwt_chan_t worker_channels[LWT_CACHE];
+	for(i = 0; i < LWT_CACHE; ++i){
+		lwt_create_chan(read_cache, my_channel, LWT_NOJOIN);
+		worker_channels[i] = lwt_rcv_chan(my_channel);
+		lwt_snd_chan(worker_channels[i], main_channel);
+	}
+
+	lwt_chan_t accept_channel;
+	int fd;
+
+	i = 0;
+	while(1){
+		accept_channel = lwt_cgrp_wait(accept_group);
+		fd = lwt_rcv(accept_channel);
+		lwt_snd(worker_channels[i], (void *)fd);
+		i++;
+		if(i > LWT_CACHE){
+			i = 0;
+		}
+	}
+	//cleanup
+	for(i = 0; i < MAX_ACCEPTORS; ++i){
+		lwt_chan_deref(cache_channels[i]);
+	}
+	for(i = 0; i < LWT_CACHE; ++i){
+		lwt_chan_deref(worker_channels[i]);
+	}
+	lwt_chan_deref(my_channel);
 }
 
 void * accept_worker(lwt_chan_t main_channel){
@@ -275,7 +314,7 @@ void process_kthd_server(int accept_fd){
 	}
 
 	//create the cache kthd
-	assert(!lwt_kthd_create(read_cache, main_channel, LWT_NOJOIN));
+	assert(!lwt_kthd_create(read_cache_kthd, main_channel, LWT_NOJOIN));
 	for(i = 0; i < MAX_ACCEPTORS; ++i){
 		cache_channels[i] = lwt_rcv_chan(main_channel);
 	}
@@ -286,7 +325,7 @@ void process_kthd_server(int accept_fd){
 		accept_channels[i] = lwt_rcv_chan(main_channel);
 		//send cache channels
 		for(j = 0; j < MAX_ACCEPTORS; ++j){
-			lwt_snd_chan(accept_channels[i], cache_channels[i]);
+			lwt_snd_chan(accept_channels[i], cache_channels[j]);
 		}
 		//send file descriptor
 		lwt_snd(accept_channels[i], (void *)accept_fd);
