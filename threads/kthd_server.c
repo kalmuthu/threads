@@ -149,7 +149,6 @@ void * read_cache(lwt_chan_t kthd_channel){
 	ENTRY query;
 	ENTRY * result;
 
-	lwt_chan_t accept_channel;
 	int accept_fd;
 
 	struct http_req *r;
@@ -168,8 +167,10 @@ void * read_cache(lwt_chan_t kthd_channel){
 	lwt_chan_t fs_channel;
 	lwt_chan_t response_channel = lwt_chan(0);
 
+
 	//create hash
-	hcreate(MAX_CACHE_ENTRIES);
+	struct hsearch_data * htab = (struct hsearch_data *)calloc(1, sizeof(struct hsearch_data));
+	hcreate_r(MAX_CACHE_ENTRIES, htab);
 
 
 	while(1){
@@ -191,10 +192,12 @@ void * read_cache(lwt_chan_t kthd_channel){
 
 
 		query.key = r->path;
-		result = hsearch(query, FIND);
+		hsearch_r(query, FIND, &result, htab);
 		//data is cached
 		if(result && result->data){
-			data = result->data;
+			//prevent double frees
+			data = (char *)calloc(MAX_REQ_SZ, sizeof(char));
+			strncpy(data, result->data, MAX_REQ_SZ);
 		}
 		else
 		{
@@ -213,7 +216,7 @@ void * read_cache(lwt_chan_t kthd_channel){
 			if(num_hash_entries < MAX_CACHE_ENTRIES){
 				query.data = (char *)calloc(MAX_REQ_SZ, sizeof(char));
 				strncpy(query.data, data, MAX_REQ_SZ);
-				result = hsearch(query, ENTER);
+				hsearch_r(query, ENTER, &result, htab);
 				//there should be no errors insertion
 				assert(result);
 				num_hash_entries++;
@@ -256,10 +259,10 @@ void * read_cache_kthd(lwt_chan_t main_channel){
 	i = 0;
 	while(1){
 		accept_channel = lwt_cgrp_wait(accept_group);
-		fd = lwt_rcv(accept_channel);
+		fd = (int)lwt_rcv(accept_channel);
 		lwt_snd(worker_channels[i], (void *)fd);
 		i++;
-		if(i > LWT_CACHE){
+		if(i >= LWT_CACHE){
 			i = 0;
 		}
 	}
