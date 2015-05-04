@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include <simple_http.h>
+#include "simple_http.h"
 
 struct http_req *
 shttp_alloc_req(int fd, char *request)

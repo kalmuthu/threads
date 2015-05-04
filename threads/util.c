@@ -11,9 +11,9 @@
 #include <unistd.h>
 #include <assert.h>
 
-#include <server.h>
-#include <simple_http.h>
-#include <content.h>
+#include "server.h"
+#include "simple_http.h"
+#include "content.h"
 
 /* 
  * newfd_create_req and respond_and_free_req functions are there to
