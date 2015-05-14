@@ -40,7 +40,11 @@ typedef enum
 	/**
 	 * Number of threads blocked receiving
 	 */
-	LWT_INFO_NRECEIVING
+	LWT_INFO_NRECEIVING,
+	/**
+	 * Reaper is ready to consume
+	 */
+	LWT_INFO_REAPER_READY
 } lwt_info_t;
 
 
@@ -59,5 +63,43 @@ typedef enum{
 	LWT_NOJOIN = 1
 }lwt_flags_t;
 
+typedef enum{
+	/**
+	 * Add a lwt sender to a channel
+	 */
+	LWT_REMOTE_ADD_SENDER_TO_CHANNEL,
+	/**
+	 * Remove a lwt sender to a channel
+	 */
+	LWT_REMOTE_REMOVE_SENDER_FROM_CHANNEL,
+	/**
+	 * Add a blocked lwt to a channel
+	 */
+	LWT_REMOTE_ADD_BLOCKED_SENDER_TO_CHANNEL,
+	/**
+	 * Remove a blocked sender from a channel
+	 */
+	LWT_REMOTE_REMOVE_BLOCKED_SENDER_FROM_CHANNEL,
+	/**
+	 * Add a channel to a group
+	 */
+	LWT_REMOTE_ADD_CHANNEL_TO_GROUP,
+	/**
+	 * Remove a channel from the group
+	 */
+	LWT_REMOTE_REMOVE_CHANNEL_FROM_GROUP,
+	/**
+	 * Add an event to remote group
+	 */
+	LWT_REMOTE_ADD_EVENT_TO_GROUP,
+	/**
+	 * Remove an event from a remote group
+	 */
+	LWT_REMOTE_REMOVE_EVENT_FROM_GROUP,
+	/**
+	 * Signal
+	 */
+	LWT_REMOTE_SIGNAL
+}lwt_remote_op_t;
 
 #endif /* ENUMS_H_ */

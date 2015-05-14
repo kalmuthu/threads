@@ -81,7 +81,7 @@ void * msort(lwt_chan_t main_channel){
 	//dereference channels
 	lwt_chan_deref(l_chan);
 	lwt_chan_deref(r_chan);
-	printf("DEREF MY CHILD CHANNEl\n");
+	printf("DEREF MY CHILD CHANNEL: %d\n", (int)my_channel);
 	lwt_chan_deref(my_channel);
 	//free args
 	free(l_args);
@@ -309,6 +309,7 @@ void multiple_channels_test(){
 	for(index = 0; index < ITER; ++index){
 		printf("CURRENT INDEX: %d\n", index);
 		count += (int)lwt_rcv(main_channel);
+		printf("COUNT: %d\n", count);
 	}
 	for(index = 0; index < ITER; ++index){
 		lwt_join(threads[index]);
@@ -364,8 +365,8 @@ void multiple_channels_test_v3(){
 int main(){
 	ping_pong_test();
 	merge_sort_test();
-	multiple_channels_test();
-	multiple_channels_test_v2();
-	multiple_channels_test_v3();
+	//multiple_channels_test();
+	//multiple_channels_test_v2();
+	//multiple_channels_test_v3();
 	return 0;
 }

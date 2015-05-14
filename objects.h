@@ -18,7 +18,7 @@
 /**
  * Size of the event buffer
  */
-#define EVENT_BUFFER_SIZE 100
+#define EVENT_BUFFER_SIZE 10000
 
 /**
  * Size of the a page in the OS -> 4K
@@ -32,6 +32,8 @@
  * Size of the stack
  */
 #define STACK_SIZE PAGE_SIZE*NUM_PAGES
+
+#define DEBUG 1
 
 /**
  * Null id for yields
@@ -49,21 +51,6 @@ typedef void *(*lwt_fnt_t)(void *); //function pointer definition
 
 typedef struct lwt* lwt_t;
 
-/**
- * @brief Event data
- */
-struct event{
-	TAILQ_ENTRY(event) events;
-	/**
-	 * The receiving channel with the new event
-	 */
-	lwt_chan_t channel;
-	/**
-	 * The data being added to the channel
-	 */
-	void * data;
-};
-
 
 
 /**
@@ -77,7 +64,7 @@ struct lwt_cgrp{
 	/**
 	 * Definition of the head node for the event queue
 	 */
-	TAILQ_HEAD(head_event, event) head_event;
+	TAILQ_HEAD(head_event, lwt_channel) head_event;
 	/**
 	 * Waiting thread
 	 */
@@ -119,19 +106,19 @@ struct lwt_channel{
 	/**
 	 * Start index of the buffer
 	 */
-	unsigned int start_index;
+	unsigned volatile int start_index;
 	/**
 	 * End index of the buffer
 	 */
-	unsigned int end_index;
+	unsigned volatile int end_index;
+	/**
+	 * Num entries
+	 */
+	unsigned int num_entries;
 	/**
 	 * Size of the buffer
 	 */
 	unsigned int buffer_size;
-	/**
-	 * Current number of entries in buffer
-	 */
-	unsigned int num_entries;
 	/**
 	 * List of receiver channels in a lwt
 	 */
@@ -149,32 +136,76 @@ struct lwt_channel{
 	 * Mark for channel
 	 */
 	void * mark;
+	/**
+	 * Channels in event
+	 */
+	TAILQ_ENTRY(lwt_channel) events;
+	/**
+	 * Kthd of the receiver
+	 */
+	lwt_kthd_t kthd;
 };
 
 struct kthd_event{
+	lwt_t originator;
 	lwt_t lwt;
-	lwt_info_t new_info;
+	lwt_chan_t channel;
+	lwt_cgrp_t group;
+	lwt_kthd_t kthd;
+	int is_done;
+	int block;
+	lwt_remote_op_t op;
 };
 
 struct lwt_kthd{
+	/**
+	 * The Pthread belonging to the kthd
+	 */
 	pthread_t pthread;
 	/**
 	 * Point to the head of the list of lwts associated with a kthd
 	 */
 	LIST_HEAD(head_lwts_in_kthd, lwt) head_lwts_in_kthd;
+	/**
+	 * Status flag for if the current remote thread is blocked
+	 */
 	int is_blocked;
+	/**
+	 * Mutex for the blocked lwt buffer thread
+	 */
 	pthread_mutex_t blocked_mutex;
+	/**
+	 * Condition variable for the lwt buffer thread
+	 */
 	pthread_cond_t blocked_cv;
+	/**
+	 * Buffer thread for the lwt
+	 */
 	lwt_t buffer_thread;
+	/**
+	 * Event buffer for remote communication
+	 */
 	struct kthd_event * event_buffer[EVENT_BUFFER_SIZE];
+	/**
+	 * Head of the buffer
+	 */
 	volatile unsigned int buffer_head;
+	/**
+	 * Tail of the buffer
+	 */
 	volatile unsigned int buffer_tail;
+	/**
+	 * Pointer to the head of the run queue
+	 */
+	TAILQ_HEAD(head_runnable_threads, lwt) head_runnable_threads;
 };
 
 struct lwt_kthd_data{
 	lwt_chan_fn_t channel_fn;
 	lwt_chan_t channel;
 	lwt_flags_t flags;
+	lwt_t parent;
+	int ready;
 };
 
 
@@ -220,22 +251,14 @@ struct lwt
 	LIST_ENTRY(lwt) current_threads;
 
 	/**
-	 * Previous runnable thread
+	 * List of runnable threads
 	 */
-	lwt_t previous_runnable;
-	/**
-	 * Next runnable thread
-	 */
-	lwt_t next_runnable;
+	TAILQ_ENTRY(lwt) runnable_threads;
 
 	/**
-	 * Previous ready pool thread
+	 * List of runnable pool threads
 	 */
-	lwt_t previous_ready_pool_thread;
-	/**
-	 * Next ready pool thread
-	 */
-	lwt_t next_ready_pool_thread;
+	LIST_ENTRY(lwt) ready_pool_threads;
 
 	/**
 	 * List of senders
@@ -249,6 +272,11 @@ struct lwt
 	 * Head of the receiver channels associated with the lwt
 	 */
 	LIST_HEAD(head_receiver_channel, lwt_channel) head_receiver_channel;
+
+	/**
+	 * Sync buffer
+	 */
+	void * sync_buffer;
 
 	/**
 	 * The start routine for the thread to run
@@ -277,6 +305,7 @@ struct lwt
 	 * List of lwts in the kthd
 	 */
 	LIST_ENTRY(lwt) lwts_in_kthd;
+
 	/**
 	 * Pointer to kthd
 	 */

@@ -8,44 +8,55 @@ Channel group for handling events within a group.
 
 
 
-{\ttfamily \#include $<$lwt\+\_\+cgrp.\+h$>$}
+{\ttfamily \#include $<$objects.\+h$>$}
 
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{structlwt__cgrp_a9e64fc8426379432c84b71b3ebb5a265}{L\+I\+S\+T\+\_\+\+H\+E\+A\+D} (head\+\_\+channels\+\_\+in\+\_\+group, \hyperlink{structlwt__channel}{lwt\+\_\+channel}) head\+\_\+channels\+\_\+in\+\_\+group
+\item 
+\hyperlink{structlwt__cgrp_aaf2977059a823baa00c6e12b32e5690b}{T\+A\+I\+L\+Q\+\_\+\+H\+E\+A\+D} (head\+\_\+event, \hyperlink{structlwt__channel}{lwt\+\_\+channel}) head\+\_\+event
+\end{DoxyCompactItemize}
 \subsection*{Data Fields}
 \begin{DoxyCompactItemize}
 \item 
-lwt\+\_\+chan\+\_\+t \hyperlink{structlwt__cgrp_a50c0e0c6ae5d35a6fcb1c42098e3fc4d}{channel\+\_\+head}
-\item 
-lwt\+\_\+chan\+\_\+t \hyperlink{structlwt__cgrp_addf100f46a0a912555c71bb1efe43380}{channel\+\_\+tail}
-\item 
-struct \hyperlink{structevent}{event} $\ast$ \hyperlink{structlwt__cgrp_a0b10e0f366557a71518836f2c12328f5}{event\+\_\+head}
-\item 
-struct \hyperlink{structevent}{event} $\ast$ \hyperlink{structlwt__cgrp_a180417922953d4a26cf88f429dde623e}{event\+\_\+tail}
-\item 
 lwt\+\_\+t \hyperlink{structlwt__cgrp_ac77ed0ee0cf31bd27b995749f819c32b}{waiting\+\_\+thread}
+\item 
+lwt\+\_\+t \hyperlink{structlwt__cgrp_af86699c56fb03f7a348fa606510af33b}{creator\+\_\+thread}
 \end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 Channel group for handling events within a group. 
 
+\subsection{Member Function Documentation}
+\hypertarget{structlwt__cgrp_a9e64fc8426379432c84b71b3ebb5a265}{\index{lwt\+\_\+cgrp@{lwt\+\_\+cgrp}!L\+I\+S\+T\+\_\+\+H\+E\+A\+D@{L\+I\+S\+T\+\_\+\+H\+E\+A\+D}}
+\index{L\+I\+S\+T\+\_\+\+H\+E\+A\+D@{L\+I\+S\+T\+\_\+\+H\+E\+A\+D}!lwt\+\_\+cgrp@{lwt\+\_\+cgrp}}
+\subsubsection[{L\+I\+S\+T\+\_\+\+H\+E\+A\+D}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+cgrp\+\_\+t\+::\+L\+I\+S\+T\+\_\+\+H\+E\+A\+D (
+\begin{DoxyParamCaption}
+\item[{head\+\_\+channels\+\_\+in\+\_\+group}]{, }
+\item[{{\bf lwt\+\_\+channel}}]{}
+\end{DoxyParamCaption}
+)}}\label{structlwt__cgrp_a9e64fc8426379432c84b71b3ebb5a265}
+Definition of the head in the channels \hypertarget{structlwt__cgrp_aaf2977059a823baa00c6e12b32e5690b}{\index{lwt\+\_\+cgrp@{lwt\+\_\+cgrp}!T\+A\+I\+L\+Q\+\_\+\+H\+E\+A\+D@{T\+A\+I\+L\+Q\+\_\+\+H\+E\+A\+D}}
+\index{T\+A\+I\+L\+Q\+\_\+\+H\+E\+A\+D@{T\+A\+I\+L\+Q\+\_\+\+H\+E\+A\+D}!lwt\+\_\+cgrp@{lwt\+\_\+cgrp}}
+\subsubsection[{T\+A\+I\+L\+Q\+\_\+\+H\+E\+A\+D}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+cgrp\+\_\+t\+::\+T\+A\+I\+L\+Q\+\_\+\+H\+E\+A\+D (
+\begin{DoxyParamCaption}
+\item[{head\+\_\+event}]{, }
+\item[{{\bf lwt\+\_\+channel}}]{}
+\end{DoxyParamCaption}
+)}}\label{structlwt__cgrp_aaf2977059a823baa00c6e12b32e5690b}
+Definition of the head node for the event queue 
+
 \subsection{Field Documentation}
-\hypertarget{structlwt__cgrp_a50c0e0c6ae5d35a6fcb1c42098e3fc4d}{\index{lwt\+\_\+cgrp@{lwt\+\_\+cgrp}!channel\+\_\+head@{channel\+\_\+head}}
-\index{channel\+\_\+head@{channel\+\_\+head}!lwt\+\_\+cgrp@{lwt\+\_\+cgrp}}
-\subsubsection[{channel\+\_\+head}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+chan\+\_\+t lwt\+\_\+cgrp\+\_\+t\+::channel\+\_\+head}}\label{structlwt__cgrp_a50c0e0c6ae5d35a6fcb1c42098e3fc4d}
-Head of the list of channels \hypertarget{structlwt__cgrp_addf100f46a0a912555c71bb1efe43380}{\index{lwt\+\_\+cgrp@{lwt\+\_\+cgrp}!channel\+\_\+tail@{channel\+\_\+tail}}
-\index{channel\+\_\+tail@{channel\+\_\+tail}!lwt\+\_\+cgrp@{lwt\+\_\+cgrp}}
-\subsubsection[{channel\+\_\+tail}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+chan\+\_\+t lwt\+\_\+cgrp\+\_\+t\+::channel\+\_\+tail}}\label{structlwt__cgrp_addf100f46a0a912555c71bb1efe43380}
-Tail of the list of channels \hypertarget{structlwt__cgrp_a0b10e0f366557a71518836f2c12328f5}{\index{lwt\+\_\+cgrp@{lwt\+\_\+cgrp}!event\+\_\+head@{event\+\_\+head}}
-\index{event\+\_\+head@{event\+\_\+head}!lwt\+\_\+cgrp@{lwt\+\_\+cgrp}}
-\subsubsection[{event\+\_\+head}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf event}$\ast$ lwt\+\_\+cgrp\+\_\+t\+::event\+\_\+head}}\label{structlwt__cgrp_a0b10e0f366557a71518836f2c12328f5}
-Head of the event queue \hypertarget{structlwt__cgrp_a180417922953d4a26cf88f429dde623e}{\index{lwt\+\_\+cgrp@{lwt\+\_\+cgrp}!event\+\_\+tail@{event\+\_\+tail}}
-\index{event\+\_\+tail@{event\+\_\+tail}!lwt\+\_\+cgrp@{lwt\+\_\+cgrp}}
-\subsubsection[{event\+\_\+tail}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf event}$\ast$ lwt\+\_\+cgrp\+\_\+t\+::event\+\_\+tail}}\label{structlwt__cgrp_a180417922953d4a26cf88f429dde623e}
-Tail of the event queue \hypertarget{structlwt__cgrp_ac77ed0ee0cf31bd27b995749f819c32b}{\index{lwt\+\_\+cgrp@{lwt\+\_\+cgrp}!waiting\+\_\+thread@{waiting\+\_\+thread}}
+\hypertarget{structlwt__cgrp_af86699c56fb03f7a348fa606510af33b}{\index{lwt\+\_\+cgrp@{lwt\+\_\+cgrp}!creator\+\_\+thread@{creator\+\_\+thread}}
+\index{creator\+\_\+thread@{creator\+\_\+thread}!lwt\+\_\+cgrp@{lwt\+\_\+cgrp}}
+\subsubsection[{creator\+\_\+thread}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+cgrp\+\_\+t\+::creator\+\_\+thread}}\label{structlwt__cgrp_af86699c56fb03f7a348fa606510af33b}
+Creator thread \hypertarget{structlwt__cgrp_ac77ed0ee0cf31bd27b995749f819c32b}{\index{lwt\+\_\+cgrp@{lwt\+\_\+cgrp}!waiting\+\_\+thread@{waiting\+\_\+thread}}
 \index{waiting\+\_\+thread@{waiting\+\_\+thread}!lwt\+\_\+cgrp@{lwt\+\_\+cgrp}}
 \subsubsection[{waiting\+\_\+thread}]{\setlength{\rightskip}{0pt plus 5cm}lwt\+\_\+t lwt\+\_\+cgrp\+\_\+t\+::waiting\+\_\+thread}}\label{structlwt__cgrp_ac77ed0ee0cf31bd27b995749f819c32b}
 Waiting thread 
 
 The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-\hyperlink{lwt__cgrp_8h}{lwt\+\_\+cgrp.\+h}\end{DoxyCompactItemize}
+\hyperlink{objects_8h}{objects.\+h}\end{DoxyCompactItemize}

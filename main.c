@@ -1,179 +1,117 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-
-#include "lwt.h"
-
-#define rdtscll(val) __asm__ __volatile__("rdtsc" : "=A" (val))
-
-#define ITER 10000
-
-/*
- * My output on an Intel Core i5-2520M CPU @ 2.50GHz:
+/**
+ * Redistribution of this file is permitted under the GNU General
+ * Public License v2.
  *
- * [PERF] 120 <- fork/join
- * [PERF] 13 <- yield
- * [TEST] thread creation/join/scheduling
+ * Copyright 2012 by Gabriel Parmer.
+ * Author: Gabriel Parmer, gparmer@gwu.edu, 2012
+ */
+/* 
+ * This is a HTTP server.  It accepts connections on port 8080, and
+ * serves a local static document.
+ *
+ * The clients you can use are 
+ * - httperf (e.g., httperf --port=8080),
+ * - wget (e.g. wget localhost:8080 /), 
+ * - or even your browser.  
+ *
+ * To measure the efficiency and concurrency of your server, use
+ * httperf and explore its options using the manual pages (man
+ * httperf) to see the maximum number of connections per second you
+ * can maintain over, for example, a 10 second period.
+ *
+ * Example usage:
+ * # make test1
+ * # make test2
  */
 
-void *
-fn_bounce(void *d)
-{
-	int i;
-	unsigned long long start, end;
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <assert.h>
+#include <sys/wait.h>
+#include <pthread.h>
 
-	lwt_yield(LWT_NULL);
-	lwt_yield(LWT_NULL);
-	rdtscll(start);
-	for (i = 0 ; i < ITER ; i++) lwt_yield(LWT_NULL);
-	rdtscll(end);
-	lwt_yield(LWT_NULL);
-	lwt_yield(LWT_NULL);
+#include "util.h" 		/* client_process */
+#include "server.h"		/* server_accept and server_create */
 
-	if (!d) printf("[PERF] %5lld <- yield\n", (end-start)/(ITER*2));
+#include "kthd_server.h"
 
-	return NULL;
-}
+#include "cas.h"
 
-void *
-fn_null(void *d)
-{ return NULL; }
+#define MAX_DATA_SZ 1024
+#define MAX_CONCURRENCY 4
+#define BUFFER_LENGTH 256
 
-#define IS_RESET()						\
-        assert( lwt_info(LWT_INFO_NTHD_RUNNABLE) == 1 &&	\
-		lwt_info(LWT_INFO_NTHD_ZOMBIES) == 0 &&		\
-		lwt_info(LWT_INFO_NTHD_BLOCKED) == 0)
-
+/* 
+ * This is the function for handling a _single_ request.  Understand
+ * what each of the steps in this function do, so that you can handle
+ * _multiple_ requests.  Use this function as an _example_ of the
+ * basic functionality.  As you increase the server in functionality,
+ * you will want to probably keep all of the functions called in this
+ * function, but define different code to use them.
+ */
 void
-test_perf(void)
+server_single_request(int accept_fd)
 {
-	lwt_t chld1, chld2;
-	int i;
-	unsigned long long start, end;
+	int fd;
 
+	/* 
+	 * The server thread will always want to be doing the accept.
+	 * That main thread will want to hand off the new fd to the
+	 * new threads/processes/thread pool.
+	 */
+	fd = server_accept(accept_fd);
+	client_process(fd);
 
-	/* Performance tests */
-	rdtscll(start);
-	for (i = 0 ; i < ITER ; i++) {
-		chld1 = lwt_create(fn_null, NULL, 0);
-		lwt_join(chld1);
-	}
-	rdtscll(end);
-	printf("[PERF] %5lld <- fork/join\n", (end-start)/ITER);
-	IS_RESET();
+	/* 
+	 * A loop around these two lines will result in multiple
+	 * documents being served.
+	 */
 
-	chld1 = lwt_create(fn_bounce, (void*)1, 0);
-	chld2 = lwt_create(fn_bounce, NULL, 0);
-	lwt_join(chld1);
-	lwt_join(chld2);
-	IS_RESET();
+	return;
 }
 
-void *
-fn_identity(void *d)
-{ return d; }
 
-void *
-fn_nested_joins(void *d)
-{
-	lwt_t chld;
 
-	if (d) {
-		lwt_yield(LWT_NULL);
-		lwt_yield(LWT_NULL);
-		assert(lwt_info(LWT_INFO_NTHD_RUNNABLE) == 1);
-		lwt_die(NULL);
-	}
-	chld = lwt_create(fn_nested_joins, (void*)1, 0);
-	lwt_join(chld);
-}
 
-volatile int sched[2] = {0, 0};
-volatile int curr = 0;
-
-void *
-fn_sequence(void *d)
-{
-	int i, other, val = (int)d;
-
-	for (i = 0 ; i < ITER ; i++) {
-		other = curr;
-		curr  = (curr + 1) % 2;
-		sched[curr] = val;
-		assert(sched[other] != val);
-		lwt_yield(LWT_NULL);
-	}
-
-	return NULL;
-}
-
-void *
-fn_join(void *d)
-{
-	lwt_t t = (lwt_t)d;
-	void *r;
-
-	r = lwt_join(d);
-	assert(r == (void*)0x37337);
-}
-
-void
-test_crt_join_sched(void)
-{
-	lwt_t chld1, chld2;
-
-	printf("[TEST] thread creation/join/scheduling\n");
-
-	/* functional tests: scheduling */
-	lwt_yield(LWT_NULL);
-
-	chld1 = lwt_create(fn_sequence, (void*)1, 0);
-	chld2 = lwt_create(fn_sequence, (void*)2, 0);
-	lwt_join(chld2);
-	lwt_join(chld1);
-	IS_RESET();
-
-	/* functional tests: join */
-	chld1 = lwt_create(fn_null, NULL, 0);
-	lwt_join(chld1);
-	IS_RESET();
-
-	chld1 = lwt_create(fn_null, NULL, 0);
-	lwt_yield(LWT_NULL);
-	lwt_join(chld1);
-	IS_RESET();
-
-	chld1 = lwt_create(fn_nested_joins, NULL, 0);
-	lwt_join(chld1);
-	IS_RESET();
-
-	/* functional tests: join only from parents */
-	chld1 = lwt_create(fn_identity, (void*)0x37337, 0);
-	chld2 = lwt_create(fn_join, chld1, 0);
-	lwt_yield(LWT_NULL);
-	lwt_yield(LWT_NULL);
-	lwt_join(chld2);
-	//lwt_join(chld1);
-	IS_RESET();
-
-	/* functional tests: passing data between threads */
-	chld1 = lwt_create(fn_identity, (void*)0x37337, 0);
-	assert((void*)0x37337 == lwt_join(chld1));
-	IS_RESET();
-
-	/* functional tests: directed yield */
-	chld1 = lwt_create(fn_null, NULL, 0);
-	lwt_yield(chld1);
-	assert(lwt_info(LWT_INFO_NTHD_ZOMBIES) == 1);
-	lwt_join(chld1);
-	IS_RESET();
-}
+typedef enum {
+	SERVER_TYPE_ONE = 0,
+	SERVER_TYPE_TWO = 1,
+} server_type_t;
 
 int
-main(void)
+main(int argc, char *argv[])
 {
-	test_perf();
-	test_crt_join_sched();
+	server_type_t server_type;
+	short int port;
+    int accept_fd;
+
+	if (argc != 3) {
+		printf("Proper usage of http server is:\n%s <port> <#>\n"
+		       "port is the port to serve on, # is either\n"
+		       "0: serve only a single request\n"
+		       "1: serve each request with kthds\n",
+		       argv[0]);
+		return -1;
+	}
+
+	port = atoi(argv[1]);
+	accept_fd = server_create(port);
+	if (accept_fd < 0) return -1;
+	
+	server_type = atoi(argv[2]);
+
+	switch(server_type) {
+	case SERVER_TYPE_ONE:
+		server_single_request(accept_fd);
+		break;
+	case SERVER_TYPE_TWO:
+		process_kthd_server(accept_fd);
+		break;
+	default:
+		perror("Unknown server type provided.\n");
+	}
+	close(accept_fd);
 
 	return 0;
 }

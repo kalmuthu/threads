@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['rdtscll',['rdtscll',['../main_8c.html#ac24e1ca366317fc627e4ba6ec3cbc67b',1,'rdtscll():&#160;main.c'],['../main3_8c.html#ac24e1ca366317fc627e4ba6ec3cbc67b',1,'rdtscll():&#160;main3.c']]],
-  ['receiver',['receiver',['../structlwt__channel.html#a740680d836200bfc87150333e4d62785',1,'lwt_channel']]],
-  ['receiving_5fchannels',['receiving_channels',['../structlwt.html#ac857ca0e804faec3a2dc17ff1ee0f22d',1,'lwt']]],
-  ['return_5fvalue',['return_value',['../structlwt.html#a22ac5beef8503481294035218e73c3ef',1,'lwt']]]
+  ['objects_2eh',['objects.h',['../objects_8h.html',1,'']]],
+  ['op',['op',['../structkthd__event.html#ac435cbbe9abc116467e022b3994bb85e',1,'kthd_event']]],
+  ['original_5fthread',['original_thread',['../lwt_8c.html#a1a5635751bf334d8e69a9114075111b8',1,'lwt.c']]],
+  ['originator',['originator',['../structkthd__event.html#a96cd60edf833ee1bc910a3bbbdda7ac7',1,'kthd_event']]]
 ];

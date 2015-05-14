@@ -20,42 +20,36 @@
  * @brief Initializes the event for when data is added to the channel
  * @param channel The channel with the new data
  * @param sender The sender lwt
- * @param data The data being inserted
  */
-void __init_event(lwt_chan_t channel, void * data){
-	if(channel->channel_group){
-		struct event * event = __create_event(channel, data);
-		TAILQ_INSERT_TAIL(&channel->channel_group->head_event, event, events);
-		if(channel->async_buffer && channel->channel_group->waiting_thread && channel->channel_group->waiting_thread->info != LWT_INFO_NTHD_RUNNABLE){
-			channel->channel_group->waiting_thread->info = LWT_INFO_NTHD_RUNNABLE;
-			__insert_runnable_tail(channel->channel_group->waiting_thread);
+void __init_event(lwt_chan_t channel){
+	if(channel->channel_group && channel->num_entries == 1){
+		//printf("Inserting event for channel: %d\n", (int)channel);
+		//printf("Num entries: %d\n", channel->num_entries);
+		//printf("Channel already has been added: %d\n", channel->events.tqe_next);
+		if(__get_kthd() == channel->channel_group->creator_thread->kthd){
+			TAILQ_INSERT_TAIL(&channel->channel_group->head_event, channel, events);
+		}
+		else{
+			__init_kthd_event(NULL, channel, channel->channel_group, channel->channel_group->creator_thread->kthd, LWT_REMOTE_ADD_EVENT_TO_GROUP, 1);
+		}
+		if(channel->channel_group->waiting_thread){
+			lwt_signal(channel->channel_group->waiting_thread);
 		}
 	}
 }
 
 /**
- * @brief Constructs an event
- * @param channel The channel being sent on
- * @param sender The sending LWT
- * @param data The data being sent
+ * @brief Removes an event from the group
+ * @param channel The channel (i.e. event) to remove
+ * @param group The group to remove the event from
  */
-struct event * __create_event(lwt_chan_t channel, void * data){
-	struct event * event = (struct event *)malloc(sizeof(struct event));
-	assert(event);
-	event->data = data;
-	event->channel = channel;
-	return event;
-}
-
-/**
- * @brief Removes the event from the group
- * @param event The event being removed
- */
-void free_event(struct event * event){
-	if(event->channel->channel_group){
-
+void __remove_event(lwt_chan_t channel, lwt_cgrp_t group){
+	if(__get_kthd() == group->creator_thread->kthd){
+		TAILQ_REMOVE(&group->head_event, channel, events);
 	}
-	free(event);
+	else{
+		__init_kthd_event(NULL, channel, channel->channel_group, channel->channel_group->creator_thread->kthd, LWT_REMOTE_REMOVE_EVENT_FROM_GROUP, 1);
+	}
 }
 
 
@@ -85,6 +79,7 @@ lwt_cgrp_t lwt_cgrp(){
  */
 int lwt_cgrp_free(lwt_cgrp_t group){
 	if(group->head_event.tqh_first){
+		//perror("There is still an event to consume\n");
 		return -1;
 	}
 	//remove the group from the channels
@@ -105,9 +100,13 @@ int lwt_cgrp_add(lwt_cgrp_t group, lwt_chan_t channel){
 	if(channel->channel_group){
 		return -1;
 	}
-	channel->channel_group = group;
-	LIST_INSERT_HEAD(&group->head_channels_in_group, channel, channels_in_group);
-
+	if(__get_kthd() == group->creator_thread->kthd){
+		channel->channel_group = group;
+		LIST_INSERT_HEAD(&group->head_channels_in_group, channel, channels_in_group);
+	}
+	else{
+		__init_kthd_event(NULL, channel, group, group->creator_thread->kthd, LWT_REMOTE_ADD_CHANNEL_TO_GROUP, 1);
+	}
 	return 0;
 }
 
@@ -126,7 +125,11 @@ int lwt_cgrp_rem(lwt_cgrp_t group, lwt_chan_t channel){
 		//printf("Event queue is not empty\n");
 		return 1;
 	}
-	LIST_REMOVE(channel, channels_in_group);
+	if(__get_kthd() == group->creator_thread->kthd){
+		LIST_REMOVE(channel, channels_in_group);
+	}else{
+		__init_kthd_event(NULL, channel, group, group->creator_thread->kthd, LWT_REMOTE_REMOVE_CHANNEL_FROM_GROUP, 1);
+	}
 	return 0;
 }
 
@@ -137,17 +140,17 @@ int lwt_cgrp_rem(lwt_cgrp_t group, lwt_chan_t channel){
  */
 lwt_chan_t lwt_cgrp_wait(lwt_cgrp_t group){
 	group->waiting_thread = lwt_current();
-	__update_lwt_info(group->waiting_thread, LWT_INFO_NRECEIVING);
 	//wait until there is an event in the queue
 	while(!group->head_event.tqh_first){
-		lwt_yield(LWT_NULL);
+		//printf("Waiting for new event in lwt: %d\n", lwt_current()->id);
+		lwt_block(LWT_INFO_NRECEIVING);
 	}
-	__update_lwt_info(lwt_current(), LWT_INFO_NTHD_RUNNABLE);
 	group->waiting_thread = NULL;
-	lwt_chan_t channel = group->head_event.tqh_first->channel;
-	struct event * head_event = group->head_event.tqh_first;
-	TAILQ_REMOVE(&group->head_event, head_event, events);
-	free(head_event);
+	lwt_chan_t channel = group->head_event.tqh_first;
+	if(channel->num_entries == 1){
+		__remove_event(channel, group);
+	}
+	//printf("Received channel: %d with num entries: %d\n", (int)channel, channel->num_entries);
 	return channel;
 }
 

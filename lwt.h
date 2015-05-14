@@ -18,7 +18,9 @@ lwt_t lwt_current();
 int lwt_id(lwt_t);
 int lwt_info(lwt_info_t);
 
-void __insert_runnable_tail(lwt_t);
+void lwt_block(lwt_info_t);
+void lwt_signal(lwt_t);
+
 void __init__();
 void __destroy__();
 
